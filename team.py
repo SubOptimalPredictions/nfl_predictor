@@ -40,6 +40,8 @@ class Team:
         self.division: str = division
         self.conference_record: np.ndarray = np.array([[0, 0, 0]])
         self.division_record: np.ndarray = np.array([[0, 0, 0]])
+        # opponent abbreviation -> head-to-head record
+        self.head_to_head_record: Dict[str, np.ndarray] = {}
 
     @staticmethod
     def load_teams_from_csv(
@@ -83,6 +85,12 @@ class Team:
             self.conference_record += delta
         if self.division == opponent_team.division:
             self.division_record += delta
+        self.head_to_head_record[opponent_team.abbreviation] = (
+            self.head_to_head_record.get(
+                opponent_team.abbreviation, np.array([[0, 0, 0]])
+            )
+            + delta
+        )
 
     def __repr__(self) -> str:
         return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
