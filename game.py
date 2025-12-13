@@ -24,10 +24,10 @@ class Game:
             only when ``score`` is ``None``.
     """
 
-    def __init__(self, away_team : Team, home_team : Team, score : np.ndarray, probabilities : np.ndarray):
+    def __init__(self, away_team : Team, home_team : Team, score : np.ndarray | None, probabilities : np.ndarray):
         self.away_team : Team = away_team
         self.home_team : Team = home_team
-        self.score : np.ndarray = score
+        self.score : np.ndarray | None = score
         self.probabilities : np.ndarray = probabilities
 
     def simulate(self) -> None:
