@@ -40,7 +40,7 @@ class Team:
         self.division: str = division
 
     @staticmethod
-    def load_teams_from_csv(filepath: str) -> Dict[str, "Team"]:
+    def load_teams_from_csv(filepath: str, load_existing_record=False) -> Dict[str, "Team"]:
         """
         Load teams from a CSV file.
         Args:
@@ -52,7 +52,10 @@ class Team:
         teams = {}
         for row in df.iter_rows(named=True):
             name = row["Name"]
-            record = np.array([[row["Wins"], row["Losses"], row["Ties"]]])
+            if load_existing_record:
+                record = np.array([[row["Wins"], row["Losses"], row["Ties"]]])
+            else:
+                record = np.array([[0, 0, 0]])
             conference = row["Conference"]
             division = row["Division"]
             abbreviation = row["Abbreviation"]
