@@ -69,13 +69,13 @@ class Team:
             team = Team(name, abbreviation, record, conference, division)
             teams[abbreviation] = team
         return teams
-    
-    def get_record_pct(self, record_type='full'):
-        if record_type == 'full':
+
+    def get_record_pct(self, record_type="full"):
+        if record_type == "full":
             return record_to_pct(self.record)
-        elif record_type == 'division':
+        elif record_type == "division":
             return record_to_pct(self.division_record)
-        elif record_type == 'conference':
+        elif record_type == "conference":
             return record_to_pct(self.conference_record)
         else:
             raise NotImplementedError("Record Type?")
@@ -111,9 +111,9 @@ class Team:
             return True
         elif my_pct > other_pct:
             return False
-        
+
         return None
-    
+
     def _h2h_record_lt(self, other):
         my_h2h_pct = record_to_pct(self.head_to_head_record[other.abbreviation])
         if my_h2h_pct < 0.5:
@@ -121,39 +121,69 @@ class Team:
         elif my_h2h_pct > 0.5:
             return False
         return None
-    
+
     def _division_record_lt(self, other):
-        my_division_pct = self.get_record_pct(record_type='division')
-        other_division_pct = other.get_record_pct(record_type='division')
+        my_division_pct = self.get_record_pct(record_type="division")
+        other_division_pct = other.get_record_pct(record_type="division")
 
         if my_division_pct < other_division_pct:
             return True
         elif my_division_pct > other_division_pct:
             return False
-        
+
+        return None
+
+    def _conference_record_lt(self, other):
+        my_conference_pct = self.get_record_pct(record_type="conference")
+        other_conference_pct = other.get_record_pct(record_type="conference")
+
+        if my_conference_pct < other_conference_pct:
+            return True
+        elif my_conference_pct > other_conference_pct:
+            return False
+
         return None
 
     def __repr__(self) -> str:
         return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
 
-class DivisionTeamWrapper():
+
+class DivisionTeamWrapper:
     def __init__(self, team):
         self.team = team
 
-    def __lt__(self, other : "DivisionTeamWrapper"):
+    def __lt__(self, other: "DivisionTeamWrapper"):
         comparisons = [
             self.team._overall_record_lt,
-            self.team._h2h_record_lt, 
+            self.team._h2h_record_lt,
             self.team._division_record_lt,
         ]
-        
+
         for comparison in comparisons:
             result = comparison(other.team)
             if result is not None:
                 return result
-        
+
         raise NotImplementedError("OOps")
-        
+
+
+class ConferenceTeamWrapper:
+    def __init__(self, team):
+        self.team = team
+
+    def __lt__(self, other: "ConferenceTeamWrapper"):
+        comparisons = [
+            self.team._h2h_record_lt,
+            self.team._conference_record_lt,
+        ]
+
+        for comparison in comparisons:
+            result = comparison(other)
+            if result is not None:
+                return result
+
+        raise NotImplementedError("OOps")
+
 
 if __name__ == "__main__":
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
