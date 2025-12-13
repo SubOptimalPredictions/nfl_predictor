@@ -210,6 +210,7 @@ class ConferenceTeamWrapper:
         comparisons = [
             self.team._h2h_record_lt,
             self.team._conference_record_lt,
+            self.team._common_games_record_lt,
         ]
 
         for comparison in comparisons:
