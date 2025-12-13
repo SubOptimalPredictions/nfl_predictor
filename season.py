@@ -70,6 +70,16 @@ class Season:
         afc_ranking = afc_division_winners_ranked + afc_remaining_ranked
 
         return nfc_ranking, afc_ranking
+    
+    def print_standings(self, nfc_ranking, afc_ranking):
+        print("NFC:")
+        for team in nfc_ranking:
+            print(team)
+
+        print("-----\n")
+        print("AFC:")
+        for team in afc_ranking:
+            print(team)
 
     def rank_division(self, division):
         division_wrapped_teams = [DivisionTeamWrapper(t) for t in division]
