@@ -41,3 +41,30 @@ class Season:
         assert (len(self.list_of_games) > 13), "Less than Minimum Number of games per week" 
         for game in self.list_of_games:
             game.simulate()
+
+    @staticmethod
+    def load_season(
+        teams_file_path: str,
+        schedule_filepath: str
+    ):
+        teams = Team.load_teams_from_csv(teams_file_path)
+        games = Game.load_games_from_csv(schedule_filepath, teams)
+
+        season = Season(list_of_games=games, team_name_to_team=teams)
+        return season
+
+    def __repr__(self) -> str:
+        output = ""
+        for game in self.list_of_games:
+            output += game.__repr__()
+            output += "\n"
+        for team in self.team_name_to_team:
+            output += f"Team Name: {team}, {self.team_name_to_team[team].__repr__()}"
+            output += "\n"
+        return output
+    
+if __name__ == "__main__":
+    season = Season.load_season(teams_file_path="data/teams_with_records.csv",
+                                schedule_filepath="data/schedules_2025.csv")
+
+
