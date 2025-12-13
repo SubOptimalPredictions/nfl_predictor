@@ -10,6 +10,7 @@ import numpy as np
 from team import Team
 import polars as pl
 from enum import Enum
+from utils import moneyline_to_probability
 
 
 class GameLoadingMode(Enum):
@@ -73,9 +74,15 @@ class Game:
             away_team = teams[row["away_team"]]
             home_team = teams[row["home_team"]]
             score = None
+            probabilities = np.array([0.5, 0.5])
             if row["away_score"] is not None and row["home_score"] is not None:
                 score = np.array([[row["away_score"], row["home_score"]]])
-            probabilities = np.array([0.5, 0.5])  # Default equal probabilities
+            elif (
+                row["away_moneyline"] is not None and row["home_moneyline"] is not None
+            ):
+                probabilities = moneyline_to_probability(
+                    row["away_moneyline"], row["home_moneyline"]
+                )
             game = Game(away_team, home_team, score, probabilities)
             games.append(game)
         return games

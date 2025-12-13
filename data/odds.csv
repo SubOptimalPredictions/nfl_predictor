@@ -1,0 +1,248 @@
+game_id,game_date,home_team,away_team,bookmaker,home_moneyline,away_moneyline,home_spread,home_spread_price,away_spread,away_spread_price,total_points,over_price,under_price
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,DraftKings,1.18,5.1,-9.5,1.87,9.5,1.95,42.5,1.95,1.87
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,FanDuel,1.18,5.1,-9.5,1.91,9.5,1.91,42.5,1.89,1.93
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,MyBookie.ag,1.18,4.9,-10.0,1.91,10.0,1.91,42.5,1.91,1.91
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,BetUS,1.21,4.7,-10.0,2.0,10.0,1.83,42.5,1.91,1.91
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,BetOnline.ag,1.21,4.67,-10.0,1.95,10.0,1.87,42.0,1.91,1.91
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,LowVig.ag,1.21,4.67,-10.0,2.0,10.0,1.91,42.0,1.93,1.93
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,BetRivers,1.18,4.8,-9.0,1.88,9.0,1.89,42.5,1.88,1.88
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,BetMGM,1.19,5.0,-9.5,1.87,9.5,1.95,42.5,1.91,1.91
+a360e4c43576d22057ff90d818928066,2025-12-14 18:00,Houston Texans,Arizona Cardinals,Bovada,1.2,4.6,-9.5,1.87,9.5,1.95,42.5,1.95,1.87
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,DraftKings,2.2,1.7,2.5,1.95,-2.5,1.87,51.5,1.87,1.95
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,BetUS,2.25,1.69,3.0,1.83,-3.0,2.0,51.5,1.91,1.91
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,BetMGM,2.25,1.67,2.5,1.95,-2.5,1.87,51.5,1.91,1.91
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,FanDuel,2.24,1.68,2.5,1.95,-2.5,1.87,51.5,1.91,1.91
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,MyBookie.ag,2.31,1.62,2.5,1.95,-2.5,1.87,51.5,1.91,1.91
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,BetOnline.ag,2.35,1.65,3.0,1.87,-3.0,1.95,51.5,1.95,1.87
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,LowVig.ag,2.35,1.65,3.0,1.91,-3.0,2.0,51.5,1.98,1.88
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,BetRivers,2.23,1.64,2.5,1.93,-2.5,1.83,51.5,1.89,1.88
+1aa1fb046f11dadb32dad77d5baf552e,2025-12-14 18:00,Cincinnati Bengals,Baltimore Ravens,Bovada,2.25,1.69,3.0,1.83,-3.0,2.0,51.0,1.95,1.87
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,DraftKings,2.0,1.83,1.5,1.89,-1.5,1.93,49.5,1.91,1.91
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,BetMGM,2.0,1.83,1.0,1.91,-1.0,1.91,49.5,1.91,1.91
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,FanDuel,2.0,1.85,1.5,1.87,-1.5,1.95,49.5,1.91,1.91
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,MyBookie.ag,1.93,1.89,1.0,1.87,-1.0,1.95,49.5,1.91,1.91
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,BetUS,1.95,1.87,1.0,1.91,-1.0,1.91,49.5,1.91,1.91
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,LowVig.ag,1.97,1.85,1.0,2.0,-1.0,1.91,49.5,1.88,1.98
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,BetOnline.ag,1.97,1.85,1.0,1.95,-1.0,1.87,49.5,1.87,1.95
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,BetRivers,1.95,1.82,1.0,1.89,-1.0,1.88,49.5,1.89,1.88
+c127c7a2426ec655e18ca9c394068f6c,2025-12-14 18:00,New England Patriots,Buffalo Bills,Bovada,2.0,1.83,1.0,1.95,-1.0,1.87,50.0,1.95,1.87
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,DraftKings,1.26,4.0,-7.5,1.91,7.5,1.91,38.5,1.87,1.95
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,FanDuel,1.25,4.2,-7.5,1.91,7.5,1.91,38.5,1.91,1.91
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,MyBookie.ag,1.24,4.07,-7.5,1.91,7.5,1.91,38.5,1.91,1.91
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,BetUS,1.27,3.95,-8.0,1.95,8.0,1.87,38.5,1.91,1.91
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,BetRivers,1.23,4.1,-7.5,1.91,7.5,1.88,38.5,1.88,1.89
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,BetOnline.ag,1.27,3.96,-7.5,1.92,7.5,1.9,39.0,1.91,1.91
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,LowVig.ag,1.27,3.96,-7.5,1.96,7.5,1.94,39.0,1.93,1.93
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,BetMGM,1.25,4.1,-7.5,1.91,7.5,1.91,39.0,1.91,1.91
+8261541e6b9b32537bd0821ef2c0a05d,2025-12-14 18:00,Chicago Bears,Cleveland Browns,Bovada,1.28,3.8,-7.5,2.0,7.5,1.83,38.5,1.91,1.91
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,DraftKings,1.11,7.25,-13.5,1.93,13.5,1.89,41.5,1.91,1.91
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,FanDuel,1.1,7.6,-13.5,1.94,13.5,1.88,41.5,1.93,1.89
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,MyBookie.ag,1.09,7.5,-13.5,1.91,13.5,1.91,41.5,1.91,1.91
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,BetUS,1.1,7.5,-13.5,1.91,13.5,1.91,41.5,1.91,1.91
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,BetOnline.ag,1.1,7.61,-13.0,1.87,13.0,1.95,41.5,1.91,1.91
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,LowVig.ag,1.1,7.61,-13.0,1.91,13.0,2.0,41.5,1.93,1.93
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,BetRivers,1.1,6.75,-13.5,1.91,13.5,1.88,41.5,1.89,1.88
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,BetMGM,1.1,7.5,-13.5,1.91,13.5,1.91,41.5,1.91,1.91
+0f0601c020a478f5d9f81f06a141c2c8,2025-12-14 18:00,Jacksonville Jaguars,New York Jets,Bovada,1.11,7.0,-13.0,1.83,13.0,2.0,41.5,1.83,2.0
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,DraftKings,1.4,3.05,-6.0,1.93,6.0,1.89,40.5,1.87,1.95
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,BetUS,1.36,3.3,-5.5,1.91,5.5,1.91,41.0,1.91,1.91
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,FanDuel,1.38,3.15,-5.5,1.91,5.5,1.91,41.5,1.91,1.91
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,MyBookie.ag,1.39,3.02,-5.5,1.91,5.5,1.91,41.0,1.91,1.91
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,BetOnline.ag,1.36,3.26,-5.5,1.88,5.5,1.93,41.0,1.91,1.91
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,LowVig.ag,1.36,3.26,-5.5,1.93,5.5,1.98,41.0,1.93,1.93
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,BetRivers,1.36,3.05,-5.5,1.87,5.5,1.92,41.0,1.88,1.88
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,BetMGM,1.4,3.0,-5.5,1.91,5.5,1.91,41.0,1.91,1.91
+cd5151f8a1e7fcba4901929e77b94acd,2025-12-14 18:00,Kansas City Chiefs,Los Angeles Chargers,Bovada,1.35,3.35,-6.0,1.95,6.0,1.87,41.0,1.91,1.91
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,DraftKings,1.12,6.75,-12.5,1.93,12.5,1.89,38.5,1.95,1.87
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,BetUS,1.12,6.8,-13.0,1.95,13.0,1.87,38.0,1.91,1.91
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,FanDuel,1.11,7.1,-11.5,1.87,11.5,1.95,38.5,1.91,1.91
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,MyBookie.ag,1.12,6.5,-12.0,1.91,12.0,1.91,38.5,1.91,1.91
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,LowVig.ag,1.12,6.61,-12.5,1.95,12.5,1.95,38.5,1.98,1.88
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,BetOnline.ag,1.12,6.61,-12.5,1.91,12.5,1.91,38.5,1.95,1.87
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,BetRivers,1.11,6.5,-11.5,1.87,11.5,1.91,38.0,1.88,1.89
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,BetMGM,1.12,6.5,-12.0,1.91,12.0,1.91,38.5,1.91,1.91
+813dab51d999b87c7968ac4890965f73,2025-12-14 18:00,Philadelphia Eagles,Las Vegas Raiders,Bovada,1.13,6.0,-12.5,1.87,12.5,1.95,38.0,1.91,1.91
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,DraftKings,1.68,2.24,-2.5,1.87,2.5,1.95,46.5,1.91,1.91
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,BetMGM,1.74,2.15,-2.5,1.87,2.5,1.95,46.5,1.91,1.91
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,FanDuel,1.75,2.14,-2.5,1.91,2.5,1.91,46.5,1.95,1.87
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,MyBookie.ag,1.7,2.17,-2.5,1.87,2.5,1.95,46.5,1.91,1.91
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,BetUS,1.69,2.25,-2.0,1.83,2.0,2.0,46.5,1.91,1.91
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,LowVig.ag,1.71,2.2,-2.5,1.93,2.5,1.98,46.5,1.93,1.93
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,BetOnline.ag,1.71,2.2,-2.5,1.88,2.5,1.93,46.5,1.91,1.91
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,BetRivers,1.72,2.1,-2.5,1.87,2.5,1.91,46.5,1.91,1.88
+3aba4bb1fe41ecd45f934116fcc90c3f,2025-12-14 18:00,New York Giants,Washington Commanders,Bovada,1.67,2.3,-2.5,1.87,2.5,1.95,46.5,1.91,1.91
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,DraftKings,2.3,1.65,2.5,2.0,-2.5,1.83,40.5,1.91,1.91
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,BetUS,2.34,1.65,3.0,1.83,-3.0,2.0,40.5,1.91,1.91
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,FanDuel,2.36,1.62,2.5,2.0,-2.5,1.82,40.5,1.95,1.87
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,MyBookie.ag,2.28,1.63,2.5,2.0,-2.5,1.83,40.5,1.91,1.91
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,LowVig.ag,2.29,1.67,2.5,2.06,-2.5,1.85,40.5,1.93,1.93
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,BetOnline.ag,2.29,1.67,2.5,2.0,-2.5,1.83,40.5,1.91,1.91
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,BetRivers,2.23,1.63,3.0,1.85,-3.0,1.93,40.5,1.88,1.89
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,BetMGM,2.25,1.67,2.5,2.0,-2.5,1.83,40.5,1.91,1.91
+f3fd2782d4d03bd12a177fbbad17005b,2025-12-14 21:25,New Orleans Saints,Carolina Panthers,Bovada,2.3,1.67,3.0,1.87,-3.0,1.95,40.5,1.91,1.91
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,DraftKings,2.1,1.77,2.5,1.87,-2.5,1.95,42.5,1.91,1.91
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,FanDuel,2.16,1.74,2.5,1.91,-2.5,1.91,42.5,1.85,1.96
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,MyBookie.ag,2.05,1.78,2.0,1.91,-2.0,1.91,43.0,1.91,1.91
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,BetUS,2.1,1.77,1.5,1.95,-1.5,1.87,42.5,1.91,1.91
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,BetOnline.ag,2.13,1.75,2.0,1.91,-2.0,1.91,42.5,1.91,1.91
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,LowVig.ag,2.13,1.75,2.0,1.95,-2.0,1.95,42.5,1.93,1.93
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,BetRivers,2.1,1.72,2.5,1.88,-2.5,1.88,42.5,1.87,1.91
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,BetMGM,2.1,1.77,2.5,1.91,-2.5,1.91,42.5,1.91,1.91
+2ec8a387d0c337aeffac3f956c292e87,2025-12-14 21:25,Denver Broncos,Green Bay Packers,Bovada,2.1,1.77,2.0,1.91,-2.0,1.91,43.5,1.95,1.87
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,DraftKings,1.4,3.05,-6.0,1.91,6.0,1.91,54.5,1.83,2.0
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,FanDuel,1.37,3.2,-5.5,1.85,5.5,1.96,54.5,1.83,1.98
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,MyBookie.ag,1.37,3.11,-6.0,1.91,6.0,1.91,55.0,1.91,1.91
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,BetUS,1.38,3.18,-6.0,1.91,6.0,1.91,55.0,1.91,1.91
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,LowVig.ag,1.38,3.15,-6.0,1.95,6.0,1.95,55.0,1.93,1.93
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,BetOnline.ag,1.38,3.15,-6.0,1.91,6.0,1.91,55.0,1.91,1.91
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,BetRivers,1.36,3.05,-6.0,1.91,6.0,1.87,55.0,1.87,1.91
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,BetMGM,1.4,3.0,-6.0,1.91,6.0,1.91,55.0,1.91,1.91
+bd299b70476643cff05f2be58e12301a,2025-12-14 21:25,Los Angeles Rams,Detroit Lions,Bovada,1.4,3.1,-6.0,1.91,6.0,1.91,55.0,1.91,1.91
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,DraftKings,1.08,8.5,-13.5,1.83,13.5,2.0,42.5,1.93,1.89
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,BetUS,1.09,8.0,-14.0,1.95,14.0,1.87,43.0,1.91,1.91
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,FanDuel,1.08,8.5,-13.5,1.87,13.5,1.95,42.5,1.87,1.95
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,MyBookie.ag,1.07,8.4,-14.0,1.91,14.0,1.91,43.0,1.91,1.91
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,LowVig.ag,1.1,7.61,-13.5,1.91,13.5,2.0,43.0,1.98,1.88
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,BetOnline.ag,1.1,7.61,-14.0,1.95,14.0,1.87,43.0,1.95,1.87
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,BetRivers,1.08,7.5,-14.0,1.91,14.0,1.87,42.0,1.88,1.89
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,BetMGM,1.11,7.25,-14.0,1.91,14.0,1.83,43.0,1.91,1.91
+f7343baf47dcf23e672799d00788173d,2025-12-14 21:25,Seattle Seahawks,Indianapolis Colts,Bovada,1.1,7.25,-13.5,1.83,13.5,2.0,42.5,1.87,1.95
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,DraftKings,1.11,7.0,-12.5,1.93,12.5,1.89,44.5,1.91,1.91
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,BetUS,1.12,6.8,-13.0,1.95,13.0,1.87,44.5,1.87,1.95
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,FanDuel,1.11,7.4,-12.5,1.87,12.5,1.95,44.5,1.91,1.91
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,MyBookie.ag,1.11,6.7,-13.0,1.91,13.0,1.91,44.5,1.91,1.91
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,BetOnline.ag,1.12,6.61,-13.0,1.96,13.0,1.86,44.5,1.87,1.95
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,LowVig.ag,1.12,6.61,-13.0,1.98,13.0,1.93,44.5,1.88,1.98
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,BetRivers,1.09,7.0,-12.0,1.88,12.0,1.89,44.0,1.87,1.91
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,BetMGM,1.1,7.5,-12.5,1.91,12.5,1.91,44.5,1.91,1.91
+7ba03312d1012d9872de9999e496558f,2025-12-14 21:25,San Francisco 49ers,Tennessee Titans,Bovada,1.12,6.25,-12.0,1.87,12.0,1.95,44.5,1.91,1.91
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,DraftKings,1.37,3.2,-5.5,1.89,5.5,1.93,48.5,1.91,1.91
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,FanDuel,1.34,3.35,-6.5,1.95,6.5,1.87,47.5,1.87,1.95
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,MyBookie.ag,1.37,3.1,-6.0,1.91,6.0,1.91,47.5,1.91,1.91
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,BetUS,1.38,3.18,-5.5,1.87,5.5,1.95,47.5,1.91,1.91
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,BetOnline.ag,1.37,3.22,-5.5,1.87,5.5,1.95,47.5,1.91,1.91
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,LowVig.ag,1.37,3.22,-5.5,1.91,5.5,2.0,47.5,1.93,1.93
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,BetRivers,1.32,3.35,-6.0,1.88,6.0,1.89,48.0,1.89,1.88
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,BetMGM,1.36,3.25,-5.5,1.91,5.5,1.91,48.0,1.95,1.87
+3c74ebd1d005a7346c182daf6f7279dd,2025-12-15 01:20,Dallas Cowboys,Minnesota Vikings,Bovada,1.36,3.25,-5.5,1.87,5.5,1.95,47.5,1.91,1.91
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,DraftKings,1.6,2.4,-3.0,1.91,3.0,1.91,42.5,1.95,1.87
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,FanDuel,1.56,2.5,-3.0,1.87,3.0,1.95,41.5,1.87,1.95
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,MyBookie.ag,1.57,2.43,-3.0,1.91,3.0,1.91,41.5,1.91,1.91
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,BetUS,1.59,2.46,-3.0,1.87,3.0,1.95,41.5,1.91,1.91
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,BetOnline.ag,1.59,2.49,-3.0,1.87,3.0,1.95,41.5,1.91,1.91
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,LowVig.ag,1.59,2.49,-3.0,1.88,3.0,2.02,41.5,1.93,1.93
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,BetRivers,1.51,2.55,-3.0,1.87,3.0,1.91,42.0,1.88,1.89
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,BetMGM,1.61,2.4,-3.0,1.87,3.0,1.95,41.5,1.91,1.91
+ba5d065a7e9ea9afe54642036f2ec83a,2025-12-16 01:15,Pittsburgh Steelers,Miami Dolphins,Bovada,1.61,2.4,-3.0,1.87,3.0,1.95,41.5,1.91,1.91
+ac7881cc5a498c5b72680498d3fa8f6e,2025-12-19 01:15,Seattle Seahawks,Los Angeles Rams,DraftKings,1.89,1.93,-1.5,2.0,1.5,1.83,46.5,1.89,1.93
+ac7881cc5a498c5b72680498d3fa8f6e,2025-12-19 01:15,Seattle Seahawks,Los Angeles Rams,FanDuel,1.93,1.93,1.5,1.83,-1.5,1.98,46.5,1.91,1.91
+ac7881cc5a498c5b72680498d3fa8f6e,2025-12-19 01:15,Seattle Seahawks,Los Angeles Rams,MyBookie.ag,1.83,1.94,-1.0,1.91,1.0,1.91,46.5,1.91,1.91
+ac7881cc5a498c5b72680498d3fa8f6e,2025-12-19 01:15,Seattle Seahawks,Los Angeles Rams,BetOnline.ag,,,-1.0,1.95,1.0,1.87,46.5,1.91,1.91
+ac7881cc5a498c5b72680498d3fa8f6e,2025-12-19 01:15,Seattle Seahawks,Los Angeles Rams,LowVig.ag,,,-1.0,2.0,1.0,1.91,46.5,1.93,1.93
+ac7881cc5a498c5b72680498d3fa8f6e,2025-12-19 01:15,Seattle Seahawks,Los Angeles Rams,BetUS,,,-1.0,1.95,1.0,1.87,46.5,1.91,1.91
+ac7881cc5a498c5b72680498d3fa8f6e,2025-12-19 01:15,Seattle Seahawks,Los Angeles Rams,BetRivers,1.89,1.88,1.0,1.83,-1.0,1.93,46.0,1.87,1.91
+18fe4528a0bc43d9cd64bd09c0d5019f,2025-12-20 22:00,Washington Commanders,Philadelphia Eagles,DraftKings,3.1,1.39,5.5,1.91,-5.5,1.91,45.5,1.95,1.87
+18fe4528a0bc43d9cd64bd09c0d5019f,2025-12-20 22:00,Washington Commanders,Philadelphia Eagles,MyBookie.ag,2.83,1.4,5.5,1.91,-5.5,1.91,45.5,1.91,1.91
+18fe4528a0bc43d9cd64bd09c0d5019f,2025-12-20 22:00,Washington Commanders,Philadelphia Eagles,BetUS,,,5.5,1.91,-5.5,1.91,45.0,1.91,1.91
+18fe4528a0bc43d9cd64bd09c0d5019f,2025-12-20 22:00,Washington Commanders,Philadelphia Eagles,FanDuel,3.2,1.37,5.5,1.91,-5.5,1.91,45.5,1.91,1.91
+18fe4528a0bc43d9cd64bd09c0d5019f,2025-12-20 22:00,Washington Commanders,Philadelphia Eagles,LowVig.ag,,,5.5,1.95,-5.5,1.95,45.0,1.93,1.93
+18fe4528a0bc43d9cd64bd09c0d5019f,2025-12-20 22:00,Washington Commanders,Philadelphia Eagles,BetOnline.ag,,,5.5,1.91,-5.5,1.91,45.0,1.91,1.91
+18fe4528a0bc43d9cd64bd09c0d5019f,2025-12-20 22:00,Washington Commanders,Philadelphia Eagles,BetRivers,2.95,1.4,5.0,1.89,-5.0,1.88,45.0,1.85,1.92
+9f70d98bc6918dc8e21f329405b649fe,2025-12-21 01:20,Chicago Bears,Green Bay Packers,DraftKings,2.4,1.6,3.0,1.91,-3.0,1.91,46.5,1.91,1.91
+9f70d98bc6918dc8e21f329405b649fe,2025-12-21 01:20,Chicago Bears,Green Bay Packers,MyBookie.ag,2.37,1.55,3.0,1.91,-3.0,1.91,46.5,1.91,1.91
+9f70d98bc6918dc8e21f329405b649fe,2025-12-21 01:20,Chicago Bears,Green Bay Packers,FanDuel,2.46,1.57,3.5,1.83,-3.5,1.98,46.5,1.93,1.89
+9f70d98bc6918dc8e21f329405b649fe,2025-12-21 01:20,Chicago Bears,Green Bay Packers,LowVig.ag,,,3.0,2.05,-3.0,1.86,45.5,1.93,1.93
+9f70d98bc6918dc8e21f329405b649fe,2025-12-21 01:20,Chicago Bears,Green Bay Packers,BetOnline.ag,,,3.0,2.0,-3.0,1.83,45.5,1.91,1.91
+9f70d98bc6918dc8e21f329405b649fe,2025-12-21 01:20,Chicago Bears,Green Bay Packers,BetUS,,,3.0,2.0,-3.0,1.83,45.5,1.91,1.91
+9f70d98bc6918dc8e21f329405b649fe,2025-12-21 01:20,Chicago Bears,Green Bay Packers,BetRivers,2.43,1.53,3.5,1.88,-3.5,1.88,46.5,1.89,1.88
+2557976e0e66ab698539b543de125469,2025-12-21 18:00,Cleveland Browns,Buffalo Bills,DraftKings,4.7,1.21,8.5,1.91,-8.5,1.91,42.5,1.91,1.91
+2557976e0e66ab698539b543de125469,2025-12-21 18:00,Cleveland Browns,Buffalo Bills,FanDuel,4.85,1.2,8.5,1.91,-8.5,1.91,40.5,1.87,1.95
+2557976e0e66ab698539b543de125469,2025-12-21 18:00,Cleveland Browns,Buffalo Bills,MyBookie.ag,4.2,1.2,,,,,41.5,1.91,1.91
+2557976e0e66ab698539b543de125469,2025-12-21 18:00,Cleveland Browns,Buffalo Bills,LowVig.ag,,,9.0,1.95,-9.0,1.95,41.5,1.93,1.93
+2557976e0e66ab698539b543de125469,2025-12-21 18:00,Cleveland Browns,Buffalo Bills,BetOnline.ag,,,9.0,1.91,-9.0,1.91,41.5,1.91,1.91
+2557976e0e66ab698539b543de125469,2025-12-21 18:00,Cleveland Browns,Buffalo Bills,BetUS,,,9.0,1.91,-9.0,1.91,41.5,1.91,1.91
+2557976e0e66ab698539b543de125469,2025-12-21 18:00,Cleveland Browns,Buffalo Bills,BetRivers,4.5,1.19,8.5,1.89,-8.5,1.88,40.5,1.88,1.88
+d056f31082bdea4d018a26ba274b8430,2025-12-21 18:00,Carolina Panthers,Tampa Bay Buccaneers,DraftKings,2.05,1.8,1.5,1.91,-1.5,1.91,45.5,1.87,1.95
+d056f31082bdea4d018a26ba274b8430,2025-12-21 18:00,Carolina Panthers,Tampa Bay Buccaneers,BetUS,,,2.5,1.95,-2.5,1.87,44.5,1.91,1.91
+d056f31082bdea4d018a26ba274b8430,2025-12-21 18:00,Carolina Panthers,Tampa Bay Buccaneers,FanDuel,2.14,1.75,1.5,1.95,-1.5,1.87,44.5,1.87,1.95
+d056f31082bdea4d018a26ba274b8430,2025-12-21 18:00,Carolina Panthers,Tampa Bay Buccaneers,MyBookie.ag,2.02,1.74,2.5,1.91,-2.5,1.91,45.0,1.91,1.91
+d056f31082bdea4d018a26ba274b8430,2025-12-21 18:00,Carolina Panthers,Tampa Bay Buccaneers,BetOnline.ag,,,2.5,1.95,-2.5,1.87,44.5,1.91,1.91
+d056f31082bdea4d018a26ba274b8430,2025-12-21 18:00,Carolina Panthers,Tampa Bay Buccaneers,LowVig.ag,,,2.5,2.0,-2.5,1.91,44.5,1.93,1.93
+d056f31082bdea4d018a26ba274b8430,2025-12-21 18:00,Carolina Panthers,Tampa Bay Buccaneers,BetRivers,2.02,1.77,1.5,1.89,-1.5,1.88,45.0,1.91,1.87
+945286798abb5081432aef109df29778,2025-12-21 18:00,Miami Dolphins,Cincinnati Bengals,DraftKings,1.95,1.87,1.5,1.85,-1.5,1.98,50.5,1.93,1.89
+945286798abb5081432aef109df29778,2025-12-21 18:00,Miami Dolphins,Cincinnati Bengals,FanDuel,1.98,1.85,1.5,1.87,-1.5,1.95,49.5,1.91,1.91
+945286798abb5081432aef109df29778,2025-12-21 18:00,Miami Dolphins,Cincinnati Bengals,MyBookie.ag,1.93,1.81,,,,,50.0,1.91,1.91
+945286798abb5081432aef109df29778,2025-12-21 18:00,Miami Dolphins,Cincinnati Bengals,BetOnline.ag,,,0.0,1.91,0.0,1.91,50.5,1.91,1.91
+945286798abb5081432aef109df29778,2025-12-21 18:00,Miami Dolphins,Cincinnati Bengals,LowVig.ag,,,0.0,1.95,0.0,1.95,50.5,1.93,1.93
+945286798abb5081432aef109df29778,2025-12-21 18:00,Miami Dolphins,Cincinnati Bengals,BetUS,,,0.0,1.91,0.0,1.91,50.5,1.91,1.91
+945286798abb5081432aef109df29778,2025-12-21 18:00,Miami Dolphins,Cincinnati Bengals,BetRivers,2.0,1.79,1.5,1.89,-1.5,1.88,49.5,1.88,1.89
+aa9d0cf732b6adde4ad3ec04ca79825c,2025-12-21 18:00,Dallas Cowboys,Los Angeles Chargers,DraftKings,1.74,2.14,-2.5,1.91,2.5,1.91,48.5,1.91,1.91
+aa9d0cf732b6adde4ad3ec04ca79825c,2025-12-21 18:00,Dallas Cowboys,Los Angeles Chargers,FanDuel,1.64,2.32,-3.0,1.93,3.0,1.89,48.5,1.87,1.95
+aa9d0cf732b6adde4ad3ec04ca79825c,2025-12-21 18:00,Dallas Cowboys,Los Angeles Chargers,MyBookie.ag,1.65,2.15,-2.5,1.91,2.5,1.91,48.5,1.91,1.91
+aa9d0cf732b6adde4ad3ec04ca79825c,2025-12-21 18:00,Dallas Cowboys,Los Angeles Chargers,BetRivers,1.65,2.23,-2.5,1.87,2.5,1.92,48.5,1.88,1.88
+aa9d0cf732b6adde4ad3ec04ca79825c,2025-12-21 18:00,Dallas Cowboys,Los Angeles Chargers,BetOnline.ag,,,-3.0,2.0,3.0,1.83,48.5,1.91,1.91
+aa9d0cf732b6adde4ad3ec04ca79825c,2025-12-21 18:00,Dallas Cowboys,Los Angeles Chargers,LowVig.ag,,,-3.0,2.05,3.0,1.86,48.5,1.93,1.93
+aa9d0cf732b6adde4ad3ec04ca79825c,2025-12-21 18:00,Dallas Cowboys,Los Angeles Chargers,BetUS,,,-3.0,2.0,3.0,1.83,48.5,1.91,1.91
+0cce34b9a49c4c6bdc1e65449e37a0f9,2025-12-21 18:00,Tennessee Titans,Kansas City Chiefs,DraftKings,5.55,1.16,10.5,1.89,-10.5,1.93,41.5,1.98,1.85
+0cce34b9a49c4c6bdc1e65449e37a0f9,2025-12-21 18:00,Tennessee Titans,Kansas City Chiefs,BetUS,,,10.5,1.87,-10.5,1.95,41.0,1.91,1.91
+0cce34b9a49c4c6bdc1e65449e37a0f9,2025-12-21 18:00,Tennessee Titans,Kansas City Chiefs,FanDuel,6.0,1.14,11.5,1.85,-11.5,1.96,41.5,1.95,1.87
+0cce34b9a49c4c6bdc1e65449e37a0f9,2025-12-21 18:00,Tennessee Titans,Kansas City Chiefs,MyBookie.ag,5.5,1.12,10.5,1.91,-10.5,1.91,,,
+0cce34b9a49c4c6bdc1e65449e37a0f9,2025-12-21 18:00,Tennessee Titans,Kansas City Chiefs,BetRivers,5.6,1.13,11.5,1.88,-11.5,1.88,41.5,1.88,1.88
+0cce34b9a49c4c6bdc1e65449e37a0f9,2025-12-21 18:00,Tennessee Titans,Kansas City Chiefs,BetOnline.ag,,,10.5,1.87,-10.5,1.95,41.0,1.91,1.91
+0cce34b9a49c4c6bdc1e65449e37a0f9,2025-12-21 18:00,Tennessee Titans,Kansas City Chiefs,LowVig.ag,,,10.5,1.91,-10.5,2.0,41.0,1.93,1.93
+3db6ba91d2a72ada8843d5a0517bff27,2025-12-21 18:00,New York Giants,Minnesota Vikings,DraftKings,1.98,1.85,1.5,1.87,-1.5,1.95,43.5,1.91,1.91
+3db6ba91d2a72ada8843d5a0517bff27,2025-12-21 18:00,New York Giants,Minnesota Vikings,FanDuel,2.04,1.82,1.5,1.87,-1.5,1.95,41.5,1.87,1.95
+3db6ba91d2a72ada8843d5a0517bff27,2025-12-21 18:00,New York Giants,Minnesota Vikings,MyBookie.ag,1.96,1.79,1.5,1.91,-1.5,1.91,43.0,1.91,1.91
+3db6ba91d2a72ada8843d5a0517bff27,2025-12-21 18:00,New York Giants,Minnesota Vikings,LowVig.ag,,,1.5,1.95,-1.5,1.95,43.0,1.93,1.93
+3db6ba91d2a72ada8843d5a0517bff27,2025-12-21 18:00,New York Giants,Minnesota Vikings,BetOnline.ag,,,1.5,1.91,-1.5,1.91,43.0,1.91,1.91
+3db6ba91d2a72ada8843d5a0517bff27,2025-12-21 18:00,New York Giants,Minnesota Vikings,BetUS,,,1.5,1.91,-1.5,1.91,43.0,1.91,1.91
+3db6ba91d2a72ada8843d5a0517bff27,2025-12-21 18:00,New York Giants,Minnesota Vikings,BetRivers,2.0,1.79,1.5,1.91,-1.5,1.88,42.0,1.89,1.88
+aa5b25e85d1ad6540d7a5ae04b73ddfd,2025-12-21 18:00,New Orleans Saints,New York Jets,DraftKings,1.54,2.54,-3.5,1.91,3.5,1.91,39.5,1.89,1.93
+aa5b25e85d1ad6540d7a5ae04b73ddfd,2025-12-21 18:00,New Orleans Saints,New York Jets,FanDuel,1.53,2.6,-3.5,1.91,3.5,1.91,39.5,1.91,1.91
+aa5b25e85d1ad6540d7a5ae04b73ddfd,2025-12-21 18:00,New Orleans Saints,New York Jets,MyBookie.ag,1.5,2.49,-3.5,1.91,3.5,1.91,39.5,1.91,1.91
+aa5b25e85d1ad6540d7a5ae04b73ddfd,2025-12-21 18:00,New Orleans Saints,New York Jets,BetOnline.ag,,,-3.0,1.8,3.0,2.05,39.5,1.91,1.91
+aa5b25e85d1ad6540d7a5ae04b73ddfd,2025-12-21 18:00,New Orleans Saints,New York Jets,LowVig.ag,,,-3.0,1.83,3.0,2.1,39.5,1.93,1.93
+aa5b25e85d1ad6540d7a5ae04b73ddfd,2025-12-21 18:00,New Orleans Saints,New York Jets,BetUS,,,-3.0,1.8,3.0,2.05,39.5,1.91,1.91
+aa5b25e85d1ad6540d7a5ae04b73ddfd,2025-12-21 18:00,New Orleans Saints,New York Jets,BetRivers,1.51,2.5,-3.5,1.88,3.5,1.89,39.5,1.88,1.91
+7d71a0d3cc2a04eb35f1a725104217b5,2025-12-21 21:05,Arizona Cardinals,Atlanta Falcons,DraftKings,1.89,1.93,-1.5,2.0,1.5,1.83,45.5,1.87,1.95
+7d71a0d3cc2a04eb35f1a725104217b5,2025-12-21 21:05,Arizona Cardinals,Atlanta Falcons,FanDuel,1.85,2.0,-1.5,1.95,1.5,1.87,44.5,1.87,1.95
+7d71a0d3cc2a04eb35f1a725104217b5,2025-12-21 21:05,Arizona Cardinals,Atlanta Falcons,MyBookie.ag,1.83,1.92,,,,,,,
+7d71a0d3cc2a04eb35f1a725104217b5,2025-12-21 21:05,Arizona Cardinals,Atlanta Falcons,LowVig.ag,,,0.0,1.95,0.0,1.95,45.0,1.93,1.93
+7d71a0d3cc2a04eb35f1a725104217b5,2025-12-21 21:05,Arizona Cardinals,Atlanta Falcons,BetOnline.ag,,,0.0,1.91,0.0,1.91,45.0,1.91,1.91
+7d71a0d3cc2a04eb35f1a725104217b5,2025-12-21 21:05,Arizona Cardinals,Atlanta Falcons,BetUS,,,0.0,1.91,0.0,1.91,45.0,1.91,1.91
+7d71a0d3cc2a04eb35f1a725104217b5,2025-12-21 21:05,Arizona Cardinals,Atlanta Falcons,BetRivers,1.82,1.95,-1.0,1.88,1.0,1.91,45.0,1.89,1.88
+93c002f0a42d1b57f3bbabdcfe24ab97,2025-12-21 21:05,Denver Broncos,Jacksonville Jaguars,DraftKings,1.62,2.36,-3.0,1.95,3.0,1.87,43.5,1.98,1.85
+93c002f0a42d1b57f3bbabdcfe24ab97,2025-12-21 21:05,Denver Broncos,Jacksonville Jaguars,FanDuel,1.63,2.34,-3.0,1.93,3.0,1.89,43.5,1.87,1.95
+93c002f0a42d1b57f3bbabdcfe24ab97,2025-12-21 21:05,Denver Broncos,Jacksonville Jaguars,MyBookie.ag,1.65,2.16,-3.0,1.91,3.0,1.91,43.5,1.91,1.91
+93c002f0a42d1b57f3bbabdcfe24ab97,2025-12-21 21:05,Denver Broncos,Jacksonville Jaguars,LowVig.ag,,,-3.0,1.95,3.0,1.95,43.0,1.93,1.93
+93c002f0a42d1b57f3bbabdcfe24ab97,2025-12-21 21:05,Denver Broncos,Jacksonville Jaguars,BetOnline.ag,,,-3.0,1.91,3.0,1.91,43.0,1.91,1.91
+93c002f0a42d1b57f3bbabdcfe24ab97,2025-12-21 21:05,Denver Broncos,Jacksonville Jaguars,BetUS,,,-3.0,1.91,3.0,1.91,43.0,1.91,1.91
+93c002f0a42d1b57f3bbabdcfe24ab97,2025-12-21 21:05,Denver Broncos,Jacksonville Jaguars,BetRivers,1.65,2.2,-3.0,1.91,3.0,1.87,43.5,1.91,1.87
+a03f89d3aaadf737deb09be24986d5bf,2025-12-21 21:25,Detroit Lions,Pittsburgh Steelers,DraftKings,1.35,3.3,-6.5,1.91,6.5,1.91,49.5,1.87,1.95
+a03f89d3aaadf737deb09be24986d5bf,2025-12-21 21:25,Detroit Lions,Pittsburgh Steelers,FanDuel,1.3,3.7,-6.5,1.87,6.5,1.95,49.5,1.87,1.95
+a03f89d3aaadf737deb09be24986d5bf,2025-12-21 21:25,Detroit Lions,Pittsburgh Steelers,MyBookie.ag,1.32,3.16,-6.5,1.91,6.5,1.91,49.5,1.91,1.91
+a03f89d3aaadf737deb09be24986d5bf,2025-12-21 21:25,Detroit Lions,Pittsburgh Steelers,LowVig.ag,,,-6.5,1.91,6.5,2.0,49.5,1.93,1.93
+a03f89d3aaadf737deb09be24986d5bf,2025-12-21 21:25,Detroit Lions,Pittsburgh Steelers,BetOnline.ag,,,-6.5,1.87,6.5,1.95,49.5,1.91,1.91
+a03f89d3aaadf737deb09be24986d5bf,2025-12-21 21:25,Detroit Lions,Pittsburgh Steelers,BetUS,,,-6.5,1.87,6.5,1.95,49.5,1.91,1.91
+a03f89d3aaadf737deb09be24986d5bf,2025-12-21 21:25,Detroit Lions,Pittsburgh Steelers,BetRivers,1.33,3.3,-6.5,1.89,6.5,1.88,49.0,1.87,1.91
+47a54fb60f7b79179bc80e18a7c5de81,2025-12-21 21:25,Houston Texans,Las Vegas Raiders,DraftKings,1.12,6.5,-12.5,1.91,12.5,1.91,37.5,1.91,1.91
+47a54fb60f7b79179bc80e18a7c5de81,2025-12-21 21:25,Houston Texans,Las Vegas Raiders,FanDuel,1.12,6.7,-12.5,1.95,12.5,1.87,38.5,1.95,1.87
+47a54fb60f7b79179bc80e18a7c5de81,2025-12-21 21:25,Houston Texans,Las Vegas Raiders,MyBookie.ag,1.09,6.5,-12.5,1.91,12.5,1.91,37.5,1.91,1.91
+47a54fb60f7b79179bc80e18a7c5de81,2025-12-21 21:25,Houston Texans,Las Vegas Raiders,LowVig.ag,,,-12.5,1.95,12.5,1.95,37.5,1.93,1.93
+47a54fb60f7b79179bc80e18a7c5de81,2025-12-21 21:25,Houston Texans,Las Vegas Raiders,BetOnline.ag,,,-12.5,1.91,12.5,1.91,37.5,1.91,1.91
+47a54fb60f7b79179bc80e18a7c5de81,2025-12-21 21:25,Houston Texans,Las Vegas Raiders,BetUS,,,-12.5,1.91,12.5,1.91,37.5,1.91,1.91
+47a54fb60f7b79179bc80e18a7c5de81,2025-12-21 21:25,Houston Texans,Las Vegas Raiders,BetRivers,1.13,5.8,-11.5,1.91,11.5,1.87,38.0,1.87,1.91
+a0476b027679a1670f21e8b75a860ab9,2025-12-22 01:20,Baltimore Ravens,New England Patriots,DraftKings,1.77,2.1,-1.5,1.89,1.5,1.93,47.5,1.89,1.93
+a0476b027679a1670f21e8b75a860ab9,2025-12-22 01:20,Baltimore Ravens,New England Patriots,BetUS,,,-1.5,1.87,1.5,1.95,48.0,1.91,1.91
+a0476b027679a1670f21e8b75a860ab9,2025-12-22 01:20,Baltimore Ravens,New England Patriots,FanDuel,1.75,2.14,-2.5,1.91,2.5,1.91,47.5,1.95,1.87
+a0476b027679a1670f21e8b75a860ab9,2025-12-22 01:20,Baltimore Ravens,New England Patriots,MyBookie.ag,1.72,2.05,-2.0,1.91,2.0,1.91,47.5,1.91,1.91
+a0476b027679a1670f21e8b75a860ab9,2025-12-22 01:20,Baltimore Ravens,New England Patriots,LowVig.ag,,,-1.5,1.91,1.5,2.0,48.0,1.93,1.93
+a0476b027679a1670f21e8b75a860ab9,2025-12-22 01:20,Baltimore Ravens,New England Patriots,BetOnline.ag,,,-1.5,1.87,1.5,1.95,48.0,1.91,1.91
+a0476b027679a1670f21e8b75a860ab9,2025-12-22 01:20,Baltimore Ravens,New England Patriots,BetRivers,1.76,2.04,-2.0,1.88,2.0,1.88,47.5,1.91,1.87
+2dd4521ee298fa2c6f0ab009c182aae9,2025-12-23 01:15,Indianapolis Colts,San Francisco 49ers,DraftKings,3.4,1.34,6.5,1.91,-6.5,1.91,45.5,1.87,1.95
+2dd4521ee298fa2c6f0ab009c182aae9,2025-12-23 01:15,Indianapolis Colts,San Francisco 49ers,BetUS,,,6.5,2.0,-6.5,1.83,46.0,1.91,1.91
+2dd4521ee298fa2c6f0ab009c182aae9,2025-12-23 01:15,Indianapolis Colts,San Francisco 49ers,FanDuel,3.6,1.31,6.5,1.91,-6.5,1.91,46.5,1.96,1.85
+2dd4521ee298fa2c6f0ab009c182aae9,2025-12-23 01:15,Indianapolis Colts,San Francisco 49ers,MyBookie.ag,3.2,1.32,6.5,1.91,-6.5,1.91,46.0,1.91,1.91
+2dd4521ee298fa2c6f0ab009c182aae9,2025-12-23 01:15,Indianapolis Colts,San Francisco 49ers,BetOnline.ag,,,6.5,1.98,-6.5,1.85,46.0,1.91,1.91
+2dd4521ee298fa2c6f0ab009c182aae9,2025-12-23 01:15,Indianapolis Colts,San Francisco 49ers,LowVig.ag,,,6.5,2.03,-6.5,1.88,46.0,1.93,1.93
+2dd4521ee298fa2c6f0ab009c182aae9,2025-12-23 01:15,Indianapolis Colts,San Francisco 49ers,BetRivers,3.4,1.3,6.5,1.87,-6.5,1.91,46.5,1.91,1.87
