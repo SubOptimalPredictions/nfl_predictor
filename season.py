@@ -50,23 +50,6 @@ class Season:
         nfc_north, nfc_south, nfc_east, nfc_west = self.split_conferences_into_divison(nfc_teams)
         afc_north, afc_south, afc_east, afc_west = self.split_conferences_into_divison(afc_teams)
 
-        # records = [(record_to_pct(t.record), t) for t in nfc_north]
-        # print(records)
-
-        # Print NFC Division
-        print("NFC North: ", [t.name for t in nfc_north])
-        print("NFC South: ", [t.name for t in nfc_south])
-        print("NFC East: ", [t.name for t in nfc_east])
-        print("NFC West: ", [t.name for t in nfc_west])
-
-        # Print AFC Division
-        print("AFC North: ", [t.name for t in afc_north])
-        print("AFC South: ", [t.name for t in afc_south])
-        print("AFC East: ", [t.name for t in afc_east])
-        print("AFC West: ", [t.name for t in afc_west])
-
-        self.rank_division(nfc_north)
-
         nfc_north_winner, nfc_north_remaining = self.rank_division(nfc_north)
         nfc_south_winner, nfc_south_remaining = self.rank_division(nfc_south)
         nfc_east_winner, nfc_east_remaining = self.rank_division(nfc_east)
@@ -77,19 +60,31 @@ class Season:
         afc_east_winner, afc_east_remaining = self.rank_division(afc_east)
         afc_west_winner, afc_west_remaining = self.rank_division(afc_west)
 
-        # Print All Winners
-        print(nfc_north_winner, nfc_south_winner, nfc_east_winner, nfc_west_winner)
-        print(afc_north_winner, afc_south_winner, afc_east_winner, afc_west_winner)
+        nfc_division_winners_ranked = self.rank_conference_division_winners([nfc_north_winner, nfc_south_winner, nfc_east_winner, nfc_west_winner])
+        afc_division_winners_ranked = self.rank_conference_division_winners([afc_north_winner, afc_south_winner, afc_east_winner, afc_west_winner])
+
+        nfc_remaining_ranked = self.rank_conference_wild_card(nfc_north_remaining + nfc_south_remaining + nfc_east_remaining + nfc_west_remaining)
+        afc_remaining_ranked = self.rank_conference_wild_card(afc_north_remaining + afc_south_remaining + afc_east_remaining + afc_west_remaining)
+
+        nfc_ranking = nfc_division_winners_ranked + nfc_remaining_ranked
+        afc_ranking = afc_division_winners_ranked + afc_remaining_ranked
+
+        return nfc_ranking, afc_ranking
 
     def rank_division(self, division):
         division_wrapped_teams = [DivisionTeamWrapper(t) for t in division]
         division_wrapped_teams.sort(reverse=True)
         ranked_divison_results = [t.team for t in division_wrapped_teams]
         return ranked_divison_results[0], ranked_divison_results[1:]
+    
+    def rank_conference_division_winners(self, conference_division_winners: list[Team]):
+        conference_division_winners.sort(reverse=True)
+        return conference_division_winners
 
-    def rank_conference(self, conference):
+    def rank_conference_wild_card(self, conference_division_remaining: list[Team]):
         # Used for division winners and wild cards
-        pass
+        conference_division_remaining.sort(reverse=True)
+        return conference_division_remaining
 
     def split_teams_into_conferences(self):
         nfc_teams = []
