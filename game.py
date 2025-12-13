@@ -83,8 +83,20 @@ class Game:
                 probabilities = moneyline_to_probability(
                     row["away_moneyline"], row["home_moneyline"]
                 )
+            elif (
+                row["gemini_away_win_prob"] is not None
+                and row["gemini_home_win_prob"] is not None
+            ):
+                probabilities = np.array(
+                    [
+                        float(row["gemini_away_win_prob"]),
+                        float(row["gemini_home_win_prob"]),
+                    ]
+                )
+
             game = Game(away_team, home_team, score, probabilities)
             games.append(game)
+
         return games
 
     def simulate(self) -> None:

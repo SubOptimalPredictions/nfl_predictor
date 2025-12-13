@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "google-genai>=1.55.0",
     "nflreadpy>=0.1.5",
     "numpy>=2.3.5",
 ]
