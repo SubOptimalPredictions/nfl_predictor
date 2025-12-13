@@ -208,6 +208,7 @@ class ConferenceTeamWrapper:
 
     def __lt__(self, other: "ConferenceTeamWrapper"):
         comparisons = [
+            self.team._overall_record_lt,
             self.team._h2h_record_lt,
             self.team._conference_record_lt,
             self.team._common_games_record_lt,
