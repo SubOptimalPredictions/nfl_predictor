@@ -6,7 +6,7 @@ project grows.
 """
 
 from team import Team
-from week import Week
+from game import Game
 import numpy as np
 
 
@@ -18,9 +18,9 @@ class Season:
     etc.).
     """
 
-    def __init__(self, list_of_weeks, team_name_to_team):
-        
-        self.list_of_weeks : list[Week] = list_of_weeks
+    def __init__(self, list_of_games, team_name_to_team):
+
+        self.list_of_games : list[Game] = list_of_games
         self.team_name_to_team : dict[str, Team] = team_name_to_team
 
     def add_team(self, name, conference, division, record=np.array([0, 0, 0])):
@@ -29,8 +29,15 @@ class Season:
         # Map team name to team object
         self.team_name_to_team[name] = team
 
-    def simulate_season(self) -> None:
-        assert (len(self.list_of_weeks) == 18), "NFL Season Must Have 18 Weeks"
+    def simulate_games(self) -> None:
+        """Simulate every game in the week in order.
 
-        for week in self.list_of_weeks:
-            week.simulate_games()
+        The method asserts there are a reasonable number of games
+        scheduled (a sanity check) and then calls ``simulate`` on each
+        :class:`Game`.
+        """
+
+        # TODO: Check actual minimum number of games
+        assert (len(self.list_of_games) > 13), "Less than Minimum Number of games per week" 
+        for game in self.list_of_games:
+            game.simulate()
