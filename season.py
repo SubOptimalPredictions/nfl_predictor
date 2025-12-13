@@ -5,10 +5,11 @@ functionality (standings, schedule, etc.). It can be extended as the
 project grows.
 """
 
-from team import Team
+from team import Team, DivisionTeamWrapper
 from game import Game
 import numpy as np
 import time
+from utils import record_to_pct
 
 
 class Season:
@@ -49,6 +50,9 @@ class Season:
         nfc_north, nfc_south, nfc_east, nfc_west = self.split_conferences_into_divison(nfc_teams)
         afc_north, afc_south, afc_east, afc_west = self.split_conferences_into_divison(afc_teams)
 
+        # records = [(record_to_pct(t.record), t) for t in nfc_north]
+        # print(records)
+
         # Print NFC Division
         print("NFC North: ", [t.name for t in nfc_north])
         print("NFC South: ", [t.name for t in nfc_south])
@@ -61,7 +65,31 @@ class Season:
         print("AFC East: ", [t.name for t in afc_east])
         print("AFC West: ", [t.name for t in afc_west])
 
-        
+        self.rank_division(nfc_north)
+
+        nfc_north_winner, nfc_north_remaining = self.rank_division(nfc_north)
+        nfc_south_winner, nfc_south_remaining = self.rank_division(nfc_south)
+        nfc_east_winner, nfc_east_remaining = self.rank_division(nfc_east)
+        nfc_west_winner, nfc_west_remaining = self.rank_division(nfc_west)
+
+        afc_north_winner, afc_north_remaining = self.rank_division(afc_north)
+        afc_south_winner, afc_south_remaining = self.rank_division(afc_south)
+        afc_east_winner, afc_east_remaining = self.rank_division(afc_east)
+        afc_west_winner, afc_west_remaining = self.rank_division(afc_west)
+
+        # Print All Winners
+        print(nfc_north_winner, nfc_south_winner, nfc_east_winner, nfc_west_winner)
+        print(afc_north_winner, afc_south_winner, afc_east_winner, afc_west_winner)
+
+    def rank_division(self, division):
+        division_wrapped_teams = [DivisionTeamWrapper(t) for t in division]
+        division_wrapped_teams.sort(reverse=True)
+        ranked_divison_results = [t.team for t in division_wrapped_teams]
+        return ranked_divison_results[0], ranked_divison_results[1:]
+
+    def rank_conference(self, conference):
+        # Used for division winners and wild cards
+        pass
 
     def split_teams_into_conferences(self):
         nfc_teams = []

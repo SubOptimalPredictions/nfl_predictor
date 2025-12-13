@@ -8,6 +8,7 @@ identity and its season record as a numpy array with the layout
 from typing import Dict
 import numpy as np
 import polars as pl
+from utils import record_to_pct
 
 
 class Team:
@@ -68,6 +69,16 @@ class Team:
             team = Team(name, abbreviation, record, conference, division)
             teams[abbreviation] = team
         return teams
+    
+    def get_record_pct(self, record_type='full'):
+        if record_type == 'full':
+            return record_to_pct(self.record)
+        elif record_type == 'division':
+            return record_to_pct(self.division_record)
+        elif record_type == 'conference':
+            return record_to_pct(self.conference_record)
+        else:
+            raise NotImplementedError("Record Type?")
 
     def update_record(self, delta: np.ndarray, opponent_team: "Team") -> None:
         """Apply an increment to the team's record.
@@ -95,6 +106,54 @@ class Team:
     def __repr__(self) -> str:
         return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
 
+class DivisionTeamWrapper():
+    def __init__(self, team):
+        self.team = team
+
+    def _overall_record_lt(self, other):
+        my_pct = self.team.get_record_pct()
+        other_pct = other.team.get_record_pct()
+
+        if my_pct < other_pct:
+            return True
+        elif my_pct > other_pct:
+            return False
+        
+        return None
+    
+    def _h2h_record_lt(self, other):
+        my_h2h_pct = record_to_pct(self.team.head_to_head_record[other.team.abbreviation])
+        if my_h2h_pct < 0.5:
+            return True
+        elif my_h2h_pct > 0.5:
+            return False
+        return None
+    
+    def _division_record_lt(self, other):
+        my_division_pct = self.team.get_record_pct(record_type='division')
+        other_division_pct = other.team.get_record_pct(record_type='division')
+
+        if my_division_pct < other_division_pct:
+            return True
+        elif my_division_pct > other_division_pct:
+            return False
+        
+        return None
+
+    def __lt__(self, other : "DivisionTeamWrapper"):
+        comparisons = [
+            self._overall_record_lt,
+            self._h2h_record_lt, 
+            self._division_record_lt,
+        ]
+        
+        for comparison in comparisons:
+            result = comparison(other)
+            if result is not None:
+                return result
+        
+        raise NotImplementedError("OOps")
+        
 
 if __name__ == "__main__":
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
