@@ -80,7 +80,8 @@ class Season:
     def rank_conference_teams(self, conference_teams: list[Team]):
         conference_wrapped_teams = [ConferenceTeamWrapper(t) for t in conference_teams]
         conference_wrapped_teams.sort(reverse=True)
-        return conference_wrapped_teams
+        ranked_conference_results = [t.team for t in conference_wrapped_teams]
+        return ranked_conference_results
 
     def split_teams_into_conferences(self):
         nfc_teams = []
