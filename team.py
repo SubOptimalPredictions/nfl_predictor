@@ -39,9 +39,6 @@ class Team:
         self.conference: str = conference
         self.division: str = division
 
-    def update_record(self, delta: np.ndarray):
-        self.record += delta
-
     @staticmethod
     def load_teams_from_csv(filepath: str) -> Dict[str, "Team"]:
         df = pl.read_csv(filepath)
