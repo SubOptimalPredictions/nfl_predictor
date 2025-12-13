@@ -67,7 +67,7 @@ if odds_response.status_code != 200:
 else:
     odds_json = odds_response.json()
     print("Number of events:", len(odds_json))
-    json.dump(odds_json, open("odds.json", "w"), indent=2)
+    json.dump(odds_json, open("data/odds.json", "w"), indent=2)
     print(odds_json)
 
     # Check the usage quota
