@@ -38,9 +38,13 @@ class Team:
         self.record: np.ndarray = record
         self.conference: str = conference
         self.division: str = division
+        self.conference_record: np.ndarray = np.array([[0, 0, 0]])
+        self.division_record: np.ndarray = np.array([[0, 0, 0]])
 
     @staticmethod
-    def load_teams_from_csv(filepath: str, load_existing_record=False) -> Dict[str, "Team"]:
+    def load_teams_from_csv(
+        filepath: str, load_existing_record=False
+    ) -> Dict[str, "Team"]:
         """
         Load teams from a CSV file.
         Args:
@@ -63,20 +67,25 @@ class Team:
             teams[abbreviation] = team
         return teams
 
-    def update_record(self, delta: np.ndarray) -> None:
+    def update_record(self, delta: np.ndarray, opponent_team: "Team") -> None:
         """Apply an increment to the team's record.
 
         Args:
             delta: A numpy array of shape (1, 3) representing the
                 increments to add to `[wins, losses, ties]`.
+            opposing_team: The opposing Team instance.
 
         The operation mutates ``self.record`` in place.
         """
 
         self.record += delta
+        if self.conference == opponent_team.conference:
+            self.conference_record += delta
+        if self.division == opponent_team.division:
+            self.division_record += delta
 
     def __repr__(self) -> str:
-        return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division})"
+        return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
 
 
 if __name__ == "__main__":

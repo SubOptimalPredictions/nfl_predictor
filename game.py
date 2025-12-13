@@ -110,8 +110,8 @@ class Game:
                 self._generate_records_from_score(self.score)
             )
 
-        self.away_team.update_record(away_team_record_delta)
-        self.home_team.update_record(home_team_record_delta)
+        self.away_team.update_record(away_team_record_delta, self.home_team)
+        self.home_team.update_record(home_team_record_delta, self.away_team)
 
     def _generate_records_from_score(
         self, score: np.ndarray
@@ -160,4 +160,6 @@ if __name__ == "__main__":
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
     games = Game.load_games_from_csv("data/schedules_2025.csv", teams)
     for game in games:
+        game.simulate()
         print(game)
+        print(f"Result:\n \t{game.away_team} \n\t{game.home_team}")
