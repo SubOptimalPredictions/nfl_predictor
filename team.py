@@ -103,16 +103,9 @@ class Team:
             + delta
         )
 
-    def __repr__(self) -> str:
-        return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
-
-class DivisionTeamWrapper():
-    def __init__(self, team):
-        self.team = team
-
     def _overall_record_lt(self, other):
-        my_pct = self.team.get_record_pct()
-        other_pct = other.team.get_record_pct()
+        my_pct = self.get_record_pct()
+        other_pct = other.get_record_pct()
 
         if my_pct < other_pct:
             return True
@@ -122,7 +115,7 @@ class DivisionTeamWrapper():
         return None
     
     def _h2h_record_lt(self, other):
-        my_h2h_pct = record_to_pct(self.team.head_to_head_record[other.team.abbreviation])
+        my_h2h_pct = record_to_pct(self.head_to_head_record[other.abbreviation])
         if my_h2h_pct < 0.5:
             return True
         elif my_h2h_pct > 0.5:
@@ -130,8 +123,8 @@ class DivisionTeamWrapper():
         return None
     
     def _division_record_lt(self, other):
-        my_division_pct = self.team.get_record_pct(record_type='division')
-        other_division_pct = other.team.get_record_pct(record_type='division')
+        my_division_pct = self.get_record_pct(record_type='division')
+        other_division_pct = other.get_record_pct(record_type='division')
 
         if my_division_pct < other_division_pct:
             return True
@@ -140,15 +133,22 @@ class DivisionTeamWrapper():
         
         return None
 
+    def __repr__(self) -> str:
+        return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
+
+class DivisionTeamWrapper():
+    def __init__(self, team):
+        self.team = team
+
     def __lt__(self, other : "DivisionTeamWrapper"):
         comparisons = [
-            self._overall_record_lt,
-            self._h2h_record_lt, 
-            self._division_record_lt,
+            self.team._overall_record_lt,
+            self.team._h2h_record_lt, 
+            self.team._division_record_lt,
         ]
         
         for comparison in comparisons:
-            result = comparison(other)
+            result = comparison(other.team)
             if result is not None:
                 return result
         
