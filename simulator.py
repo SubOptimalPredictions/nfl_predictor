@@ -2,6 +2,7 @@ from season import Season
 from collections import defaultdict
 from team import Team
 import numpy as np
+from tqdm import tqdm
 import time
 
 def get_aggregator_dict():
@@ -26,11 +27,11 @@ def simulate_single_season():
     nfc_ranking, afc_ranking = season.rank()
     return nfc_ranking, afc_ranking
 
-def simulate(num_iterations=1000):
+def simulate(num_iterations=10000):
     aggregator = get_aggregator_dict()
     num_times_run = 0
     # TODO: Fix Try Catch?
-    for i in range(num_iterations):
+    for i in tqdm(range(num_iterations)):
         try:
             nfc_ranking, afc_ranking = simulate_single_season()
             aggregate_final_ranking(aggregator, nfc_ranking, afc_ranking)

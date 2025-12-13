@@ -11,6 +11,7 @@ import polars as pl
 from utils import record_to_pct, total_record_to_pct
 from enum import Enum
 from operator import itemgetter
+from random import randint
 
 
 class RecordType(Enum):
@@ -184,6 +185,10 @@ class Team:
         elif self.strength_of_victory > other.strength_of_victory:
             return False
         return None
+    
+    def _coin_flip(self, other: "Team"):
+        return randint(0, 1) > 0
+
 
     def __repr__(self) -> str:
         return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
@@ -201,7 +206,8 @@ class DivisionTeamWrapper:
             self.team._common_games_record_lt,
             self.team._conference_record_lt,
             self.team._strength_of_victory_lt,
-            self.team._strength_of_schedule_lt
+            self.team._strength_of_schedule_lt,
+            self.team._coin_flip
         ]
 
         for comparison in comparisons:
@@ -223,7 +229,8 @@ class ConferenceTeamWrapper:
             self.team._conference_record_lt,
             self.team._common_games_record_lt,
             self.team._strength_of_victory_lt,
-            self.team._strength_of_schedule_lt
+            self.team._strength_of_schedule_lt,
+            self.team._coin_flip
         ]
 
         for comparison in comparisons:
