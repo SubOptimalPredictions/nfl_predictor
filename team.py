@@ -9,6 +9,13 @@ from typing import Dict
 import numpy as np
 import polars as pl
 from utils import record_to_pct
+from enum import Enum
+
+
+class RecordType(Enum):
+    FULL = "full"
+    DIVISION = "division"
+    CONFERENCE = "conference"
 
 
 class Team:
@@ -70,12 +77,12 @@ class Team:
             teams[abbreviation] = team
         return teams
 
-    def get_record_pct(self, record_type="full"):
-        if record_type == "full":
+    def get_record_pct(self, record_type=RecordType.FULL):
+        if record_type == RecordType.FULL:
             return record_to_pct(self.record)
-        elif record_type == "division":
+        elif record_type == RecordType.DIVISION:
             return record_to_pct(self.division_record)
-        elif record_type == "conference":
+        elif record_type == RecordType.CONFERENCE:
             return record_to_pct(self.conference_record)
         else:
             raise NotImplementedError("Record Type?")
@@ -123,8 +130,8 @@ class Team:
         return None
 
     def _division_record_lt(self, other):
-        my_division_pct = self.get_record_pct(record_type="division")
-        other_division_pct = other.get_record_pct(record_type="division")
+        my_division_pct = self.get_record_pct(record_type=RecordType.DIVISION)
+        other_division_pct = other.get_record_pct(record_type=RecordType.DIVISION)
 
         if my_division_pct < other_division_pct:
             return True
@@ -134,8 +141,8 @@ class Team:
         return None
 
     def _conference_record_lt(self, other):
-        my_conference_pct = self.get_record_pct(record_type="conference")
-        other_conference_pct = other.get_record_pct(record_type="conference")
+        my_conference_pct = self.get_record_pct(record_type=RecordType.CONFERENCE)
+        other_conference_pct = other.get_record_pct(record_type=RecordType.CONFERENCE)
 
         if my_conference_pct < other_conference_pct:
             return True
@@ -178,7 +185,7 @@ class ConferenceTeamWrapper:
         ]
 
         for comparison in comparisons:
-            result = comparison(other)
+            result = comparison(other.team)
             if result is not None:
                 return result
 
