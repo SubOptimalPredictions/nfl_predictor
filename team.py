@@ -122,6 +122,8 @@ class Team:
         return None
 
     def _h2h_record_lt(self, other):
+        if other.abbreviation not in self.head_to_head_record:
+            return None
         my_h2h_pct = record_to_pct(self.head_to_head_record[other.abbreviation])
         if my_h2h_pct < 0.5:
             return True
