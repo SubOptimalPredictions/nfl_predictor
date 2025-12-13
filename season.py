@@ -18,10 +18,10 @@ class Season:
     etc.).
     """
 
-    def __init__(self):
-        self.list_of_weeks : list[Week] = []
-
-        self.team_name_to_team : dict[str, Team] = {}
+    def __init__(self, list_of_weeks, team_name_to_team):
+        
+        self.list_of_weeks : list[Week] = list_of_weeks
+        self.team_name_to_team : dict[str, Team] = team_name_to_team
 
     def add_team(self, name, conference, division, record=np.array([0, 0, 0])):
         team = Team(name=name, record=record, conference=conference, division=division)
