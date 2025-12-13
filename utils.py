@@ -30,6 +30,7 @@ def moneyline_to_probability(away_team_moneyline: int, home_team_moneyline: int)
     return result
 
 def record_to_pct(record):
+    record = record[0]
     return (record[0] + 0.5 * record[2]) / np.sum(record)
 
 if __name__ == '__main__':
