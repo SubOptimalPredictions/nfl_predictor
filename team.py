@@ -8,10 +8,9 @@ identity and its season record as a numpy array with the layout
 from typing import Dict
 import numpy as np
 import polars as pl
-from utils import record_to_pct
+from utils import record_to_pct, total_record_to_pct
 from enum import Enum
 from operator import itemgetter
-from functools import reduce
 
 
 class RecordType(Enum):
@@ -52,6 +51,10 @@ class Team:
         self.division_record: np.ndarray = np.array([[0, 0, 0]])
         # opponent abbreviation -> head-to-head record
         self.head_to_head_record: Dict[str, np.ndarray] = {}
+        # Sum of W - L - T of all opponents
+        self.strength_of_schedule: np.ndarray = np.array([0, 0, 0])
+        # Sum of W - L - T of defeated opponents
+        self.strength_of_victory: np.ndarray = np.array([0, 0, 0])
 
     @staticmethod
     def load_teams_from_csv(
@@ -133,7 +136,7 @@ class Team:
             return False
         return None
 
-    def _division_record_lt(self, other):
+    def _division_record_lt(self, other: "Team"):
         my_division_pct = self.get_record_pct(record_type=RecordType.DIVISION)
         other_division_pct = other.get_record_pct(record_type=RecordType.DIVISION)
 
@@ -144,7 +147,7 @@ class Team:
 
         return None
 
-    def _conference_record_lt(self, other):
+    def _conference_record_lt(self, other: "Team"):
         my_conference_pct = self.get_record_pct(record_type=RecordType.CONFERENCE)
         other_conference_pct = other.get_record_pct(record_type=RecordType.CONFERENCE)
 
@@ -155,26 +158,30 @@ class Team:
 
         return None
 
-    def _common_games_record_lt(self, other):
+    def _common_games_record_lt(self, other: "Team"):
         common_opponents = set(self.head_to_head_record.keys()).intersection(
             other.head_to_head_record.keys()
         )
-        my_h2h_pct = record_to_pct(
-            reduce(
-                lambda x, y: x + y,
-                itemgetter(*common_opponents)(self.head_to_head_record),
-            )
-        )
-        other_h2h_pct = record_to_pct(
-            reduce(
-                lambda x, y: x + y,
-                itemgetter(*common_opponents)(other.head_to_head_record),
-            )
-        )
+        my_h2h_pct = total_record_to_pct(np.array(itemgetter(*common_opponents)(self.head_to_head_record)).reshape((-1, 3)))
+        other_h2h_pct = total_record_to_pct(np.array(itemgetter(*common_opponents)(other.head_to_head_record)).reshape((-1, 3)))
 
         if my_h2h_pct < other_h2h_pct:
             return True
         elif my_h2h_pct > other_h2h_pct:
+            return False
+        return None
+    
+    def _strength_of_schedule_lt(self, other: "Team"):
+        if self.strength_of_schedule < other.strength_of_schedule:
+            return True
+        elif self.strength_of_schedule > other.strength_of_schedule:
+            return False
+        return None
+    
+    def _strength_of_victory_lt(self, other: "Team"):
+        if self.strength_of_victory < other.strength_of_victory:
+            return True
+        elif self.strength_of_victory > other.strength_of_victory:
             return False
         return None
 
@@ -184,7 +191,7 @@ class Team:
 
 class DivisionTeamWrapper:
     def __init__(self, team):
-        self.team = team
+        self.team: Team = team
 
     def __lt__(self, other: "DivisionTeamWrapper"):
         comparisons = [
@@ -192,6 +199,9 @@ class DivisionTeamWrapper:
             self.team._h2h_record_lt,
             self.team._division_record_lt,
             self.team._common_games_record_lt,
+            self.team._conference_record_lt,
+            self.team._strength_of_victory_lt,
+            self.team._strength_of_schedule_lt
         ]
 
         for comparison in comparisons:
@@ -204,7 +214,7 @@ class DivisionTeamWrapper:
 
 class ConferenceTeamWrapper:
     def __init__(self, team):
-        self.team = team
+        self.team: Team = team
 
     def __lt__(self, other: "ConferenceTeamWrapper"):
         comparisons = [
@@ -212,6 +222,8 @@ class ConferenceTeamWrapper:
             self.team._h2h_record_lt,
             self.team._conference_record_lt,
             self.team._common_games_record_lt,
+            self.team._strength_of_victory_lt,
+            self.team._strength_of_schedule_lt
         ]
 
         for comparison in comparisons:

@@ -1,11 +1,8 @@
-import math
 import numpy as np
 from google import genai
-from google.genai import types
 import dotenv
 import os
 from pydantic import BaseModel
-import json
 
 
 def moneyline_to_probability(
@@ -50,6 +47,8 @@ def moneyline_to_probability(
     assert np.isclose(np.sum(result), 1), "Probabilities are not normalized"
     return result
 
+def total_record_to_pct(records):
+    return record_to_pct(np.sum(records, axis=0, keepdims=True))
 
 def record_to_pct(record):
     record = record[0]

@@ -9,7 +9,19 @@ from team import Team, DivisionTeamWrapper, ConferenceTeamWrapper
 from game import Game
 import numpy as np
 import time
-from utils import record_to_pct
+from utils import total_record_to_pct
+from operator import itemgetter
+
+def get_strength_of_victory(team: Team, team_name_to_team):
+    losing_abbvrs = [loser for loser, record in list(team.head_to_head_record.items()) if record[0, 0] > 0]
+    losing_teams = itemgetter(*losing_abbvrs)(team_name_to_team)
+    loser_records = [np.concatenate(list(opp.head_to_head_record.values())) for opp in losing_teams]
+    return total_record_to_pct(np.concatenate(loser_records))
+
+def get_strength_of_schedule(team: Team, team_name_to_team):
+    opponents = itemgetter(*list(team.head_to_head_record.keys()))(team_name_to_team)
+    opponent_records = [np.concatenate(list(opp.head_to_head_record.values())) for opp in opponents]
+    return total_record_to_pct(np.concatenate(opponent_records))
 
 
 class Season:
@@ -23,6 +35,7 @@ class Season:
     def __init__(self, list_of_games, team_name_to_team):
 
         self.list_of_games : list[Game] = list_of_games
+        # team abbvr to team
         self.team_name_to_team : dict[str, Team] = team_name_to_team
 
     def add_team(self, name, conference, division, record=np.array([0, 0, 0])):
@@ -43,6 +56,9 @@ class Season:
         assert (len(self.list_of_games) > 13), "Less than Minimum Number of games per week" 
         for game in self.list_of_games:
             game.simulate()
+        for _, team in self.team_name_to_team.items():
+            team.strength_of_schedule = get_strength_of_schedule(team, self.team_name_to_team)
+            team.strength_of_victory = get_strength_of_victory(team, self.team_name_to_team)
 
     def rank(self):
         nfc_teams, afc_teams = self.split_teams_into_conferences()
