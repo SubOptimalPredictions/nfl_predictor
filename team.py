@@ -41,6 +41,13 @@ class Team:
 
     @staticmethod
     def load_teams_from_csv(filepath: str) -> Dict[str, "Team"]:
+        """
+        Load teams from a CSV file.
+        Args:
+            filepath: Path to the CSV file containing team data.
+        Returns:
+            A dictionary mapping team abbreviations to Team instances.
+        """
         df = pl.read_csv(filepath)
         teams = {}
         for row in df.iter_rows(named=True):
@@ -50,7 +57,7 @@ class Team:
             division = row["Division"]
             abbreviation = row["Abbreviation"]
             team = Team(name, abbreviation, record, conference, division)
-            teams[name] = team
+            teams[abbreviation] = team
         return teams
 
     def update_record(self, delta: np.ndarray) -> None:
@@ -65,10 +72,11 @@ class Team:
 
         self.record += delta
 
+    def __repr__(self) -> str:
+        return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division})"
+
 
 if __name__ == "__main__":
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
     for name, team in teams.items():
-        print(
-            f"Team: {name}, Record: {team.record}, Abbreviation: {team.abbreviation}, Conference: {team.conference}, Division: {team.division}"
-        )
+        print(team)

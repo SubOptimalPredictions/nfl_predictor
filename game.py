@@ -8,6 +8,16 @@ two-element probability vector for the away/home team.
 
 import numpy as np
 from team import Team
+import polars as pl
+from enum import Enum
+
+
+class GameLoadingMode(Enum):
+    """Enum for game loading modes."""
+
+    ALL_GAMES = 1
+    UPCOMING_GAMES_ONLY = 2
+    PLAYED_GAMES_ONLY = 3
 
 
 class Game:
@@ -24,11 +34,51 @@ class Game:
             only when ``score`` is ``None``.
     """
 
-    def __init__(self, away_team : Team, home_team : Team, score : np.ndarray | None, probabilities : np.ndarray):
-        self.away_team : Team = away_team
-        self.home_team : Team = home_team
-        self.score : np.ndarray | None = score
-        self.probabilities : np.ndarray = probabilities
+    def __init__(
+        self,
+        away_team: Team,
+        home_team: Team,
+        score: np.ndarray | None,
+        probabilities: np.ndarray,
+    ):
+
+        self.away_team: Team = away_team
+        self.home_team: Team = home_team
+        self.score: np.ndarray | None = score
+        self.probabilities: np.ndarray = probabilities
+
+    @staticmethod
+    def load_games_from_csv(
+        schedule_filepath: str,
+        teams: dict[str, Team],
+        game_mode: GameLoadingMode = GameLoadingMode.ALL_GAMES,
+    ) -> list["Game"]:
+        """Load games from a CSV file.
+        Args:
+            schedule_filepath: Path to the CSV file containing schedule data.
+            teams: A dictionary mapping team abbreviations to Team instances.
+            game_mode: Mode for loading games (all, upcoming only, played only).
+        Returns:
+            A list of Game instances.
+        """
+        df = pl.read_csv(schedule_filepath)
+        games = []
+        for row in df.iter_rows(named=True):
+            if game_mode == GameLoadingMode.UPCOMING_GAMES_ONLY:
+                if row["result"] is not None:
+                    continue
+            elif game_mode == GameLoadingMode.PLAYED_GAMES_ONLY:
+                if row["result"] is None:
+                    continue
+            away_team = teams[row["away_team"]]
+            home_team = teams[row["home_team"]]
+            score = None
+            if row["away_score"] is not None and row["home_score"] is not None:
+                score = np.array([[row["away_score"], row["home_score"]]])
+            probabilities = np.array([0.5, 0.5])  # Default equal probabilities
+            game = Game(away_team, home_team, score, probabilities)
+            games.append(game)
+        return games
 
     def simulate(self) -> None:
         """Simulate the game and update team records.
@@ -45,14 +95,20 @@ class Game:
 
         if self.score is None:
             winner_id = np.random.choice(2, p=self.probabilities)
-            away_team_record_delta, home_team_record_delta = self._generate_records(winner_id)
+            away_team_record_delta, home_team_record_delta = self._generate_records(
+                winner_id
+            )
         else:
-            away_team_record_delta, home_team_record_delta = self._generate_records_from_score(self.score)
+            away_team_record_delta, home_team_record_delta = (
+                self._generate_records_from_score(self.score)
+            )
 
         self.away_team.update_record(away_team_record_delta)
         self.home_team.update_record(home_team_record_delta)
 
-    def _generate_records_from_score(self, score: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    def _generate_records_from_score(
+        self, score: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Generate record deltas from a final score.
 
         Args:
@@ -85,4 +141,16 @@ class Game:
             increments for [wins, losses, ties].
         """
 
-        return np.array([1 - winning_id, winning_id, 0]), np.array([winning_id, 1 - winning_id, 0])
+        return np.array([1 - winning_id, winning_id, 0]), np.array(
+            [winning_id, 1 - winning_id, 0]
+        )
+
+    def __repr__(self) -> str:
+        return f"Game(away_team={self.away_team.name}, home_team={self.home_team.name}, score={self.score}, probabilities={self.probabilities})"
+
+
+if __name__ == "__main__":
+    teams = Team.load_teams_from_csv("data/teams_with_records.csv")
+    games = Game.load_games_from_csv("data/schedules_2025.csv", teams)
+    for game in games:
+        print(game)
