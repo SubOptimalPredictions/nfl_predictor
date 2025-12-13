@@ -10,6 +10,8 @@ import numpy as np
 import polars as pl
 from utils import record_to_pct
 from enum import Enum
+from operator import itemgetter
+from functools import reduce
 
 
 class RecordType(Enum):
@@ -153,6 +155,29 @@ class Team:
 
         return None
 
+    def _common_games_record_lt(self, other):
+        common_opponents = set(self.head_to_head_record.keys()).intersection(
+            other.head_to_head_record.keys()
+        )
+        my_h2h_pct = record_to_pct(
+            reduce(
+                lambda x, y: x + y,
+                itemgetter(*common_opponents)(self.head_to_head_record),
+            )
+        )
+        other_h2h_pct = record_to_pct(
+            reduce(
+                lambda x, y: x + y,
+                itemgetter(*common_opponents)(other.head_to_head_record),
+            )
+        )
+
+        if my_h2h_pct < other_h2h_pct:
+            return True
+        elif my_h2h_pct > other_h2h_pct:
+            return False
+        return None
+
     def __repr__(self) -> str:
         return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
 
@@ -166,6 +191,7 @@ class DivisionTeamWrapper:
             self.team._overall_record_lt,
             self.team._h2h_record_lt,
             self.team._division_record_lt,
+            self.team._common_games_record_lt,
         ]
 
         for comparison in comparisons:
