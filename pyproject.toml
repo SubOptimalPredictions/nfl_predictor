@@ -8,4 +8,5 @@ dependencies = [
     "google-genai>=1.55.0",
     "nflreadpy>=0.1.5",
     "numpy>=2.3.5",
+    "streamlit>=1.52.1",
 ]

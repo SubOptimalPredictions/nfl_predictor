@@ -47,6 +47,7 @@ class Game:
         self.home_team: Team = home_team
         self.score: np.ndarray | None = score
         self.probabilities: np.ndarray = probabilities
+        self.winner: Team | None = None
 
     @staticmethod
     def load_games_from_csv(
@@ -141,10 +142,13 @@ class Game:
 
         away_score, home_score = score.flatten()
         if away_score > home_score:
+            self.winner = self.away_team
             return np.array([1, 0, 0]), np.array([0, 1, 0])
         elif away_score < home_score:
+            self.winner = self.home_team
             return np.array([0, 1, 0]), np.array([1, 0, 0])
         elif away_score == home_score:
+            self.winner = None
             return np.array([0, 0, 1]), np.array([0, 0, 1])
         else:
             raise NotImplementedError("Unhandled score comparison")
@@ -159,7 +163,10 @@ class Game:
             Tuple of two numpy arrays (away_delta, home_delta) with
             increments for [wins, losses, ties].
         """
-
+        if winning_id == 0:
+            self.winner = self.away_team
+        else:
+            self.winner = self.home_team
         return np.array([1 - winning_id, winning_id, 0]), np.array(
             [winning_id, 1 - winning_id, 0]
         )
