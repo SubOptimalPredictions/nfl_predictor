@@ -2,8 +2,10 @@ import streamlit as st
 import polars as pl
 import numpy as np
 import time
+import altair as alt
 from simulator import get_aggregator_dict, parallel_simulatation, simulate
 from team import Team
+from team_colors import TEAM_COLORS
 
 st.set_page_config(page_title="NFL Season Simulator", layout="wide")
 st.title("🏈 NFL Season Simulator - Live Rankings")
@@ -97,12 +99,24 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
         elapsed_time = end_time - start_time
         progress_bar.progress(1.0, text="Simulation complete!")
 
+        st.session_state.aggregator = aggregator
+        st.session_state.num_times_run = num_times_run
+        st.session_state.simulation_complete = True
+        
         st.success(
             f"✅ Simulation Complete! Ran {num_times_run} successful iterations in {elapsed_time:.2f} seconds ({num_times_run/elapsed_time:.1f} iterations/sec)"
         )
     except Exception as e:
         st.error(f"❌ Simulation failed: {str(e)}")
+        # Clear state on failure
+        if "simulation_complete" in st.session_state:
+            del st.session_state.simulation_complete
         st.stop()
+
+if st.session_state.get("simulation_complete"):
+    aggregator = st.session_state.aggregator
+    num_times_run = st.session_state.num_times_run
+    team_conferences = get_team_conferences()
 
     # Display results
     nfc_col, afc_col = st.columns(2)
@@ -228,70 +242,101 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
 
     # Final detailed results by conference
     st.subheader("📊 NFC Final Ranking Distribution")
-    nfc_teams = sorted(
-        [
-            (team, count)
-            for team, count in aggregator.items()
-            if team_conferences.get(team) == "NFC"
-        ],
-        key=lambda x: calculate_playoff_probability(x[1], num_times_run),
-        reverse=True,
-    )
-    for team, finishing_pos_count in nfc_teams:
-        playoff_prob = (
-            calculate_playoff_probability(finishing_pos_count, num_times_run) * 100
+    
+    # Graph for NFC
+    st.write("### NFC Finish Probability Graph")
+    nfc_team_names = sorted([t for t in aggregator.keys() if team_conferences.get(t) == "NFC"])
+    nfc_selected_teams = st.multiselect("Select NFC Teams to View", nfc_team_names, default=nfc_team_names)
+    
+    if nfc_selected_teams:
+        nfc_graph_data = []
+        for team in nfc_selected_teams:
+            counts = aggregator.get(team, [])
+            probs = [(c / num_times_run) for c in counts]
+            # Ensure we have 16 positions padded with 0 if needed
+            probs = probs + [0.0] * (16 - len(probs))
+            probs = probs[:16]
+            
+            for rank, prob in enumerate(probs, 1):
+                nfc_graph_data.append({
+                    "Team": team,
+                    "Position": rank,
+                    "Probability": prob
+                })
+        
+        nfc_chart_df = pl.DataFrame(nfc_graph_data)
+        
+        # Create Altair chart
+        nfc_chart = (
+            alt.Chart(nfc_chart_df)
+            .mark_bar()
+            .encode(
+                x=alt.X("Position:O", title="Finishing Position"),
+                y=alt.Y("Probability:Q", title="Probability"),
+                color=alt.Color(
+                    "Team:N",
+                    scale=alt.Scale(
+                        domain=list(nfc_selected_teams),
+                        range=[TEAM_COLORS.get(t, "#000000") for t in nfc_selected_teams],
+                    ),
+                    legend=alt.Legend(title="Team"),
+                ),
+                xOffset="Team:N",
+                tooltip=["Team", "Position", alt.Tooltip("Probability", format=".1%")],
+            )
+            .properties(height=500)
+            .interactive()
         )
-        division_winner_prob = (
-            calculate_division_winner_probability(finishing_pos_count, num_times_run)
-            * 100
-        )
-        st.write(
-            f"**{team}**: {playoff_prob:.1f}% playoff chance | {division_winner_prob:.1f}% division winner chance"
-        )
-
-        dist = (
-            finishing_pos_count / num_times_run
-            if num_times_run > 0
-            else finishing_pos_count
-        )
-        positions = {
-            f"#{i+1}": f"{val:.1%}" for i, val in enumerate(dist) if val > 0.01
-        }
-        if positions:
-            st.caption(f"Position distribution: {positions}")
+        st.altair_chart(nfc_chart, use_container_width=True)
 
     st.subheader("📊 AFC Final Ranking Distribution")
-    afc_teams = sorted(
-        [
-            (team, count)
-            for team, count in aggregator.items()
-            if team_conferences.get(team) == "AFC"
-        ],
-        key=lambda x: calculate_playoff_probability(x[1], num_times_run),
-        reverse=True,
-    )
-    for team, finishing_pos_count in afc_teams:
-        playoff_prob = (
-            calculate_playoff_probability(finishing_pos_count, num_times_run) * 100
-        )
-        division_winner_prob = (
-            calculate_division_winner_probability(finishing_pos_count, num_times_run)
-            * 100
-        )
-        st.write(
-            f"**{team}**: {playoff_prob:.1f}% playoff chance | {division_winner_prob:.1f}% division winner chance"
-        )
 
-        dist = (
-            finishing_pos_count / num_times_run
-            if num_times_run > 0
-            else finishing_pos_count
+    # Graph for AFC
+    st.write("### AFC Finish Probability Graph")
+    afc_team_names = sorted([t for t in aggregator.keys() if team_conferences.get(t) == "AFC"])
+    afc_selected_teams = st.multiselect("Select AFC Teams to View", afc_team_names, default=afc_team_names)
+    
+    if afc_selected_teams:
+        afc_graph_data = []
+        for team in afc_selected_teams:
+            counts = aggregator.get(team, [])
+            probs = [(c / num_times_run) for c in counts]
+            # Ensure we have 16 positions padded with 0 if needed
+            probs = probs + [0.0] * (16 - len(probs))
+            probs = probs[:16]
+            
+            for rank, prob in enumerate(probs, 1):
+                afc_graph_data.append({
+                    "Team": team,
+                    "Position": rank,
+                    "Probability": prob
+                })
+        
+        afc_chart_df = pl.DataFrame(afc_graph_data)
+        
+        # Create Altair chart
+        afc_chart = (
+            alt.Chart(afc_chart_df)
+            .mark_bar()
+            .encode(
+                x=alt.X("Position:O", title="Finishing Position"),
+                y=alt.Y("Probability:Q", title="Probability"),
+                color=alt.Color(
+                    "Team:N",
+                    scale=alt.Scale(
+                        domain=list(afc_selected_teams),
+                        range=[TEAM_COLORS.get(t, "#000000") for t in afc_selected_teams],
+                    ),
+                    legend=alt.Legend(title="Team"),
+                ),
+                xOffset="Team:N",
+                tooltip=["Team", "Position", alt.Tooltip("Probability", format=".1%")],
+            )
+            .properties(height=500)
+            .interactive()
         )
-        positions = {
-            f"#{i+1}": f"{val:.1%}" for i, val in enumerate(dist) if val > 0.01
-        }
-        if positions:
-            st.caption(f"Position distribution: {positions}")
+        st.altair_chart(afc_chart, use_container_width=True)
 
 else:
-    st.info("👈 Configure settings and click 'Start Simulation' to begin")
+    if not st.session_state.get("simulation_complete"):
+        st.info("👈 Configure settings and click 'Start Simulation' to begin")
