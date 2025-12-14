@@ -149,8 +149,8 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
     afc_data.sort(key=lambda x: afc_order_map.get(x["Team"], 999))
 
     # Create separate DataFrames for each conference
-    nfc_df = pl.DataFrame(nfc_data)
-    afc_df = pl.DataFrame(afc_data)
+    nfc_df = pl.DataFrame(nfc_data).with_row_index("Predicted Seed", offset=1)
+    afc_df = pl.DataFrame(afc_data).with_row_index("Predicted Seed", offset=1)
 
     # Display NFC results
     with nfc_col:
@@ -164,7 +164,8 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
             height=400,
         )
 
-        top_nfc_team = nfc_df.row(0)[0]
+        # "Seed" is column 0, "Team" is column 1
+        top_nfc_team = nfc_df["Team"][0]
         st.metric("Top NFC Team", top_nfc_team)
         
         nfc_1st_counts = aggregator.get(top_nfc_team, [])
@@ -172,7 +173,7 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
         st.metric("Top NFC 1st Seed Chance", f"{nfc_1st_prob:.1f}%")
         st.dataframe(
             nfc_df.select(
-                ["Team", "Playoff %", "Div Winner %", "1st Seed %"]
+                ["Predicted Seed", "Team", "Playoff %", "Div Winner %", "1st Seed %"]
             ).with_columns(
                 [
                     pl.col("Playoff %").round(1),
@@ -180,6 +181,9 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
                     pl.col("1st Seed %").round(1),
                 ]
             ),
+            column_config={
+                "Predicted Seed": st.column_config.NumberColumn(width="small"),
+            },
             hide_index=True,
             use_container_width=True,
             height=400,
@@ -197,7 +201,8 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
             height=400,
         )
 
-        top_afc_team = afc_df.row(0)[0]
+        # "Seed" is column 0, "Team" is column 1
+        top_afc_team = afc_df["Team"][0]
         st.metric("Top AFC Team", top_afc_team)
 
         afc_1st_counts = aggregator.get(top_afc_team, [])
@@ -205,7 +210,7 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
         st.metric("Top AFC 1st Seed Chance", f"{afc_1st_prob:.1f}%")
         st.dataframe(
             afc_df.select(
-                ["Team", "Playoff %", "Div Winner %", "1st Seed %"]
+                ["Predicted Seed", "Team", "Playoff %", "Div Winner %", "1st Seed %"]
             ).with_columns(
                 [
                     pl.col("Playoff %").round(1),
@@ -213,6 +218,9 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
                     pl.col("1st Seed %").round(1),
                 ]
             ),
+            column_config={
+                "Predicted Seed": st.column_config.NumberColumn(width="small"),
+            },
             hide_index=True,
             use_container_width=True,
             height=400,
