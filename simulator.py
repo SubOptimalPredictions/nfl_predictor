@@ -2,7 +2,9 @@ from season import Season
 from team import Team
 import numpy as np
 from tqdm import tqdm
-
+import math
+import multiprocessing
+import concurrent.futures
 
 def get_aggregator_dict():
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
@@ -45,11 +47,35 @@ def simulate(num_iterations=1000):
 
     return aggregator, num_times_run
 
+def aggregate_multiple_results(results):
+    aggregator = get_aggregator_dict()
+    num_times_run = 0
+
+    for thread_aggregator, thread_num_times_run in results:
+        for team in aggregator:
+            aggregator[team] += thread_aggregator[team]
+        num_times_run += thread_num_times_run
+    return aggregator, num_times_run
+    
+
+def parallel_simulatation(num_iterations=100, batch_size=10):
+    num_batches = math.ceil(num_iterations / batch_size)
+    print(f"Using {num_batches} processes each with batch size: {batch_size}")
+
+    rankings = []
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = [executor.submit(simulate, batch_size) for _ in range(num_batches)]
+
+        for f in concurrent.futures.as_completed(results):
+            rankings.append(f.result())
+        
+    return aggregate_multiple_results(rankings)
 
 if __name__ == "__main__":
     aggregator, num_times_run = simulate()
-    print(f"Num Iterations Run: {num_times_run}")
-
+    # aggregator, num_times_run = parallel_simulatation(num_iterations=100000, batch_size=1000)
+    
+    print(f"\nNum Iterations Run: {num_times_run}")
     for team, finishing_pos_count in aggregator.items():
         print(team, finishing_pos_count / num_times_run)
 
