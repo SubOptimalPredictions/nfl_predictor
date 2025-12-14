@@ -6,6 +6,7 @@ import math
 import multiprocessing
 import concurrent.futures
 import time
+import utils
 
 
 def get_aggregator_dict():
@@ -93,6 +94,7 @@ def orig_parallel_simulatation(num_iterations=100, batch_size=10):
 
 
 def parallel_simulatation(num_iterations=100, batch_size=10, num_workers=None):
+    utils.update_schedule("data/schedules_2025.csv")
     num_batches = math.ceil(num_iterations / batch_size)
 
     if num_workers is None:

@@ -1,10 +1,9 @@
 import nflreadpy as nfl
 import polars as pl
+import sys, os
 
-# Load current season play-by-play data
-pbp = nfl.load_pbp()
-#
-schedule: pl.DataFrame = nfl.load_schedules([2025])
-print(schedule.head())
-# save as pandas df as csv file
-schedule.write_csv("data/schedules_2025.csv")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils import update_schedule
+
+if __name__ == "__main__":
+    update_schedule("data/schedules_2025.csv")

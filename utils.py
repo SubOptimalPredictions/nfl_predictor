@@ -3,6 +3,8 @@ from google import genai
 import dotenv
 import os
 from pydantic import BaseModel
+import nflreadpy as nfl
+import polars as pl
 
 
 def moneyline_to_probability(
@@ -47,15 +49,17 @@ def moneyline_to_probability(
     assert np.isclose(np.sum(result), 1), "Probabilities are not normalized"
     return result
 
+
 def total_record_to_pct(records):
     return record_to_pct(np.sum(records, axis=0, keepdims=True))
+
 
 def record_to_pct(record):
     record = record[0]
     return (record[0] + 0.5 * record[2]) / np.sum(record)
 
 
-GEMINI_MODEL_NAME = "gemini-2.5-flash-lite"
+GEMINI_MODEL_NAME = "gemini-2.5-flash"
 
 
 class WinProbability(BaseModel):
@@ -142,6 +146,28 @@ def gemini_probability_batch(
         result_dict[key] = np.array([pred.away_team_win_prob, pred.home_team_win_prob])
 
     return result_dict
+
+
+def update_schedule(
+    schedule_filepath: str,
+    columns_to_preserve: list[str] = [
+        "game_id",
+        "gemini_away_win_prob",
+        "gemini_home_win_prob",
+    ],
+):
+    pbp = nfl.load_pbp()
+    schedule_new: pl.DataFrame = nfl.load_schedules([2025])
+    try:
+        schedule_existing = pl.read_csv(schedule_filepath)
+
+        custom_cols = schedule_existing.select(columns_to_preserve)
+
+        # Merge: keep all new data and join the custom columns
+        schedule = schedule_new.join(custom_cols, on="game_id", how="left")
+        schedule.write_csv("data/schedules_2025.csv")
+    except FileNotFoundError:
+        schedule_new.write_csv("data/schedules_2025.csv")
 
 
 if __name__ == "__main__":
