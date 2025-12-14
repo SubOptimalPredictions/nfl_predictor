@@ -2,11 +2,7 @@ import streamlit as st
 import polars as pl
 import numpy as np
 import time
-from simulator import (
-    get_aggregator_dict,
-    aggregate_final_ranking,
-    simulate_single_season,
-)
+from simulator import get_aggregator_dict, parallel_simulatation, simulate
 from team import Team
 
 st.set_page_config(page_title="NFL Season Simulator", layout="wide")
@@ -34,153 +30,129 @@ def get_team_conferences():
 
 
 # UI Setup
-st.sidebar.header("Conference View")
-nfc_col, afc_col = st.columns(2)
-nfc_chart = nfc_col.empty()
-afc_chart = afc_col.empty()
-nfc_stats = nfc_col.empty()
-afc_stats = afc_col.empty()
-progress_holder = st.empty()
+st.sidebar.header("Simulation Settings")
 
 # Simulation parameters
 num_iterations = st.sidebar.number_input(
-    "Number of Simulations", min_value=10, max_value=10000, value=100, step=10
+    "Number of Simulations", min_value=10, max_value=100000, value=1000, step=100
 )
-update_frequency = st.sidebar.slider(
-    "Update Every N Iterations", min_value=1, max_value=50, value=1
-)
-animation_speed = st.sidebar.slider(
-    "Animation Speed (seconds)", min_value=0.0, max_value=0.5, value=0.05, step=0.01
+batch_size = st.sidebar.number_input(
+    "Batch Size (per process)", min_value=10, max_value=10000, value=100, step=10
 )
 
 if st.sidebar.button("▶️ Start Simulation", type="primary"):
-    aggregator = get_aggregator_dict()
     team_conferences = get_team_conferences()
-    num_times_run = 0
 
-    progress_bar = progress_holder.progress(0)
+    progress_bar = st.progress(0, text="Starting simulation...")
+    start_time = time.time()
 
-    for i in range(num_iterations):
-        try:
-            nfc_ranking, afc_ranking = simulate_single_season()
-            aggregate_final_ranking(aggregator, nfc_ranking, afc_ranking)
-            num_times_run += 1
+    try:
+        aggregator, num_times_run = parallel_simulatation(
+            num_iterations, batch_size, num_workers=None
+        )
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        progress_bar.progress(1.0, text="Simulation complete!")
 
-            # Update UI every N iterations
-            if i % update_frequency == 0 or i == num_iterations - 1:
-                # Separate teams by conference
-                nfc_data = []
-                afc_data = []
+        st.success(
+            f"✅ Simulation Complete! Ran {num_times_run} successful iterations in {elapsed_time:.2f} seconds ({num_times_run/elapsed_time:.1f} iterations/sec)"
+        )
+    except Exception as e:
+        st.error(f"❌ Simulation failed: {str(e)}")
+        st.stop()
 
-                for team, finishing_pos_count in aggregator.items():
-                    playoff_prob = (
-                        calculate_playoff_probability(
-                            finishing_pos_count, num_times_run
-                        )
-                        * 100
-                    )
-                    division_winner_prob = (
-                        calculate_division_winner_probability(
-                            finishing_pos_count, num_times_run
-                        )
-                        * 100
-                    )
-                    avg_finish = np.sum(
-                        [
-                            pos * count
-                            for pos, count in enumerate(finishing_pos_count, 1)
-                        ]
-                    ) / max(num_times_run, 1)
+    # Display results
+    nfc_col, afc_col = st.columns(2)
 
-                    team_data = {
-                        "Team": team,
-                        "Playoff %": playoff_prob,
-                        "Div Winner %": division_winner_prob,
-                        "Avg Finish": avg_finish,
-                    }
+    # Separate teams by conference
+    nfc_data = []
+    afc_data = []
 
-                    if team_conferences.get(team) == "NFC":
-                        nfc_data.append(team_data)
-                    else:
-                        afc_data.append(team_data)
+    for team, finishing_pos_count in aggregator.items():
+        playoff_prob = (
+            calculate_playoff_probability(finishing_pos_count, num_times_run) * 100
+        )
+        division_winner_prob = (
+            calculate_division_winner_probability(finishing_pos_count, num_times_run)
+            * 100
+        )
+        avg_finish = np.sum(
+            [pos * count for pos, count in enumerate(finishing_pos_count, 1)]
+        ) / max(num_times_run, 1)
 
-                # Create separate DataFrames for each conference
-                nfc_df = pl.DataFrame(nfc_data).sort("Playoff %", descending=True)
-                afc_df = pl.DataFrame(afc_data).sort("Playoff %", descending=True)
+        team_data = {
+            "Team": team,
+            "Playoff %": playoff_prob,
+            "Div Winner %": division_winner_prob,
+            "Avg Finish": avg_finish,
+        }
 
-                # Update NFC chart
-                with nfc_chart.container():
-                    st.subheader("🔵 NFC Conference")
-                    st.bar_chart(
-                        data=nfc_df,
-                        x="Team",
-                        y="Playoff %",
-                        color="#013369",
-                        use_container_width=True,
-                        height=400,
-                    )
+        if team_conferences.get(team) == "NFC":
+            nfc_data.append(team_data)
+        else:
+            afc_data.append(team_data)
 
-                # Update AFC chart
-                with afc_chart.container():
-                    st.subheader("🔴 AFC Conference")
-                    st.bar_chart(
-                        data=afc_df,
-                        x="Team",
-                        y="Playoff %",
-                        color="#D50A0A",
-                        use_container_width=True,
-                        height=400,
-                    )
+    # Create separate DataFrames for each conference
+    nfc_df = pl.DataFrame(nfc_data).sort("Playoff %", descending=True)
+    afc_df = pl.DataFrame(afc_data).sort("Playoff %", descending=True)
 
-                # Update NFC stats table
-                with nfc_stats.container():
-                    st.metric("Top NFC Team", nfc_df.row(0)[0])
-                    st.metric("Top NFC Playoff %", f"{nfc_df.row(0)[1]:.1f}%")
-                    st.dataframe(
-                        nfc_df.select(
-                            ["Team", "Playoff %", "Div Winner %", "Avg Finish"]
-                        ).with_columns(
-                            [
-                                pl.col("Playoff %").round(1),
-                                pl.col("Div Winner %").round(1),
-                                pl.col("Avg Finish").round(2),
-                            ]
-                        ),
-                        hide_index=True,
-                        use_container_width=True,
-                        height=300,
-                    )
+    # Display NFC results
+    with nfc_col:
+        st.subheader("🔵 NFC Conference")
+        st.bar_chart(
+            data=nfc_df,
+            x="Team",
+            y="Playoff %",
+            color="#013369",
+            use_container_width=True,
+            height=400,
+        )
 
-                # Update AFC stats table
-                with afc_stats.container():
-                    st.metric("Top AFC Team", afc_df.row(0)[0])
-                    st.metric("Top AFC Playoff %", f"{afc_df.row(0)[1]:.1f}%")
-                    st.dataframe(
-                        afc_df.select(
-                            ["Team", "Playoff %", "Div Winner %", "Avg Finish"]
-                        ).with_columns(
-                            [
-                                pl.col("Playoff %").round(1),
-                                pl.col("Div Winner %").round(1),
-                                pl.col("Avg Finish").round(2),
-                            ]
-                        ),
-                        hide_index=True,
-                        use_container_width=True,
-                        height=300,
-                    )
+        st.metric("Top NFC Team", nfc_df.row(0)[0])
+        st.metric("Top NFC Playoff %", f"{nfc_df.row(0)[1]:.1f}%")
+        st.dataframe(
+            nfc_df.select(
+                ["Team", "Playoff %", "Div Winner %", "Avg Finish"]
+            ).with_columns(
+                [
+                    pl.col("Playoff %").round(1),
+                    pl.col("Div Winner %").round(1),
+                    pl.col("Avg Finish").round(2),
+                ]
+            ),
+            hide_index=True,
+            use_container_width=True,
+            height=400,
+        )
 
-                # Update progress bar
-                progress_bar.progress((i + 1) / num_iterations)
+    # Display AFC results
+    with afc_col:
+        st.subheader("🔴 AFC Conference")
+        st.bar_chart(
+            data=afc_df,
+            x="Team",
+            y="Playoff %",
+            color="#D50A0A",
+            use_container_width=True,
+            height=400,
+        )
 
-                # Animation delay
-                if animation_speed > 0:
-                    time.sleep(animation_speed)
-
-        except NotImplementedError:
-            pass
-
-    st.success(f"✅ Simulation Complete! Ran {num_times_run} successful iterations.")
+        st.metric("Top AFC Team", afc_df.row(0)[0])
+        st.metric("Top AFC Playoff %", f"{afc_df.row(0)[1]:.1f}%")
+        st.dataframe(
+            afc_df.select(
+                ["Team", "Playoff %", "Div Winner %", "Avg Finish"]
+            ).with_columns(
+                [
+                    pl.col("Playoff %").round(1),
+                    pl.col("Div Winner %").round(1),
+                    pl.col("Avg Finish").round(2),
+                ]
+            ),
+            hide_index=True,
+            use_container_width=True,
+            height=400,
+        )
 
     # Final detailed results by conference
     st.subheader("📊 NFC Final Ranking Distribution")
