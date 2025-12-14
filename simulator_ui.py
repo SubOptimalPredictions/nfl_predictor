@@ -29,6 +29,49 @@ def get_team_conferences():
     return {team.abbreviation: team.conference for _, team in teams.items()}
 
 
+def get_projected_order(team_list, aggregator):
+    """
+    Determine the projected order of teams based on finish probabilities.
+    Rank 1: Team most likely to finish 1st.
+    Rank 2: Team most likely to finish 2nd (excluding rank 1 selection).
+    ...
+    """
+    ordered_teams = []
+    # Create a copy so we don't modify the original list if it's reused
+    available_teams = set(team_list)
+    num_positions = len(team_list)
+
+    for i in range(num_positions):
+        best_team = None
+        max_count = -1
+
+        for team in available_teams:
+            # aggregator[team] is a list of counts for pos 1, pos 2, ...
+            # We want the count for position i (0-indexed)
+            counts = aggregator.get(team, [])
+            count = counts[i] if i < len(counts) else 0
+
+            if count > max_count:
+                max_count = count
+                best_team = team
+            elif count == max_count:
+                # Tie-breaker: alphabetical to be deterministic
+                if best_team is None or team < best_team:
+                    best_team = team
+        
+        if best_team:
+            ordered_teams.append(best_team)
+            available_teams.remove(best_team)
+        else:
+            # Fallback if something goes wrong (e.g. strict subset logic issues), take any
+            if available_teams:
+                remaining = sorted(list(available_teams))
+                ordered_teams.extend(remaining)
+                break
+    
+    return ordered_teams
+
+
 # UI Setup
 st.sidebar.header("Simulation Settings")
 
@@ -76,15 +119,17 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
             calculate_division_winner_probability(finishing_pos_count, num_times_run)
             * 100
         )
-        avg_finish = np.sum(
-            [pos * count for pos, count in enumerate(finishing_pos_count, 1)]
-        ) / max(num_times_run, 1)
+        first_seed_prob = (
+            (finishing_pos_count[0] / num_times_run * 100)
+            if num_times_run > 0 and len(finishing_pos_count) > 0
+            else 0.0
+        )
 
         team_data = {
             "Team": team,
             "Playoff %": playoff_prob,
             "Div Winner %": division_winner_prob,
-            "Avg Finish": avg_finish,
+            "1st Seed %": first_seed_prob,
         }
 
         if team_conferences.get(team) == "NFC":
@@ -92,9 +137,20 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
         else:
             afc_data.append(team_data)
 
+    # Sort data based on projected order
+    nfc_teams_list = [d["Team"] for d in nfc_data]
+    nfc_order = get_projected_order(nfc_teams_list, aggregator)
+    nfc_order_map = {team: i for i, team in enumerate(nfc_order)}
+    nfc_data.sort(key=lambda x: nfc_order_map.get(x["Team"], 999))
+
+    afc_teams_list = [d["Team"] for d in afc_data]
+    afc_order = get_projected_order(afc_teams_list, aggregator)
+    afc_order_map = {team: i for i, team in enumerate(afc_order)}
+    afc_data.sort(key=lambda x: afc_order_map.get(x["Team"], 999))
+
     # Create separate DataFrames for each conference
-    nfc_df = pl.DataFrame(nfc_data).sort("Playoff %", descending=True)
-    afc_df = pl.DataFrame(afc_data).sort("Playoff %", descending=True)
+    nfc_df = pl.DataFrame(nfc_data)
+    afc_df = pl.DataFrame(afc_data)
 
     # Display NFC results
     with nfc_col:
@@ -108,16 +164,20 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
             height=400,
         )
 
-        st.metric("Top NFC Team", nfc_df.row(0)[0])
-        st.metric("Top NFC Playoff %", f"{nfc_df.row(0)[1]:.1f}%")
+        top_nfc_team = nfc_df.row(0)[0]
+        st.metric("Top NFC Team", top_nfc_team)
+        
+        nfc_1st_counts = aggregator.get(top_nfc_team, [])
+        nfc_1st_prob = (nfc_1st_counts[0] / num_times_run * 100) if num_times_run > 0 and len(nfc_1st_counts) > 0 else 0.0
+        st.metric("Top NFC 1st Seed Chance", f"{nfc_1st_prob:.1f}%")
         st.dataframe(
             nfc_df.select(
-                ["Team", "Playoff %", "Div Winner %", "Avg Finish"]
+                ["Team", "Playoff %", "Div Winner %", "1st Seed %"]
             ).with_columns(
                 [
                     pl.col("Playoff %").round(1),
                     pl.col("Div Winner %").round(1),
-                    pl.col("Avg Finish").round(2),
+                    pl.col("1st Seed %").round(1),
                 ]
             ),
             hide_index=True,
@@ -137,16 +197,20 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
             height=400,
         )
 
-        st.metric("Top AFC Team", afc_df.row(0)[0])
-        st.metric("Top AFC Playoff %", f"{afc_df.row(0)[1]:.1f}%")
+        top_afc_team = afc_df.row(0)[0]
+        st.metric("Top AFC Team", top_afc_team)
+
+        afc_1st_counts = aggregator.get(top_afc_team, [])
+        afc_1st_prob = (afc_1st_counts[0] / num_times_run * 100) if num_times_run > 0 and len(afc_1st_counts) > 0 else 0.0
+        st.metric("Top AFC 1st Seed Chance", f"{afc_1st_prob:.1f}%")
         st.dataframe(
             afc_df.select(
-                ["Team", "Playoff %", "Div Winner %", "Avg Finish"]
+                ["Team", "Playoff %", "Div Winner %", "1st Seed %"]
             ).with_columns(
                 [
                     pl.col("Playoff %").round(1),
                     pl.col("Div Winner %").round(1),
-                    pl.col("Avg Finish").round(2),
+                    pl.col("1st Seed %").round(1),
                 ]
             ),
             hide_index=True,
