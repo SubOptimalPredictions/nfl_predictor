@@ -375,7 +375,21 @@ if st.session_state.get("simulation_complete"):
 
     # Display NFC results
     with nfc_col:
-        st.subheader("🔵 NFC Conference")
+        # Load NFC Logo
+        nfc_logo_b64 = get_base64_image("assests/NFC.png")
+        if nfc_logo_b64:
+             st.markdown(
+                f"""
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <img src="data:image/png;base64,{nfc_logo_b64}" style="height: 50px;">
+                    <h3 style="margin: 0;">NFC Conference</h3>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.subheader("🔵 NFC Conference")
+            
         # Custom Altair chart for NFC Playoff Chances with restricted bounds
         nfc_playoff_chart = (
             alt.Chart(nfc_df)
@@ -427,7 +441,21 @@ if st.session_state.get("simulation_complete"):
 
     # Display AFC results
     with afc_col:
-        st.subheader("🔴 AFC Conference")
+        # Load AFC Logo
+        afc_logo_b64 = get_base64_image("assests/AFC.png")
+        if afc_logo_b64:
+             st.markdown(
+                f"""
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <img src="data:image/png;base64,{afc_logo_b64}" style="height: 50px;">
+                    <h3 style="margin: 0;">AFC Conference</h3>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        else:
+            st.subheader("🔴 AFC Conference")
+            
         # Custom Altair chart for AFC Playoff Chances with restricted bounds
         afc_playoff_chart = (
             alt.Chart(afc_df)
