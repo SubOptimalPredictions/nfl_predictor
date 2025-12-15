@@ -5,6 +5,7 @@ import time
 import altair as alt
 import base64
 import os
+import textwrap
 from simulator import get_aggregator_dict, parallel_simulatation, simulate
 from team import Team
 from team_colors import TEAM_COLORS
@@ -112,6 +113,113 @@ def render_division_filter(conference, key_prefix):
             selected_divisions.append(div)
             
     return selected_divisions
+
+
+def render_html_ranking_table(df, color, conference_id):
+    """
+    Render a custom HTML table for rankings with merged Logo+Team column.
+    """
+    # Unique class for this conference to handle specific border colors if needed, 
+    # though we use inline styles for the variable color.
+    table_class = f"ranking-table-{conference_id}"
+    
+    # CSS with sticky header support and dark/light mode friendly borders
+    style_block = textwrap.dedent(f"""
+    <style>
+        .{table_class} {{
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            font-family: sans-serif;
+        }}
+        .{table_class} th {{
+            text-align: left;
+            padding: 8px 12px;
+            color: gray;
+            font-weight: 500;
+            border-bottom: 2px solid {color};
+            background-color: var(--background-color, #ffffff);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }}
+        .{table_class} td {{
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+            vertical-align: middle;
+        }}
+        .{table_class} tr:last-child td {{
+            border-bottom: none;
+        }}
+        .{table_class} .team-cell {{
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }}
+        .{table_class} .team-logo {{
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }}
+        .{table_class} .stat-cell {{
+            text-align: right;
+            font-variant-numeric: tabular-nums; 
+        }}
+        .{table_class} .rank-cell {{
+            color: gray;
+            width: 40px;
+            text-align: center;
+        }}
+    </style>
+    """)
+
+    rows_html = ""
+    for row in df.iter_rows(named=True):
+        seed = row["Predicted Seed"]
+        logo = row["Logo"]
+        team = row["Team"]
+        playoff = row["Playoff %"]
+        div_win = row["Div Winner %"]
+        seed1 = row["1st Seed %"]
+        
+        # Construct row with minimal/zero indentation
+        row_html = f"""
+<tr>
+<td class="rank-cell">{seed}</td>
+<td>
+<div class="team-cell">
+<img src="{logo}" class="team-logo">
+<span style="font-weight: 600;">{team}</span>
+</div>
+</td>
+<td class="stat-cell">{playoff:.1f}%</td>
+<td class="stat-cell">{div_win:.1f}%</td>
+<td class="stat-cell">{seed1:.1f}%</td>
+</tr>"""
+        rows_html += row_html
+
+    # Assemble final table with zero indentation to avoid code block detection
+    table_html = f"""
+{style_block}
+<div style="max-height: 500px; overflow-y: auto; margin-top: 10px; border: 1px solid rgba(128,128,128,0.2); border-radius: 8px;">
+<table class="{table_class}">
+<thead>
+<tr>
+<th class="rank-cell">Seed</th>
+<th>Team</th>
+<th style="text-align: right;">Playoff %</th>
+<th style="text-align: right;">Div Win %</th>
+<th style="text-align: right;">1st Seed %</th>
+</tr>
+</thead>
+<tbody>
+{rows_html}
+</tbody>
+</table>
+</div>
+"""
+    
+    st.markdown(table_html, unsafe_allow_html=True)
 
 
 def get_projected_order(team_list, aggregator):
@@ -223,8 +331,14 @@ if st.session_state.get("simulation_complete"):
             else 0.0
         )
 
+        # Prepare logo data URL for st.column_config.ImageColumn
+        img_path = f"assests/{team}.png"
+        b64_img = get_base64_image(img_path)
+        logo_url = f"data:image/png;base64,{b64_img}" if b64_img else ""
+
         team_data = {
             "Team": team,
+            "Logo": logo_url,
             "Playoff %": playoff_prob,
             "Div Winner %": division_winner_prob,
             "1st Seed %": first_seed_prob,
@@ -298,23 +412,9 @@ if st.session_state.get("simulation_complete"):
             else 0.0
         )
         st.metric("Top NFC 1st Seed Chance", f"{nfc_1st_prob:.1f}%")
-        st.dataframe(
-            nfc_df.select(
-                ["Predicted Seed", "Team", "Playoff %", "Div Winner %", "1st Seed %"]
-            ).with_columns(
-                [
-                    pl.col("Playoff %").round(1),
-                    pl.col("Div Winner %").round(1),
-                    pl.col("1st Seed %").round(1),
-                ]
-            ),
-            column_config={
-                "Predicted Seed": st.column_config.NumberColumn(width="small"),
-            },
-            hide_index=True,
-            use_container_width=True,
-            height=400,
-        )
+        
+        # Render Custom HTML Table
+        render_html_ranking_table(nfc_df, "#013369", "nfc")
 
     # Display AFC results
     with afc_col:
@@ -364,23 +464,9 @@ if st.session_state.get("simulation_complete"):
             else 0.0
         )
         st.metric("Top AFC 1st Seed Chance", f"{afc_1st_prob:.1f}%")
-        st.dataframe(
-            afc_df.select(
-                ["Predicted Seed", "Team", "Playoff %", "Div Winner %", "1st Seed %"]
-            ).with_columns(
-                [
-                    pl.col("Playoff %").round(1),
-                    pl.col("Div Winner %").round(1),
-                    pl.col("1st Seed %").round(1),
-                ]
-            ),
-            column_config={
-                "Predicted Seed": st.column_config.NumberColumn(width="small"),
-            },
-            hide_index=True,
-            use_container_width=True,
-            height=400,
-        )
+        
+        # Render Custom HTML Table
+        render_html_ranking_table(afc_df, "#D50A0A", "afc")
 
     # Final detailed results by conference
     st.subheader("📊 NFC Final Ranking Distribution")
