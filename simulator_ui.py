@@ -128,7 +128,8 @@ def render_html_ranking_table(df, color, conference_id):
     <style>
         .{table_class} {{
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 14px;
             font-family: sans-serif;
         }}
@@ -137,11 +138,19 @@ def render_html_ranking_table(df, color, conference_id):
             padding: 8px 12px;
             color: gray;
             font-weight: 500;
-            border-bottom: 2px solid {color};
             background-color: var(--background-color, #ffffff);
             position: sticky;
             top: 0;
-            z-index: 1;
+            z-index: 50;
+        }}
+        .{table_class} th::after {{
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 4px;
+            background-color: {color};
         }}
         .{table_class} td {{
             padding: 8px 12px;
