@@ -31,6 +31,36 @@ def get_team_conferences():
     return {team.abbreviation: team.conference for _, team in teams.items()}
 
 
+def get_team_divisions():
+    """Load teams and return a dict mapping team abbreviation to division"""
+    teams = Team.load_teams_from_csv("data/teams_with_records.csv")
+    return {team.abbreviation: team.division for _, team in teams.items()}
+
+
+def render_division_filter(conference, key_prefix):
+    st.write(f"**Filter by Division ({conference})**")
+    cols = st.columns(5)
+    
+    # "All" checkbox
+    is_all = cols[0].checkbox("All", value=True, key=f"{key_prefix}_all")
+    
+    divisions = ["North", "South", "East", "West"]
+    selected_divisions = []
+    
+    if is_all:
+        selected_divisions = divisions[:]
+    
+    for i, div in enumerate(divisions):
+        # Render checkbox for each division
+        # Disabled if "All" is checked
+        checked = cols[i+1].checkbox(div, value=True, disabled=is_all, key=f"{key_prefix}_{div}")
+        
+        if not is_all and checked:
+            selected_divisions.append(div)
+            
+    return selected_divisions
+
+
 def get_projected_order(team_list, aggregator):
     """
     Determine the projected order of teams based on finish probabilities.
@@ -117,6 +147,7 @@ if st.session_state.get("simulation_complete"):
     aggregator = st.session_state.aggregator
     num_times_run = st.session_state.num_times_run
     team_conferences = get_team_conferences()
+    team_divisions = get_team_divisions()
 
     # Display results
     nfc_col, afc_col = st.columns(2)
@@ -268,8 +299,21 @@ if st.session_state.get("simulation_complete"):
     nfc_team_names = sorted(
         [t for t in aggregator.keys() if team_conferences.get(t) == "NFC"]
     )
+    
+    # Division Filter (NFC) - Checkboxes
+    nfc_divs_selected = render_division_filter("NFC", "nfc_div_filter_chk")
+    
+    nfc_defaults = [
+        t for t in nfc_team_names 
+        if team_divisions.get(t) in nfc_divs_selected
+    ]
+        
     nfc_selected_teams = st.multiselect(
-        "Select NFC Teams to View", nfc_team_names, default=nfc_team_names
+        "Select NFC Teams to View", 
+        nfc_team_names, 
+        default=nfc_defaults,
+        # Update key to force refresh when division selection changes
+        key=f"nfc_multiselect_{tuple(sorted(nfc_divs_selected))}"
     )
 
     if nfc_selected_teams:
@@ -320,8 +364,20 @@ if st.session_state.get("simulation_complete"):
     afc_team_names = sorted(
         [t for t in aggregator.keys() if team_conferences.get(t) == "AFC"]
     )
+    
+    # Division Filter (AFC) - Checkboxes
+    afc_divs_selected = render_division_filter("AFC", "afc_div_filter_chk")
+    
+    afc_defaults = [
+        t for t in afc_team_names 
+        if team_divisions.get(t) in afc_divs_selected
+    ]
+
     afc_selected_teams = st.multiselect(
-        "Select AFC Teams to View", afc_team_names, default=afc_team_names
+        "Select AFC Teams to View", 
+        afc_team_names, 
+        default=afc_defaults,
+        key=f"afc_multiselect_{tuple(sorted(afc_divs_selected))}"
     )
 
     if afc_selected_teams:
