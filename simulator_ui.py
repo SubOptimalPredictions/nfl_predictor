@@ -14,10 +14,54 @@ st.title("🏈 NFL Season Simulator - Live Rankings")
 
 
 def get_base64_image(image_path):
-    if not os.path.exists(image_path):
+    """
+    Load image with robust path handling (case-insensitive folder/file, fallback to 'assets').
+    """
+    if os.path.exists(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+
+    # Handle path variations for deployment (Case sensitivity, Folder typo)
+    folder, filename = os.path.split(image_path)
+    
+    # Check for folder existence or case-insensitive match
+    search_folders = [folder]
+    if folder == "assests":
+        search_folders.append("assets")  # Fix common typo
+    
+    found_folder = None
+    # Look for the folder in current directory
+    try:
+        current_ls = os.listdir(".")
+        for f in search_folders:
+            # direct match
+            if f in current_ls:
+                found_folder = f
+                break
+            # case insensitive match
+            for existing_dir in current_ls:
+                if existing_dir.lower() == f.lower():
+                    found_folder = existing_dir
+                    break
+            if found_folder: break
+    except Exception:
+        pass
+        
+    if not found_folder:
         return ""
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
+
+    # Look for file in the found folder (case-insensitive)
+    try:
+        files = os.listdir(found_folder)
+        for f in files:
+            if f.lower() == filename.lower():
+                full_path = os.path.join(found_folder, f)
+                with open(full_path, "rb") as img_file:
+                    return base64.b64encode(img_file.read()).decode()
+    except Exception:
+        pass
+        
+    return ""
 
 
 def calculate_playoff_probability(finishing_pos_count, num_times_run):
