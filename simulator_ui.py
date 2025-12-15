@@ -169,14 +169,20 @@ if st.session_state.get("simulation_complete"):
     # Display NFC results
     with nfc_col:
         st.subheader("🔵 NFC Conference")
-        st.bar_chart(
-            data=nfc_df,
-            x="Team",
-            y="Playoff %",
-            color="#013369",
-            use_container_width=True,
-            height=400,
+        # Custom Altair chart for NFC Playoff Chances with restricted bounds
+        nfc_playoff_chart = (
+            alt.Chart(nfc_df)
+            .mark_bar()
+            .encode(
+                x=alt.X("Team"),
+                y=alt.Y("Playoff %", scale=alt.Scale(domain=[0, 100])),
+                color=alt.value("#013369"),
+                tooltip=["Team", alt.Tooltip("Playoff %", format=".1f")],
+            )
+            .properties(height=400)
+            .interactive(bind_y=False)
         )
+        st.altair_chart(nfc_playoff_chart, use_container_width=True)
 
         # "Seed" is column 0, "Team" is column 1
         top_nfc_team = nfc_df["Team"][0]
@@ -210,14 +216,20 @@ if st.session_state.get("simulation_complete"):
     # Display AFC results
     with afc_col:
         st.subheader("🔴 AFC Conference")
-        st.bar_chart(
-            data=afc_df,
-            x="Team",
-            y="Playoff %",
-            color="#D50A0A",
-            use_container_width=True,
-            height=400,
+        # Custom Altair chart for AFC Playoff Chances with restricted bounds
+        afc_playoff_chart = (
+            alt.Chart(afc_df)
+            .mark_bar()
+            .encode(
+                x=alt.X("Team"),
+                y=alt.Y("Playoff %", scale=alt.Scale(domain=[0, 100])),
+                color=alt.value("#D50A0A"),
+                tooltip=["Team", alt.Tooltip("Playoff %", format=".1f")],
+            )
+            .properties(height=400)
+            .interactive(bind_y=False)
         )
+        st.altair_chart(afc_playoff_chart, use_container_width=True)
 
         # "Seed" is column 0, "Team" is column 1
         top_afc_team = afc_df["Team"][0]
@@ -282,7 +294,7 @@ if st.session_state.get("simulation_complete"):
             .mark_bar()
             .encode(
                 x=alt.X("Position:O", title="Finishing Position"),
-                y=alt.Y("Probability:Q", title="Probability"),
+                y=alt.Y("Probability:Q", title="Probability", scale=alt.Scale(domain=[0, 1])),
                 color=alt.Color(
                     "Team:N",
                     scale=alt.Scale(
@@ -297,7 +309,7 @@ if st.session_state.get("simulation_complete"):
                 tooltip=["Team", "Position", alt.Tooltip("Probability", format=".1%")],
             )
             .properties(height=500)
-            .interactive()
+            .interactive(bind_y=False)
         )
         st.altair_chart(nfc_chart, use_container_width=True)
 
@@ -334,7 +346,7 @@ if st.session_state.get("simulation_complete"):
             .mark_bar()
             .encode(
                 x=alt.X("Position:O", title="Finishing Position"),
-                y=alt.Y("Probability:Q", title="Probability"),
+                y=alt.Y("Probability:Q", title="Probability", scale=alt.Scale(domain=[0, 1])),
                 color=alt.Color(
                     "Team:N",
                     scale=alt.Scale(
@@ -349,7 +361,7 @@ if st.session_state.get("simulation_complete"):
                 tooltip=["Team", "Position", alt.Tooltip("Probability", format=".1%")],
             )
             .properties(height=500)
-            .interactive()
+            .interactive(bind_y=False)
         )
         st.altair_chart(afc_chart, use_container_width=True)
 
