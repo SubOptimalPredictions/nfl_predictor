@@ -3,12 +3,21 @@ import polars as pl
 import numpy as np
 import time
 import altair as alt
+import base64
+import os
 from simulator import get_aggregator_dict, parallel_simulatation, simulate
 from team import Team
 from team_colors import TEAM_COLORS
 
 st.set_page_config(page_title="NFL Season Simulator", layout="wide")
 st.title("🏈 NFL Season Simulator - Live Rankings")
+
+
+def get_base64_image(image_path):
+    if not os.path.exists(image_path):
+        return ""
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
 
 
 def calculate_playoff_probability(finishing_pos_count, num_times_run):
@@ -217,7 +226,26 @@ if st.session_state.get("simulation_complete"):
 
         # "Seed" is column 0, "Team" is column 1
         top_nfc_team = nfc_df["Team"][0]
-        st.metric("Top NFC Team", top_nfc_team)
+        
+        img_path = f"assests/{top_nfc_team}.png"
+        img_base64 = get_base64_image(img_path)
+        
+        logo_html = ""
+        if img_base64:
+            logo_html = f'<img src="data:image/png;base64,{img_base64}" style="height: 50px; margin-left: 20px; vertical-align: middle; pointer-events: none;">'
+            
+        st.markdown(
+            f"""
+            <div style="margin-bottom: 10px;">
+                <p style="font-size: 14px; margin-bottom: 0px; color: rgb(120, 120, 120);">Top NFC Team</p>
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 32px; font-weight: 600;">{top_nfc_team}</span>
+                    {logo_html}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         nfc_1st_counts = aggregator.get(top_nfc_team, [])
         nfc_1st_prob = (
@@ -264,7 +292,26 @@ if st.session_state.get("simulation_complete"):
 
         # "Seed" is column 0, "Team" is column 1
         top_afc_team = afc_df["Team"][0]
-        st.metric("Top AFC Team", top_afc_team)
+        
+        img_path = f"assests/{top_afc_team}.png"
+        img_base64 = get_base64_image(img_path)
+        
+        logo_html = ""
+        if img_base64:
+            logo_html = f'<img src="data:image/png;base64,{img_base64}" style="height: 50px; margin-left: 20px; vertical-align: middle; pointer-events: none;">'
+            
+        st.markdown(
+            f"""
+            <div style="margin-bottom: 10px;">
+                <p style="font-size: 14px; margin-bottom: 0px; color: rgb(120, 120, 120);">Top AFC Team</p>
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 32px; font-weight: 600;">{top_afc_team}</span>
+                    {logo_html}
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
         afc_1st_counts = aggregator.get(top_afc_team, [])
         afc_1st_prob = (
