@@ -60,7 +60,7 @@ def get_projected_order(team_list, aggregator):
                 # Tie-breaker: alphabetical to be deterministic
                 if best_team is None or team < best_team:
                     best_team = team
-        
+
         if best_team:
             ordered_teams.append(best_team)
             available_teams.remove(best_team)
@@ -70,7 +70,7 @@ def get_projected_order(team_list, aggregator):
                 remaining = sorted(list(available_teams))
                 ordered_teams.extend(remaining)
                 break
-    
+
     return ordered_teams
 
 
@@ -79,10 +79,10 @@ st.sidebar.header("Simulation Settings")
 
 # Simulation parameters
 num_iterations = st.sidebar.number_input(
-    "Number of Simulations", min_value=10, max_value=100000, value=1000, step=100
+    "Number of Simulations", min_value=10, max_value=10000, value=1000, step=100
 )
 batch_size = st.sidebar.number_input(
-    "Batch Size (per process)", min_value=10, max_value=10000, value=100, step=10
+    "Batch Size (per process)", min_value=10, max_value=1000, value=100, step=10
 )
 
 if st.sidebar.button("▶️ Start Simulation", type="primary"):
@@ -102,7 +102,7 @@ if st.sidebar.button("▶️ Start Simulation", type="primary"):
         st.session_state.aggregator = aggregator
         st.session_state.num_times_run = num_times_run
         st.session_state.simulation_complete = True
-        
+
         st.success(
             f"✅ Simulation Complete! Ran {num_times_run} successful iterations in {elapsed_time:.2f} seconds ({num_times_run/elapsed_time:.1f} iterations/sec)"
         )
@@ -181,9 +181,13 @@ if st.session_state.get("simulation_complete"):
         # "Seed" is column 0, "Team" is column 1
         top_nfc_team = nfc_df["Team"][0]
         st.metric("Top NFC Team", top_nfc_team)
-        
+
         nfc_1st_counts = aggregator.get(top_nfc_team, [])
-        nfc_1st_prob = (nfc_1st_counts[0] / num_times_run * 100) if num_times_run > 0 and len(nfc_1st_counts) > 0 else 0.0
+        nfc_1st_prob = (
+            (nfc_1st_counts[0] / num_times_run * 100)
+            if num_times_run > 0 and len(nfc_1st_counts) > 0
+            else 0.0
+        )
         st.metric("Top NFC 1st Seed Chance", f"{nfc_1st_prob:.1f}%")
         st.dataframe(
             nfc_df.select(
@@ -220,7 +224,11 @@ if st.session_state.get("simulation_complete"):
         st.metric("Top AFC Team", top_afc_team)
 
         afc_1st_counts = aggregator.get(top_afc_team, [])
-        afc_1st_prob = (afc_1st_counts[0] / num_times_run * 100) if num_times_run > 0 and len(afc_1st_counts) > 0 else 0.0
+        afc_1st_prob = (
+            (afc_1st_counts[0] / num_times_run * 100)
+            if num_times_run > 0 and len(afc_1st_counts) > 0
+            else 0.0
+        )
         st.metric("Top AFC 1st Seed Chance", f"{afc_1st_prob:.1f}%")
         st.dataframe(
             afc_df.select(
@@ -242,12 +250,16 @@ if st.session_state.get("simulation_complete"):
 
     # Final detailed results by conference
     st.subheader("📊 NFC Final Ranking Distribution")
-    
+
     # Graph for NFC
     st.write("### NFC Finish Probability Graph")
-    nfc_team_names = sorted([t for t in aggregator.keys() if team_conferences.get(t) == "NFC"])
-    nfc_selected_teams = st.multiselect("Select NFC Teams to View", nfc_team_names, default=nfc_team_names)
-    
+    nfc_team_names = sorted(
+        [t for t in aggregator.keys() if team_conferences.get(t) == "NFC"]
+    )
+    nfc_selected_teams = st.multiselect(
+        "Select NFC Teams to View", nfc_team_names, default=nfc_team_names
+    )
+
     if nfc_selected_teams:
         nfc_graph_data = []
         for team in nfc_selected_teams:
@@ -256,16 +268,14 @@ if st.session_state.get("simulation_complete"):
             # Ensure we have 16 positions padded with 0 if needed
             probs = probs + [0.0] * (16 - len(probs))
             probs = probs[:16]
-            
+
             for rank, prob in enumerate(probs, 1):
-                nfc_graph_data.append({
-                    "Team": team,
-                    "Position": rank,
-                    "Probability": prob
-                })
-        
+                nfc_graph_data.append(
+                    {"Team": team, "Position": rank, "Probability": prob}
+                )
+
         nfc_chart_df = pl.DataFrame(nfc_graph_data)
-        
+
         # Create Altair chart
         nfc_chart = (
             alt.Chart(nfc_chart_df)
@@ -277,7 +287,9 @@ if st.session_state.get("simulation_complete"):
                     "Team:N",
                     scale=alt.Scale(
                         domain=list(nfc_selected_teams),
-                        range=[TEAM_COLORS.get(t, "#000000") for t in nfc_selected_teams],
+                        range=[
+                            TEAM_COLORS.get(t, "#000000") for t in nfc_selected_teams
+                        ],
                     ),
                     legend=alt.Legend(title="Team"),
                 ),
@@ -293,9 +305,13 @@ if st.session_state.get("simulation_complete"):
 
     # Graph for AFC
     st.write("### AFC Finish Probability Graph")
-    afc_team_names = sorted([t for t in aggregator.keys() if team_conferences.get(t) == "AFC"])
-    afc_selected_teams = st.multiselect("Select AFC Teams to View", afc_team_names, default=afc_team_names)
-    
+    afc_team_names = sorted(
+        [t for t in aggregator.keys() if team_conferences.get(t) == "AFC"]
+    )
+    afc_selected_teams = st.multiselect(
+        "Select AFC Teams to View", afc_team_names, default=afc_team_names
+    )
+
     if afc_selected_teams:
         afc_graph_data = []
         for team in afc_selected_teams:
@@ -304,16 +320,14 @@ if st.session_state.get("simulation_complete"):
             # Ensure we have 16 positions padded with 0 if needed
             probs = probs + [0.0] * (16 - len(probs))
             probs = probs[:16]
-            
+
             for rank, prob in enumerate(probs, 1):
-                afc_graph_data.append({
-                    "Team": team,
-                    "Position": rank,
-                    "Probability": prob
-                })
-        
+                afc_graph_data.append(
+                    {"Team": team, "Position": rank, "Probability": prob}
+                )
+
         afc_chart_df = pl.DataFrame(afc_graph_data)
-        
+
         # Create Altair chart
         afc_chart = (
             alt.Chart(afc_chart_df)
@@ -325,7 +339,9 @@ if st.session_state.get("simulation_complete"):
                     "Team:N",
                     scale=alt.Scale(
                         domain=list(afc_selected_teams),
-                        range=[TEAM_COLORS.get(t, "#000000") for t in afc_selected_teams],
+                        range=[
+                            TEAM_COLORS.get(t, "#000000") for t in afc_selected_teams
+                        ],
                     ),
                     legend=alt.Legend(title="Team"),
                 ),
