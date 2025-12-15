@@ -138,7 +138,7 @@ def render_html_ranking_table(df, color, conference_id):
             padding: 8px 12px;
             color: gray;
             font-weight: 500;
-            background-color: var(--background-color);
+            background-color: var(--background-color, var(--primary-background-color, canvas));
             position: sticky;
             top: 0;
             z-index: 50;
