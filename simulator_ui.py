@@ -10,7 +10,7 @@ from simulator import get_aggregator_dict, parallel_simulatation, simulate
 from team import Team
 from team_colors import TEAM_COLORS
 
-st.set_page_config(page_title="NFL Season Simulator", layout="wide")
+st.set_page_config(page_title="NFL Season Simulator", page_icon=":football:", layout="wide")
 st.title("🏈 NFL Season Simulator - Live Rankings")
 
 
