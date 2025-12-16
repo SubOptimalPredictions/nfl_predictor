@@ -8,13 +8,14 @@ from ui.pages.schedule import render_schedule_page
 # Page configuration
 st.set_page_config(page_title="NFL Season Simulator", page_icon=":football:", layout="wide")
 
-# Navigation
-st.sidebar.header("Navigation")
-page = st.sidebar.radio("Go to", ["Live Rankings", "Schedule"])
+# Main title
+st.title("🏈 NFL Season Simulator")
 
-# Render selected page
-if page == "Live Rankings":
-    st.title("🏈 NFL Season Simulator - Live Rankings")
+# Tab-based navigation
+tab1, tab2 = st.tabs(["📊 Live Rankings", "📅 Schedule"])
+
+with tab1:
     render_live_rankings_page()
-elif page == "Schedule":
+
+with tab2:
     render_schedule_page()
