@@ -52,15 +52,32 @@ class Season:
 
         # Game Name is {away_team.abbreviation}-{home_team.abbreviation}. Example: DAL-CHI for Dallas @ Chicago 
         self.game_teams_to_game: dict[str, Game] = {}
+        self.played_games: list[Game] = []
+        self.unplayed_games: list[Game] = []
         for game in self.list_of_games:
             game_teams : str = game.away_team.abbreviation + "-" + game.home_team.abbreviation
             self.game_teams_to_game[game_teams] = game
+
+            if game.score is not None:
+                self.played_games.append(game)
+            else:
+                self.unplayed_games.append(game)
 
     def add_team(self, name, conference, division, record=np.array([0, 0, 0])):
         team = Team(name=name, record=record, conference=conference, division=division)
 
         # Map team name to team object
         self.team_name_to_team[name] = team
+    
+    # TODO: Improve the Searchability of this?
+    def get_team_next_game(self, team_abbreviation):
+        for game in self.unplayed_games:
+            if game.home_team.abbreviation == team_abbreviation or game.away_team.abbreviation == team_abbreviation:
+                return game
+        return None
+    
+    def lookup_game(self, game_teams):
+        return self.game_teams_to_game[game_teams]
 
     def simulate_games(self) -> None:
         """Simulate every game in the week in order.
