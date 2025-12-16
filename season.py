@@ -50,6 +50,12 @@ class Season:
         # team abbvr to team
         self.team_name_to_team: dict[str, Team] = team_name_to_team
 
+        # Game Name is {away_team.abbreviation}-{home_team.abbreviation}. Example: DAL-CHI for Dallas @ Chicago 
+        self.game_teams_to_game: dict[str, Game] = {}
+        for game in self.list_of_games:
+            game_teams : str = game.away_team.abbreviation + "-" + game.home_team.abbreviation
+            self.game_teams_to_game[game_teams] = game
+
     def add_team(self, name, conference, division, record=np.array([0, 0, 0])):
         team = Team(name=name, record=record, conference=conference, division=division)
 
