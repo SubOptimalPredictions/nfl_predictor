@@ -96,6 +96,8 @@ def render_schedule_page():
             border-radius: 50%;
             border: 3px solid transparent;
             transition: all 0.2s ease;
+            display: block;
+            z-index: 1;
         }
         .team-logo-large:hover {
             transform: scale(1.05);
@@ -104,7 +106,11 @@ def render_schedule_page():
         .picked-team {
             border: 5px solid #6c757d !important;
             box-shadow: 0 0 20px rgba(108, 117, 125, 0.6) !important;
-            background-color: rgba(108, 117, 125, 0.2) !important;
+            background-color: rgba(108, 117, 125, 0.15) !important;
+            position: relative !important;
+            z-index: 10 !important; /* lift selected image above neighbors */
+            overflow: visible !important;
+            box-sizing: border-box !important;
         }
         .team-name {
             font-weight: 600;
@@ -192,8 +198,22 @@ def render_schedule_page():
             # For unplayed games, show the card and add selection buttons
             if not is_played:
                 # Build the HTML card structure with moneyline
-                away_img = f'<img src="data:image/png;base64,{away_logo_b64}" class="{away_classes}">' if away_logo_b64 else ""
-                home_img = f'<img src="data:image/png;base64,{home_logo_b64}" class="{home_classes}">' if home_logo_b64 else ""
+                # Build image HTML with robust fallbacks and enforced sizing so selected logos always appear
+                def make_img_html(team, b64, classes):
+                    # prefer base64 data URL if available
+                    if b64:
+                        src = f"data:image/png;base64,{b64}"
+                    else:
+                        # fallback to local file path (Streamlit will serve assets)
+                        src = f"assets/{team}.png"
+
+                    # ensure consistent sizing and ensure selected logos render above others
+                    style = 'style="display:block; width:80px; height:80px; object-fit:contain;"'
+                    alt = f' alt="{team}"'
+                    return f'<img src="{src}" class="{classes}" {style}{alt}>'
+
+                away_img = make_img_html(away_team, away_logo_b64, away_classes)
+                home_img = make_img_html(home_team, home_logo_b64, home_classes)
                 
                 # Add moneyline to team display if available
                 away_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{away_ml_str}</div>' if away_ml_str else ""

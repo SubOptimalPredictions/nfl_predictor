@@ -33,6 +33,97 @@ def render_live_rankings_page():
         "Batch Size (per process)", min_value=10, max_value=1000, value=100, step=10
     )
 
+    # Show any user-selected picks from the Schedule page, grouped by week
+    if st.session_state.get("user_picks"):
+        try:
+            df_schedule = pl.read_csv("data/schedules_2025.csv")
+            picks = st.session_state.user_picks
+
+            # Build mapping week -> list of picks
+            picks_by_week = {}
+            # Iterate schedule rows and match against user_picks keys
+            for row in df_schedule.iter_rows(named=True):
+                game_id = row["away_team"] + "-" + row["home_team"]
+                if game_id in picks:
+                    away_score = row.get("away_score")
+                    home_score = row.get("home_score")
+                    is_played = away_score is not None and home_score is not None
+                    # Only show picks for unplayed games
+                    if is_played:
+                        continue
+
+                    week = row.get("week")
+                    selected_team = picks.get(game_id)
+
+                    picks_by_week.setdefault(week, []).append(
+                        {
+                            "game_id": game_id,
+                            "away": row.get("away_team"),
+                            "home": row.get("home_team"),
+                            "selected": selected_team,
+                        }
+                    )
+
+            if picks_by_week:
+                # Header with optional Unselect All button
+                header_cols = st.columns([0.9, 0.1])
+                with header_cols[0]:
+                    st.subheader("✅ Selected Game Picks (by Week)")
+                with header_cols[1]:
+                    if st.button("Unselect All", key="unselect_all_picks"):
+                        st.session_state.user_picks = {}
+                        st.rerun()
+
+                # Sort weeks numerically if possible
+                for week in sorted(picks_by_week.keys(), key=lambda w: int(w) if str(w).isdigit() else str(w)):
+                    st.markdown(f"**Week {week}**")
+                    for pick in picks_by_week[week]:
+                        # Columns: away logo, home logo, matchup text, selected indicator
+                        pick_cols = st.columns([0.12, 0.12, 0.56, 0.2])
+                        away_logo = get_base64_image(f"assets/{pick['away']}.png")
+                        home_logo = get_base64_image(f"assets/{pick['home']}.png")
+
+                        # Away logo
+                        with pick_cols[0]:
+                            if away_logo:
+                                st.image(f"data:image/png;base64,{away_logo}", width=40)
+                            else:
+                                st.image(f"assets/{pick['away']}.png", width=40)
+
+                        # Home logo
+                        with pick_cols[1]:
+                            if home_logo:
+                                st.image(f"data:image/png;base64,{home_logo}", width=40)
+                            else:
+                                st.image(f"assets/{pick['home']}.png", width=40)
+
+                        # Matchup text with selected team highlighted
+                        with pick_cols[2]:
+                            away = pick['away']
+                            home = pick['home']
+                            selected = pick['selected']
+                            # Bold the selected team in the matchup
+                            if selected == away:
+                                md = f"- **{away}** @ {home} — **Selected: {away}**"
+                            elif selected == home:
+                                md = f"- {away} @ **{home}** — **Selected: {home}**"
+                            else:
+                                md = f"- {away} @ {home} — **Selected: {selected}**"
+                            st.markdown(md)
+
+                        # Right: selected team's logo (if available)
+                        with pick_cols[3]:
+                            sel_logo = get_base64_image(f"assets/{pick['selected']}.png")
+                            if sel_logo:
+                                st.image(f"data:image/png;base64,{sel_logo}", width=40)
+                            else:
+                                st.image(f"assets/{pick['selected']}.png", width=40)
+
+                st.markdown("---")
+        except Exception:
+            # Fail silently if schedule can't be loaded or something unexpected happens
+            pass
+
     if st.sidebar.button("▶️ Start Simulation", type="primary"):
         team_conferences = get_team_conferences()
 
