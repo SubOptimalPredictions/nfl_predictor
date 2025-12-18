@@ -124,6 +124,55 @@ def render_live_rankings_page():
             # Fail silently if schedule can't be loaded or something unexpected happens
             pass
 
+    # After handling/displaying current picks, independently detect out-of-date simulations
+    if st.session_state.get("simulation_complete"):
+        last_picks = st.session_state.get("last_simulation_picks", {}) or {}
+        curr_picks = st.session_state.get("user_picks", {}) or {}
+
+        if last_picks != curr_picks:
+            # Compute diffs
+            added = [g for g in curr_picks.keys() if g not in last_picks.keys()]
+            removed = [g for g in last_picks.keys() if g not in curr_picks.keys()]
+            changed = [g for g in curr_picks.keys() if g in last_picks.keys() and curr_picks[g] != last_picks[g]]
+
+            # Load schedule to render readable game info
+            try:
+                df_schedule = pl.read_csv("data/schedules_2025.csv")
+                game_map = {}
+                for r in df_schedule.iter_rows(named=True):
+                    gid = r["away_team"] + "-" + r["home_team"]
+                    game_map[gid] = f"{r.get('away_team')} @ {r.get('home_team')} (Week {r.get('week')})"
+            except Exception:
+                game_map = {}
+
+            st.warning("Out of date simulation: your current picks differ from those used for the last simulation.")
+
+            if added:
+                st.markdown("**Added picks:**")
+                for g in added:
+                    label = game_map.get(g, g)
+                    st.markdown(f"- {label} — **Selected: {curr_picks.get(g)}**")
+
+            if removed:
+                st.markdown("**Removed picks:**")
+                for g in removed:
+                    label = game_map.get(g, g)
+                    st.markdown(f"- {label} — previously selected: **{last_picks.get(g)}**")
+
+            if changed:
+                st.markdown("**Changed picks:**")
+                for g in changed:
+                    label = game_map.get(g, g)
+                    st.markdown(f"- {label} — was **{last_picks.get(g)}**, now **{curr_picks.get(g)}**")
+
+            # Action: clear previous simulation results
+            if st.button("Clear previous simulation results", key="clear_sim_results"):
+                for k in ["simulation_complete", "aggregator", "num_times_run", "last_simulation_picks", "last_simulation_at"]:
+                    if k in st.session_state:
+                        del st.session_state[k]
+                st.success("Previous simulation results cleared. Please re-run the simulation.")
+                st.rerun()
+
     if st.sidebar.button("▶️ Start Simulation", type="primary"):
         team_conferences = get_team_conferences()
 
@@ -153,6 +202,11 @@ def render_live_rankings_page():
             st.session_state.aggregator = aggregator
             st.session_state.num_times_run = num_times_run
             st.session_state.simulation_complete = True
+            # Record the picks that were used for this simulation so we can detect changes later
+            st.session_state.last_simulation_picks = dict(st.session_state.get("user_picks", {}) or {})
+            st.session_state.last_simulation_at = time.time()
+            # Re-run to refresh UI so warning about out-of-date picks clears immediately
+            st.rerun()
 
             st.success(
                 f"✅ Simulation Complete! Ran {num_times_run} successful iterations in {elapsed_time:.2f} seconds ({num_times_run/elapsed_time:.1f} iterations/sec)"
