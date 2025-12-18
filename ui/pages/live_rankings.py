@@ -8,6 +8,8 @@ import altair as alt
 import textwrap
 from simulator import parallel_simulatation
 from team_colors import TEAM_COLORS
+from simulator import Simulator
+import numpy as np
 from ui.utils import (
     get_base64_image,
     calculate_playoff_probability,
@@ -38,9 +40,21 @@ def render_live_rankings_page():
         start_time = time.time()
 
         try:
-            aggregator, num_times_run = parallel_simulatation(
-                num_iterations, batch_size, num_workers=None
-            )
+            print(st.session_state.user_picks)
+            sim = Simulator()
+            for game in st.session_state.user_picks:
+                
+            
+                game_obj = sim.base_season.lookup_game(game)
+                winning_team = st.session_state.user_picks[game]
+                print(game, winning_team)
+                if winning_team == game_obj.get_home_team().abbreviation:
+                    modified_probs = np.array([0.0, 1.0])
+                elif winning_team == game_obj.get_away_team().abbreviation:
+                    modified_probs = np.array([1.0, 0.0])
+                sim.modify_game_probabilities(game_obj, modified_probs)
+            
+            aggregator, num_times_run = sim.simulate(num_iterations=1000)
             end_time = time.time()
             elapsed_time = end_time - start_time
             progress_bar.progress(1.0, text="Simulation complete!")
