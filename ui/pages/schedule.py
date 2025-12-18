@@ -6,6 +6,7 @@ import polars as pl
 import textwrap
 from team import Team
 from ui.utils import get_base64_image
+import numpy as np
 
 
 def render_schedule_page():
@@ -137,9 +138,10 @@ def render_schedule_page():
     for i, game in enumerate(week_games.iter_rows(named=True)):
         col_idx = i % 3
         
-        game_id = game["game_id"]
+        # game_id = game["game_id"]
         away_team = game["away_team"]
         home_team = game["home_team"]
+        game_id = away_team + '-' + home_team # TODO: TEMP USE GENERIC GAME ID FOR BETTER USEABILITY ACROSS SEASONS
         location = game["location"]
         weekday = game.get("weekday", "")
         gametime = game.get("gametime", "")
