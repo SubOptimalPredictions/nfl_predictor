@@ -100,6 +100,12 @@ class Game:
 
         return games
 
+    def get_home_team(self):
+        return self.home_team
+
+    def get_away_team(self):
+        return self.away_team
+
     def simulate(self) -> None:
         """Simulate the game and update team records.
 
