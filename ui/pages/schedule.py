@@ -348,8 +348,8 @@ def render_schedule_page():
                         rec = record_lookup.get((team, int(week) - 1))
 
                     if not rec:
-                        # If no prior data, default to 0-0
-                        return '<div class="team-record">0-0</div>' if not played else ''
+                        # If no prior data, default to 0-0 (with pre-game tooltip)
+                        return '<div class="team-record" title="Pre-game record (no prior games)"><strong>0-0</strong></div>' if not played else ''
 
                     wins, losses, ties, games = rec
                     if ties and ties > 0:
@@ -357,7 +357,8 @@ def render_schedule_page():
                     else:
                         rec_str = f"{wins}-{losses}"
                     # Only show the W-L(-T) string; remove verbose 'Record (pre/post)' label
-                    return f'<div class="team-record"><strong>{rec_str}</strong></div>'
+                    title = "Post-game record (after this game)" if played else "Pre-game record (before this game)"
+                    return f'<div class="team-record" title="{title}"><strong>{rec_str}</strong></div>'
 
                 away_record_html = record_html_for(away_team, selected_week, is_played)
                 home_record_html = record_html_for(home_team, selected_week, is_played)
@@ -398,7 +399,7 @@ def render_schedule_page():
                         rec_str = f"{wins}-{losses}-{ties}"
                     else:
                         rec_str = f"{wins}-{losses}"
-                    return f'<div class="team-record"><strong>{rec_str}</strong></div>'
+                    return f'<div class="team-record" title="Post-game record (after this game)"><strong>{rec_str}</strong></div>'
 
                 away_record_html = record_html_for_played(away_team, selected_week)
                 home_record_html = record_html_for_played(home_team, selected_week)
