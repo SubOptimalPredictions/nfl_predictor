@@ -170,7 +170,8 @@ def render_schedule_page():
         .score-val-large {
             font-size: 28px;
             font-weight: bold;
-            color: var(--text-color, #333);
+            /* Use theme text color when available (adapts to dark mode); fall back to inherited color */
+            color: var(--text-color, inherit);
         }
         .vs-text {
             font-size: 14px;
