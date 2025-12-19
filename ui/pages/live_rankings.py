@@ -26,6 +26,10 @@ from utils import update_schedule
 def render_live_rankings_page():
     st.sidebar.header("Simulation Settings")
 
+    # If there's a stored summary from the last simulation run, show it once
+    if "last_simulation_summary" in st.session_state:
+        st.success(st.session_state.pop("last_simulation_summary"))
+
     # Simulation parameters
     num_iterations = st.sidebar.number_input(
         "Number of Simulations", min_value=10, max_value=10000, value=1000, step=100
@@ -219,12 +223,12 @@ def render_live_rankings_page():
             st.session_state.last_simulation_at = time.time()
             # Clear running flag before rerunning so UI enables the Start button
             st.session_state.simulation_running = False
-            # Re-run to refresh UI so warning about out-of-date picks clears immediately
-            st.rerun()
-
-            st.success(
+            # Store a summary message so it can be shown after the rerun
+            st.session_state.last_simulation_summary = (
                 f"✅ Simulation Complete! Ran {num_times_run} successful iterations in {elapsed_time:.2f} seconds ({num_times_run/elapsed_time:.1f} iterations/sec)"
             )
+            # Re-run to refresh UI so warning about out-of-date picks clears immediately
+            st.rerun()
         except Exception as e:
             st.error(f"❌ Simulation failed: {str(e)}")
             # Ensure we clear running flag on failure so the button becomes available
