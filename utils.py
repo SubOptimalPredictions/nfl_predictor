@@ -5,6 +5,7 @@ import os
 from pydantic import BaseModel
 import nflreadpy as nfl
 import polars as pl
+import pandas as pd
 
 def _single_moneyline_to_probability(team_moneyline: int):
     if team_moneyline < 0:
@@ -149,6 +150,36 @@ def update_schedule(
     except FileNotFoundError:
         schedule_new.write_csv("data/schedules_2025.csv")
 
+def generate_team_with_weekly_records_table():
+    schedules = nfl.load_schedules([2025]).to_pandas()
+
+    # Create a DataFrame to store the weekly records for each team
+    team_weekly_records = pd.DataFrame(columns=["team", "week", "games_played", "wins", "losses", "ties"])
+
+    for idx, row in schedules.iterrows():
+
+        away_team_record = pd.DataFrame({
+            "team": [row['away_team']],
+            "week": [row['week']],
+            "games_played": [1],
+            "wins": [1 if row['away_score'] > row['home_score'] else 0],
+            "losses": [1 if row['away_score'] < row['home_score'] else 0],
+            "ties": [1 if row['away_score'] == row['home_score'] else 0],
+        })
+        team_weekly_records = pd.concat([team_weekly_records, away_team_record], ignore_index=True)
+
+        home_team_record = pd.DataFrame({
+            "team": [row['home_team']],
+            "week": [row['week']],
+            "games_played": [1],
+            "wins": [1 if row['home_score'] > row['away_score'] else 0],
+            "losses": [1 if row['home_score'] < row['away_score'] else 0],
+            "ties": [1 if row['home_score'] == row['away_score'] else 0],
+        })
+
+        team_weekly_records = pd.concat([team_weekly_records, home_team_record], ignore_index=True)
+
+    return team_weekly_records
 
 if __name__ == "__main__":
     dotenv.load_dotenv()

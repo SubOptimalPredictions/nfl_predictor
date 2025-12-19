@@ -6,7 +6,7 @@ import polars as pl
 import textwrap
 from team import Team
 from ui.utils import get_base64_image
-from utils import moneyline_to_probability
+from utils import moneyline_to_probability, generate_team_with_weekly_records_table
 from team_colors import TEAM_COLORS
 import numpy as np
 
@@ -51,6 +51,49 @@ def render_schedule_page():
     
     # Get sorted unique weeks
     weeks = df_schedule["week"].unique().sort()
+
+    # Precompute cumulative team records by week directly from schedule data
+    record_lookup = {}
+    try:
+        # Initialize team stats
+        teams_in_schedule = set(df_schedule["away_team"]) | set(df_schedule["home_team"])
+        team_stats = {t: [0, 0, 0, 0] for t in teams_in_schedule}  # wins, losses, ties, games
+
+        # Process weeks in order and accumulate results
+        unique_weeks = sorted(list(df_schedule["week"].unique()))
+        for w in unique_weeks:
+            week_rows = df_schedule.filter(pl.col("week") == w).iter_rows(named=True)
+            # For each game in the week, update team stats
+            for r in week_rows:
+                away = r.get("away_team")
+                home = r.get("home_team")
+                away_score = r.get("away_score")
+                home_score = r.get("home_score")
+
+                # Only increment games and results if the game has been played (scores present)
+                if away_score is not None and home_score is not None:
+                    try:
+                        team_stats[away][3] += 1
+                        team_stats[home][3] += 1
+
+                        if float(away_score) > float(home_score):
+                            team_stats[away][0] += 1
+                            team_stats[home][1] += 1
+                        elif float(away_score) < float(home_score):
+                            team_stats[home][0] += 1
+                            team_stats[away][1] += 1
+                        else:
+                            team_stats[away][2] += 1
+                            team_stats[home][2] += 1
+                    except Exception:
+                        # ignore if scores not numeric
+                        pass
+
+            # After processing the week, record cumulative stats for all teams
+            for t, stats in team_stats.items():
+                record_lookup[(t, int(w))] = (int(stats[0]), int(stats[1]), int(stats[2]), int(stats[3]))
+    except Exception:
+        record_lookup = {}
     
     selected_week = st.selectbox("Select Week", weeks, index=0)
     
@@ -118,6 +161,11 @@ def render_schedule_page():
             font-weight: 600;
             font-size: 18px;
             margin-bottom: 4px;
+        }
+        .team-record {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
         }
         .score-val-large {
             font-size: 28px;
@@ -292,7 +340,29 @@ def render_schedule_page():
                     away_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{away_ml_str}</div>' if away_ml_str else ""
                     home_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{home_ml_str}</div>' if home_ml_str else ""
                 
-                card_html = f'<div class="game-card"><div class="game-header">{weekday} • {gametime} • Week {selected_week}</div><div class="matchup-container"><div class="team-container">{away_img}<div class="team-name">{away_team}</div>{away_ml_display}<div class="score-val-large">{away_score_str}</div></div><div class="vs-text">@</div><div class="team-container">{home_img}<div class="team-name">{home_team}</div>{home_ml_display}<div class="score-val-large">{home_score_str}</div></div></div>{split_display}</div>'
+                # Compute record display: pre-game if unplayed, post-game if played
+                def record_html_for(team, week, played):
+                    if played:
+                        rec = record_lookup.get((team, int(week)))
+                    else:
+                        rec = record_lookup.get((team, int(week) - 1))
+
+                    if not rec:
+                        # If no prior data, default to 0-0
+                        return '<div class="team-record">0-0</div>' if not played else ''
+
+                    wins, losses, ties, games = rec
+                    if ties and ties > 0:
+                        rec_str = f"{wins}-{losses}-{ties}"
+                    else:
+                        rec_str = f"{wins}-{losses}"
+                    # Only show the W-L(-T) string; remove verbose 'Record (pre/post)' label
+                    return f'<div class="team-record"><strong>{rec_str}</strong></div>'
+
+                away_record_html = record_html_for(away_team, selected_week, is_played)
+                home_record_html = record_html_for(home_team, selected_week, is_played)
+
+                card_html = f'<div class="game-card"><div class="game-header">{weekday} • {gametime} • Week {selected_week}</div><div class="matchup-container"><div class="team-container">{away_img}<div class="team-name">{away_team}</div>{away_record_html}{away_ml_display}<div class="score-val-large">{away_score_str}</div></div><div class="vs-text">@</div><div class="team-container">{home_img}<div class="team-name">{home_team}</div>{home_record_html}{home_ml_display}<div class="score-val-large">{home_score_str}</div></div></div>{split_display}</div>'
                 st.markdown(card_html, unsafe_allow_html=True)
                 
                 # Add selection buttons below the card
@@ -318,6 +388,22 @@ def render_schedule_page():
                 # For played games, use the simple HTML card
                 away_img = f'<img src="data:image/png;base64,{away_logo_b64}" class="team-logo-large">' if away_logo_b64 else ""
                 home_img = f'<img src="data:image/png;base64,{home_logo_b64}" class="team-logo-large">' if home_logo_b64 else ""
-                
-                card_html = f'<div class="game-card"><div class="game-header">{weekday} • {gametime} • Week {selected_week}</div><div class="matchup-container"><div class="team-container">{away_img}<div class="team-name">{away_team}</div><div class="score-val-large">{away_score_str}</div></div><div class="vs-text">@</div><div class="team-container">{home_img}<div class="team-name">{home_team}</div><div class="score-val-large">{home_score_str}</div></div></div></div>'
+                # compute post-game records
+                def record_html_for_played(team, week):
+                    rec = record_lookup.get((team, int(week)))
+                    if not rec:
+                        return ''
+                    wins, losses, ties, games = rec
+                    if ties and ties > 0:
+                        rec_str = f"{wins}-{losses}-{ties}"
+                    else:
+                        rec_str = f"{wins}-{losses}"
+                    return f'<div class="team-record"><strong>{rec_str}</strong></div>'
+
+                away_record_html = record_html_for_played(away_team, selected_week)
+                home_record_html = record_html_for_played(home_team, selected_week)
+
+                card_html = f'<div class="game-card"><div class="game-header">{weekday} • {gametime} • Week {selected_week}</div><div class="matchup-container"><div class="team-container">{away_img}<div class="team-name">{away_team}</div>{away_record_html}<div class="score-val-large">{away_score_str}</div></div><div class="vs-text">@</div><div class="team-container">{home_img}<div class="team-name">{home_team}</div>{home_record_html}<div class="score-val-large">{home_score_str}</div></div></div></div>'
                 st.markdown(card_html, unsafe_allow_html=True)
+
+                # (Records are displayed inside each game card; no extra inline record text needed here)
