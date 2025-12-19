@@ -6,6 +6,8 @@ import polars as pl
 import textwrap
 from team import Team
 from ui.utils import get_base64_image
+from utils import moneyline_to_probability
+from team_colors import TEAM_COLORS
 import numpy as np
 
 
@@ -216,10 +218,81 @@ def render_schedule_page():
                 home_img = make_img_html(home_team, home_logo_b64, home_classes)
                 
                 # Add moneyline to team display if available
-                away_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{away_ml_str}</div>' if away_ml_str else ""
-                home_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{home_ml_str}</div>' if home_ml_str else ""
+                # Compute win probabilities: prefer Gemini predictions if present, else derive from moneyline
+                away_prob = None
+                home_prob = None
+                try:
+                    # Prefer moneyline-derived probabilities when moneylines are available (more accurate)
+                    if away_moneyline not in (None, "") and home_moneyline not in (None, ""):
+                        try:
+                            ml_probs = moneyline_to_probability(int(away_moneyline), int(home_moneyline))
+                            away_prob, home_prob = float(ml_probs[0]), float(ml_probs[1])
+                        except Exception:
+                            away_prob = None
+                            home_prob = None
+
+                    # Fallback to Gemini predictions if moneyline not available or failed
+                    if (away_prob is None or home_prob is None):
+                        ga = game.get("gemini_away_win_prob")
+                        gh = game.get("gemini_home_win_prob")
+                        if ga not in (None, "") and gh not in (None, ""):
+                            try:
+                                away_prob = float(ga)
+                                home_prob = float(gh)
+                            except Exception:
+                                away_prob = None
+                                home_prob = None
+                except Exception:
+                    away_prob = None
+                    home_prob = None
+
+                def make_prob_display(prob, is_away=True):
+                    if prob is None:
+                        return ""
+                    # Colors: away -> navy, home -> red
+                    color = "#013369" if is_away else "#D50A0A"
+                    pct = int(round(prob * 100))
+                    return f"<div style=\"margin-top:6px;\"><div style=\"display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:4px;\"><span>{'Win %'}</span><span><strong>{pct}%</strong></span></div><div style=\"background:#eee;border-radius:8px;overflow:hidden;height:8px;\"><div style=\"width:{pct}%;height:100%;background:{color};\"></div></div></div>"
+
+                split_display = ""
+                # If we have both probabilities, render a single split bar (away left, home right)
+                if away_prob is not None and home_prob is not None:
+                    away_pct = int(round(away_prob * 100))
+                    home_pct = int(round(home_prob * 100))
+                    # adjust rounding to ensure sum == 100
+                    if away_pct + home_pct != 100:
+                        home_pct = 100 - away_pct
+
+                    # Use team colors for the split bar; fall back to navy/red if missing
+                    away_color = TEAM_COLORS.get(away_team, "#013369")
+                    home_color = TEAM_COLORS.get(home_team, "#D50A0A")
+                    # Include moneyline odds alongside the team names when available
+                    # Prepare separate lines for moneyline odds to show under team names
+                    away_ml_line = f'<div style="color:#888; font-size:11px; margin-top:2px;">{away_ml_str}</div>' if away_ml_str else ""
+                    home_ml_line = f'<div style="color:#888; font-size:11px; margin-top:2px;">{home_ml_str}</div>' if home_ml_str else ""
+
+                    split_display = f'''<div style="width:100%; margin-top:8px;">
+                        <div style="display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:6px;">
+                            <div style="text-align:left;">
+                                <div><strong>{away_team}</strong> <span style="color:#333;">{away_pct}%</span></div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div><strong>{home_team}</strong> <span style="color:#333;">{home_pct}%</span></div>
+                            </div>
+                        </div>
+                        <div style="background:#eee;border-radius:8px;overflow:hidden;height:12px;display:flex;">
+                            <div style="width:{away_pct}%;background:{away_color};height:100%;"></div>
+                            <div style="width:{home_pct}%;background:{home_color};height:100%;"></div>
+                        </div>
+                    </div>'''
+                    # Show moneyline odds under the main team name in the card
+                    away_ml_display = away_ml_line
+                    home_ml_display = home_ml_line
+                else:
+                    away_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{away_ml_str}</div>' if away_ml_str else ""
+                    home_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{home_ml_str}</div>' if home_ml_str else ""
                 
-                card_html = f'<div class="game-card"><div class="game-header">{weekday} • {gametime} • Week {selected_week}</div><div class="matchup-container"><div class="team-container">{away_img}<div class="team-name">{away_team}</div>{away_ml_display}<div class="score-val-large">{away_score_str}</div></div><div class="vs-text">@</div><div class="team-container">{home_img}<div class="team-name">{home_team}</div>{home_ml_display}<div class="score-val-large">{home_score_str}</div></div></div></div>'
+                card_html = f'<div class="game-card"><div class="game-header">{weekday} • {gametime} • Week {selected_week}</div><div class="matchup-container"><div class="team-container">{away_img}<div class="team-name">{away_team}</div>{away_ml_display}<div class="score-val-large">{away_score_str}</div></div><div class="vs-text">@</div><div class="team-container">{home_img}<div class="team-name">{home_team}</div>{home_ml_display}<div class="score-val-large">{home_score_str}</div></div></div>{split_display}</div>'
                 st.markdown(card_html, unsafe_allow_html=True)
                 
                 # Add selection buttons below the card

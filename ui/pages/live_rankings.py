@@ -20,6 +20,7 @@ from ui.utils import (
     render_html_ranking_table,
     get_projected_order
 )
+from utils import update_schedule
 
 
 def render_live_rankings_page():
@@ -174,7 +175,9 @@ def render_live_rankings_page():
                 st.rerun()
 
     if st.sidebar.button("▶️ Start Simulation", type="primary"):
+        update_schedule('data/schedules_2025.csv')
         team_conferences = get_team_conferences()
+        
 
         progress_bar = st.progress(0, text="Starting simulation...")
         start_time = time.time()
