@@ -174,7 +174,16 @@ def render_live_rankings_page():
                 st.success("Previous simulation results cleared. Please re-run the simulation.")
                 st.rerun()
 
-    if st.sidebar.button("▶️ Start Simulation", type="primary"):
+    # Prevent starting another simulation while one is already running
+    if "simulation_running" not in st.session_state:
+        st.session_state.simulation_running = False
+
+    start_disabled = bool(st.session_state.get("simulation_running", False))
+    if start_disabled:
+        st.sidebar.info("Simulation running... Please wait until it completes.")
+    if st.sidebar.button("▶️ Start Simulation", type="primary", disabled=start_disabled):
+        # Mark that a simulation is in progress so the button is disabled on reruns
+        st.session_state.simulation_running = True
         update_schedule('data/schedules_2025.csv')
         team_conferences = get_team_conferences()
         
@@ -208,6 +217,8 @@ def render_live_rankings_page():
             # Record the picks that were used for this simulation so we can detect changes later
             st.session_state.last_simulation_picks = dict(st.session_state.get("user_picks", {}) or {})
             st.session_state.last_simulation_at = time.time()
+            # Clear running flag before rerunning so UI enables the Start button
+            st.session_state.simulation_running = False
             # Re-run to refresh UI so warning about out-of-date picks clears immediately
             st.rerun()
 
@@ -216,6 +227,8 @@ def render_live_rankings_page():
             )
         except Exception as e:
             st.error(f"❌ Simulation failed: {str(e)}")
+            # Ensure we clear running flag on failure so the button becomes available
+            st.session_state.simulation_running = False
             # Clear state on failure
             if "simulation_complete" in st.session_state:
                 del st.session_state.simulation_complete
