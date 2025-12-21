@@ -181,6 +181,80 @@ def generate_team_with_weekly_records_table():
 
     return team_weekly_records
 
+# def format_tables_for_display(df: pd.DataFrame) -> pd.DataFrame:
+
+def split_standings_by_division(conference_standings: pd.DataFrame):
+    """Split a conference standings table into divisions.
+
+    This function handles multiple shapes returned by `pd.read_html` for the
+    standings page. Supported input shapes:
+    - A DataFrame with a 'Division' column (simple case)
+    - A DataFrame containing divider rows where a cell contains 'East/North/South/West'
+    - A DataFrame with MultiIndex columns where top-level labels are division names
+
+    Returns a dict mapping division name -> DataFrame for that division. If
+    no splitting can be performed, returns {'All': conference_standings}.
+    """
+    import re
+
+    # If already a dict, assume it's in the desired format
+    if isinstance(conference_standings, dict):
+        return conference_standings
+
+    # If there's a 'Division' column, use it directly
+    if isinstance(conference_standings, pd.DataFrame) and 'Division' in conference_standings.columns:
+        divisions = {}
+        division_names = conference_standings['Division'].dropna().unique()
+        for division in division_names:
+            divisions[division] = conference_standings[conference_standings['Division'] == division]
+        return divisions
+
+    # If columns are MultiIndex with division-level top headers
+    if isinstance(conference_standings.columns, pd.MultiIndex):
+        divisions = {}
+        top_headers = list(conference_standings.columns.get_level_values(0).unique())
+        for h in top_headers:
+            try:
+                sub = conference_standings[h].dropna(how='all')
+                if not sub.empty:
+                    divisions[str(h)] = sub
+            except Exception:
+                continue
+        if divisions:
+            return divisions
+
+    # Look for divider rows that contain division names like 'AFC East' or 'East'
+    div_rows = []
+    for idx, row in conference_standings.iterrows():
+        for cell in row:
+            if isinstance(cell, str) and re.match(r'^(?:AFC|NFC)?\s*(?:East|North|South|West)$', cell.strip(), re.I):
+                div_rows.append((idx, cell.strip()))
+                break
+
+    if div_rows:
+        divisions = {}
+        indices = [idx for idx, _ in div_rows]
+        names = [name for _, name in div_rows]
+        for i, name in enumerate(names):
+            start = indices[i] + 1
+            end = indices[i + 1] if i + 1 < len(indices) else len(conference_standings)
+            sub = conference_standings.iloc[start:end].dropna(how='all')
+            if not sub.empty:
+                divisions[name] = sub.reset_index(drop=True)
+        if divisions:
+            return divisions
+
+    # As a last resort, return the whole table under 'All'
+    return {'All': conference_standings}
+
+def get_current_standings(season: int = 2025):
+    url = f"https://www.pro-football-reference.com/years/{season}/index.htm"
+
+    tables = pd.read_html(url)
+    afc_standings = tables[0]
+    nfc_standings = tables[1]
+    return split_standings_by_division(afc_standings), split_standings_by_division(nfc_standings)
+
 if __name__ == "__main__":
     dotenv.load_dotenv()
     print(moneyline_to_probability(410, -550))
