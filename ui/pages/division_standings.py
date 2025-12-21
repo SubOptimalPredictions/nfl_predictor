@@ -11,6 +11,7 @@ import streamlit as st
 
 from utils import get_current_standings
 from ui.utils import get_base64_image
+from team_abbreviations import get_abbreviation
 
 
 def _render_divisions_from_df(df: pd.DataFrame, conf: str):
@@ -77,7 +78,10 @@ def _render_table_with_logos(df: pd.DataFrame):
             val = row[h]
             if h == team_col and isinstance(val, str) and val.strip():
                 team_name = val.strip()
-                logo_b64 = get_base64_image(f"assets/{team_name}.png")
+                # Remove any suffixes like '*' or '+' that indicate playoff clinching, etc.
+                team_name = team_name.replace("*", "").replace("+", "").strip()
+                team_abbr = get_abbreviation(team_name)
+                logo_b64 = get_base64_image(f"assets/{team_abbr}.png")
                 if logo_b64:
                     logo_html = f'<img src="data:image/png;base64,{logo_b64}" style="height:20px;margin-right:8px;vertical-align:middle;border-radius:4px;">'
                 else:
@@ -153,10 +157,6 @@ def render_division_standings_page():
 
         # Render divisions in the order they are provided by the source.
         keys = list(afc_divs.keys())
-        # show the original order to the user
-        if keys:
-            order_text = " → ".join([str(k) for k in keys])
-            st.markdown(f"<div style='color:#666;font-size:13px;margin-bottom:8px'>Original order: {order_text}</div>", unsafe_allow_html=True)
         if not keys:
             st.info("No division data available for AFC")
         else:
@@ -190,9 +190,6 @@ def render_division_standings_page():
             nfc_divs = split_standings_by_division(nfc)
 
         keys = list(nfc_divs.keys())
-        if keys:
-            order_text = " → ".join([str(k) for k in keys])
-            st.markdown(f"<div style='color:#666;font-size:13px;margin-bottom:8px'>Original order: {order_text}</div>", unsafe_allow_html=True)
         if not keys:
             st.info("No division data available for NFC")
         else:
