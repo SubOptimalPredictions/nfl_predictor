@@ -123,39 +123,12 @@ def _find_stat_col(df: pd.DataFrame, candidates: list[str]):
 
 def _prepare_division_df(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize and sort a division DataFrame for display."""
+    # Preserve the order provided by the source; do not reorder rows.
+    # We only reset the index for clean display.
     if df.empty:
         return df
 
-    # Find team column
-    team_col = _find_team_col(df)
-
-    # Find common stat columns
-    wins_col = _find_stat_col(df, ["w", "wins"]) or _find_stat_col(df, ["won"]) 
-    losses_col = _find_stat_col(df, ["l", "losses"]) or _find_stat_col(df, ["lost"])
-    ties_col = _find_stat_col(df, ["t", "ties"]) 
-    pct_col = _find_stat_col(df, ["pct", "percentage"]) or _find_stat_col(df, ["win pct", "win%", "wpct"]) 
-    pf_col = _find_stat_col(df, ["pf", "for"]) 
-    pa_col = _find_stat_col(df, ["pa", "against"]) 
-
-    cols = [team_col]
-    for c in (wins_col, losses_col, ties_col, pct_col, pf_col, pa_col):
-        if c and c not in cols:
-            cols.append(c)
-
-    # Reindex columns (keep others at end)
-    remaining = [c for c in df.columns if c not in cols]
-    df2 = df[cols + remaining]
-
-    # Sort: prefer wins, then pct if available
-    try:
-        if wins_col:
-            df2 = df2.sort_values(by=wins_col, ascending=False, ignore_index=True)
-        elif pct_col:
-            df2 = df2.sort_values(by=pct_col, ascending=False, ignore_index=True)
-    except Exception:
-        df2 = df2.reset_index(drop=True)
-
-    return df2
+    return df.reset_index(drop=True)
 
 
 def render_division_standings_page():
@@ -178,26 +151,30 @@ def render_division_standings_page():
         else:
             afc_divs = split_standings_by_division(afc)
 
-        # Render divisions in a 2x2 grid: East | North  and  South | West
-        pairs = [("East", "North"), ("South", "West")]
-        for left, right in pairs:
-            cols = st.columns(2)
-            for col, d in zip(cols, (left, right)):
-                with col:
-                    key = next((k for k in afc_divs.keys() if str(k).endswith(d) or str(k) == d or d in str(k)), None)
-                    if not key:
-                        st.subheader(f"AFC {d}")
-                        st.info("No data for this division")
-                        continue
-                    sub_df = afc_divs[key]
-                    sub_df = _clean_division_rows(sub_df, "AFC")
-                    sub_df = _prepare_division_df(sub_df)
-                    if sub_df.empty:
-                        st.subheader(f"AFC {d}")
-                        st.info("No data for this division")
-                        continue
-                    st.subheader(f"AFC {d}")
-                    _render_table_with_logos(sub_df.reset_index(drop=True))
+        # Render divisions in the order they are provided by the source.
+        keys = list(afc_divs.keys())
+        # show the original order to the user
+        if keys:
+            order_text = " → ".join([str(k) for k in keys])
+            st.markdown(f"<div style='color:#666;font-size:13px;margin-bottom:8px'>Original order: {order_text}</div>", unsafe_allow_html=True)
+        if not keys:
+            st.info("No division data available for AFC")
+        else:
+            # Render as rows with two columns, preserving order
+            for i in range(0, len(keys), 2):
+                row_keys = keys[i : i + 2]
+                cols = st.columns(2)
+                for col, key in zip(cols, row_keys):
+                    with col:
+                        sub_df = afc_divs[key]
+                        sub_df = _clean_division_rows(sub_df, "AFC")
+                        sub_df = _prepare_division_df(sub_df)
+                        label = key if ("AFC" in str(key) or "NFC" in str(key)) else f"AFC {key}"
+                        st.subheader(label)
+                        if sub_df.empty:
+                            st.info("No data for this division")
+                            continue
+                        _render_table_with_logos(sub_df.reset_index(drop=True))
     except Exception:
         # Fallback to best-effort renderer
         _render_divisions_from_df(afc, "AFC")
@@ -212,24 +189,26 @@ def render_division_standings_page():
         else:
             nfc_divs = split_standings_by_division(nfc)
 
-        pairs = [("East", "North"), ("South", "West")]
-        for left, right in pairs:
-            cols = st.columns(2)
-            for col, d in zip(cols, (left, right)):
-                with col:
-                    key = next((k for k in nfc_divs.keys() if str(k).endswith(d) or str(k) == d or d in str(k)), None)
-                    if not key:
-                        st.subheader(f"NFC {d}")
-                        st.info("No data for this division")
-                        continue
-                    sub_df = nfc_divs[key]
-                    sub_df = _clean_division_rows(sub_df, "NFC")
-                    sub_df = _prepare_division_df(sub_df)
-                    if sub_df.empty:
-                        st.subheader(f"NFC {d}")
-                        st.info("No data for this division")
-                        continue
-                    st.subheader(f"NFC {d}")
-                    _render_table_with_logos(sub_df.reset_index(drop=True))
+        keys = list(nfc_divs.keys())
+        if keys:
+            order_text = " → ".join([str(k) for k in keys])
+            st.markdown(f"<div style='color:#666;font-size:13px;margin-bottom:8px'>Original order: {order_text}</div>", unsafe_allow_html=True)
+        if not keys:
+            st.info("No division data available for NFC")
+        else:
+            for i in range(0, len(keys), 2):
+                row_keys = keys[i : i + 2]
+                cols = st.columns(2)
+                for col, key in zip(cols, row_keys):
+                    with col:
+                        sub_df = nfc_divs[key]
+                        sub_df = _clean_division_rows(sub_df, "NFC")
+                        sub_df = _prepare_division_df(sub_df)
+                        label = key if ("AFC" in str(key) or "NFC" in str(key)) else f"NFC {key}"
+                        st.subheader(label)
+                        if sub_df.empty:
+                            st.info("No data for this division")
+                            continue
+                        _render_table_with_logos(sub_df.reset_index(drop=True))
     except Exception:
         _render_divisions_from_df(nfc, "NFC")
