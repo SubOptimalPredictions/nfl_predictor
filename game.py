@@ -118,7 +118,6 @@ class Game:
         return prob
 
     def update_rating(self):
-        # update away_team
         assert self.score is not None, "Score must be set to update Elo ratings"
         if self.score[0] > self.score[1]:
             S_away = 1
@@ -127,7 +126,6 @@ class Game:
         else:
             S_away = 0.5
 
-        # update home_team
         S_home = 1 - S_away
         E_away = self.calculate_win_probability()
         E_home = 1 - E_away
