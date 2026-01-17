@@ -120,21 +120,30 @@ class Game:
         return prob
 
     def get_point_differential(self):
-        assert (self.score[0] is not None and self.score[1] is not None), "Cannot compute point differential for an unplayed game"
-        return abs(self.score[0] - self.score[1])
+        assert (self.score[0, 0] is not None and self.score[0, 1] is not None), "Cannot compute point differential for an unplayed game"
+        return abs(self.score[0, 0] - self.score[0, 1])
         
     def get_margin_of_victory_multiplier(self):
         differential = self.get_point_differential()
         if differential == 0:
             return 1
         
-        return math.log(self.get_point_differential() + 1) * (K_FACTOR_SCALE / (() * ELASTICITY + K_FACTOR_SCALE))
+        winning_team, losing_team = self.get_winning_losing_teams()
+        elo_diff = winning_team.elo_rating - losing_team.elo_rating
+    
+        return math.log(self.get_point_differential() + 1) * (K_FACTOR_SCALE / ((elo_diff) * ELASTICITY + K_FACTOR_SCALE))
+
+    def get_winning_losing_teams(self):
+        if self.score[0, 0] > self.score[0, 1]:
+            return [self.away_team, self.home_team]
+        else:
+            return [self.home_team, self.away_team]
 
     def update_rating(self):
         assert self.score is not None, "Score must be set to update Elo ratings"
-        if self.score[0] > self.score[1]:
+        if self.score[0, 0] > self.score[0, 1]:
             S_away = 1
-        elif self.score[0] < self.score[1]:
+        elif self.score[0, 0] < self.score[0, 1]:
             S_away = 0
         else:
             S_away = 0.5
