@@ -12,6 +12,10 @@ import polars as pl
 from enum import Enum
 from utils import moneyline_to_probability
 
+HOME_FIELD_ADVANTAGE = 55
+SCALING_FACTOR = 400
+K = 20  # Elo K-factor
+
 
 class GameLoadingMode(Enum):
     """Enum for game loading modes."""
@@ -105,6 +109,31 @@ class Game:
 
     def get_away_team(self):
         return self.away_team
+
+    def calculate_win_probability(self) -> float:
+        rating_diff = self.away_team.elo_rating - (
+            self.home_team.elo_rating + HOME_FIELD_ADVANTAGE
+        )
+        prob = 1 / (1 + 10 ** (rating_diff / SCALING_FACTOR))
+        return prob
+
+    def update_rating(self):
+        # update away_team
+        assert self.score is not None, "Score must be set to update Elo ratings"
+        if self.score[0] > self.score[1]:
+            S_away = 1
+        elif self.score[0] < self.score[1]:
+            S_away = 0
+        else:
+            S_away = 0.5
+
+        # update home_team
+        S_home = 1 - S_away
+        E_away = self.calculate_win_probability()
+        E_home = 1 - E_away
+
+        self.away_team.update_elo(int(K * (S_away - E_away)))
+        self.home_team.update_elo(int(K * (S_home - E_home)))
 
     def simulate(self) -> None:
         """Simulate the game and update team records.
