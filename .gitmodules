@@ -1,0 +1,3 @@
+[submodule "NFL-Playoff-Predictor-UI"]
+	path = NFL-Playoff-Predictor-UI
+	url = https://github.com/pmvt19/NFL-Playoff-Predictor-UI.git
