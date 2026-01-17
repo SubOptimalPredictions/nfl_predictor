@@ -5,7 +5,7 @@ game between two :class:`Team` objects. Games can be simulated either
 deterministically from a final score or probabilistically using a
 two-element probability vector for the away/home team.
 """
-
+import math
 import numpy as np
 from team import Team
 import polars as pl
@@ -15,6 +15,8 @@ from utils import moneyline_to_probability
 HOME_FIELD_ADVANTAGE = 55
 SCALING_FACTOR = 400
 K = 20  # Elo K-factor
+K_FACTOR_SCALE = 2.2
+ELASTICITY = 0.001
 
 
 class GameLoadingMode(Enum):
@@ -117,6 +119,17 @@ class Game:
         prob = 1 / (1 + 10 ** (rating_diff / SCALING_FACTOR))
         return prob
 
+    def get_point_differential(self):
+        assert (self.score[0] is not None and self.score[1] is not None), "Cannot compute point differential for an unplayed game"
+        return abs(self.score[0] - self.score[1])
+        
+    def get_margin_of_victory_multiplier(self):
+        differential = self.get_point_differential()
+        if differential == 0:
+            return 1
+        
+        return math.log(self.get_point_differential() + 1) * (K_FACTOR_SCALE / (() * ELASTICITY + K_FACTOR_SCALE))
+
     def update_rating(self):
         assert self.score is not None, "Score must be set to update Elo ratings"
         if self.score[0] > self.score[1]:
@@ -130,8 +143,10 @@ class Game:
         E_away = self.calculate_win_probability()
         E_home = 1 - E_away
 
-        self.away_team.update_elo(int(K * (S_away - E_away)))
-        self.home_team.update_elo(int(K * (S_home - E_home)))
+        adjusted_K = K * self.get_margin_of_victory_multiplier()
+
+        self.away_team.update_elo(int(adjusted_K * (S_away - E_away)))
+        self.home_team.update_elo(int(adjusted_K * (S_home - E_home)))
 
     def simulate(self) -> None:
         """Simulate the game and update team records.
