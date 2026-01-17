@@ -50,12 +50,14 @@ class Season:
         # team abbvr to team
         self.team_name_to_team: dict[str, Team] = team_name_to_team
 
-        # Game Name is {away_team.abbreviation}-{home_team.abbreviation}. Example: DAL-CHI for Dallas @ Chicago 
+        # Game Name is {away_team.abbreviation}-{home_team.abbreviation}. Example: DAL-CHI for Dallas @ Chicago
         self.game_teams_to_game: dict[str, Game] = {}
         self.played_games: list[Game] = []
         self.unplayed_games: list[Game] = []
         for game in self.list_of_games:
-            game_teams : str = game.away_team.abbreviation + "-" + game.home_team.abbreviation
+            game_teams: str = (
+                game.away_team.abbreviation + "-" + game.home_team.abbreviation
+            )
             self.game_teams_to_game[game_teams] = game
 
             if game.score is not None:
@@ -68,16 +70,23 @@ class Season:
 
         # Map team name to team object
         self.team_name_to_team[name] = team
-    
+
     # TODO: Improve the Searchability of this?
     def get_team_next_game(self, team_abbreviation):
         for game in self.unplayed_games:
-            if game.home_team.abbreviation == team_abbreviation or game.away_team.abbreviation == team_abbreviation:
+            if (
+                game.home_team.abbreviation == team_abbreviation
+                or game.away_team.abbreviation == team_abbreviation
+            ):
                 return game
         return None
-    
+
     def lookup_game(self, game_teams):
         return self.game_teams_to_game[game_teams]
+
+    def simulate_elo(self):
+        for game in self.list_of_games:
+            game.update_rating()
 
     def simulate_games(self) -> None:
         """Simulate every game in the week in order.
@@ -239,15 +248,13 @@ if __name__ == "__main__":
         schedule_filepath="data/schedules_2025.csv",
     )
 
-    for team_name, team in season.team_name_to_team.items():
-        print(team_name, team.record)
-
     st = time.time()
-    season.simulate_games()
+    # season.simulate_games()
+    season.simulate_elo()
     et = time.time()
     print(f"Time to Simulate Games: {et - st}")
 
-    for team_name, team in season.team_name_to_team.items():
-        print(team_name, team.record[0])
-
-    season.rank()
+    for team_name, team in sorted(
+        season.team_name_to_team.items(), key=lambda x: x[1].elo_rating, reverse=True
+    ):
+        print(team_name, team.elo_rating)

@@ -37,7 +37,7 @@ class Team:
         record: np.ndarray,
         conference: str,
         division: str,
-        staring_elo: int = 1500
+        staring_elo: int = 1500,
     ):
 
         # Ensure Record is of the proper type and shape
@@ -118,9 +118,11 @@ class Team:
             )
             + delta
         )
-    
+
     def update_elo(self, elo_delta: int):
-        assert (isinstance(elo_delta, int)), "elo_delta must be of type int"
+        assert isinstance(elo_delta, int), "elo_delta must be of type int"
+        if self.abbreviation == "NE":
+            pass
         self.elo_rating += elo_delta
 
     def _overall_record_lt(self, other):
@@ -170,32 +172,39 @@ class Team:
         common_opponents = set(self.head_to_head_record.keys()).intersection(
             other.head_to_head_record.keys()
         )
-        my_h2h_pct = total_record_to_pct(np.array(itemgetter(*common_opponents)(self.head_to_head_record)).reshape((-1, 3)))
-        other_h2h_pct = total_record_to_pct(np.array(itemgetter(*common_opponents)(other.head_to_head_record)).reshape((-1, 3)))
+        my_h2h_pct = total_record_to_pct(
+            np.array(itemgetter(*common_opponents)(self.head_to_head_record)).reshape(
+                (-1, 3)
+            )
+        )
+        other_h2h_pct = total_record_to_pct(
+            np.array(itemgetter(*common_opponents)(other.head_to_head_record)).reshape(
+                (-1, 3)
+            )
+        )
 
         if my_h2h_pct < other_h2h_pct:
             return True
         elif my_h2h_pct > other_h2h_pct:
             return False
         return None
-    
+
     def _strength_of_schedule_lt(self, other: "Team"):
         if self.strength_of_schedule < other.strength_of_schedule:
             return True
         elif self.strength_of_schedule > other.strength_of_schedule:
             return False
         return None
-    
+
     def _strength_of_victory_lt(self, other: "Team"):
         if self.strength_of_victory < other.strength_of_victory:
             return True
         elif self.strength_of_victory > other.strength_of_victory:
             return False
         return None
-    
+
     def _coin_flip(self, other: "Team"):
         return randint(0, 1) > 0
-
 
     def __repr__(self) -> str:
         return f"Team(name={self.name}, abbreviation={self.abbreviation}, record={self.record}, conference={self.conference}, division={self.division}, conference_record={self.conference_record}, division_record={self.division_record})"
@@ -214,7 +223,7 @@ class DivisionTeamWrapper:
             self.team._conference_record_lt,
             self.team._strength_of_victory_lt,
             self.team._strength_of_schedule_lt,
-            self.team._coin_flip
+            self.team._coin_flip,
         ]
 
         for comparison in comparisons:
@@ -237,7 +246,7 @@ class ConferenceTeamWrapper:
             self.team._common_games_record_lt,
             self.team._strength_of_victory_lt,
             self.team._strength_of_schedule_lt,
-            self.team._coin_flip
+            self.team._coin_flip,
         ]
 
         for comparison in comparisons:

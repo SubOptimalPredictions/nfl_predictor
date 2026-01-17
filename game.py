@@ -5,6 +5,7 @@ game between two :class:`Team` objects. Games can be simulated either
 deterministically from a final score or probabilistically using a
 two-element probability vector for the away/home team.
 """
+
 import math
 import numpy as np
 from team import Team
@@ -59,7 +60,7 @@ class Game:
     def load_games_from_csv(
         schedule_filepath: str,
         teams: dict[str, Team],
-        game_mode: GameLoadingMode = GameLoadingMode.ALL_GAMES,
+        game_mode: GameLoadingMode = GameLoadingMode.PLAYED_GAMES_ONLY,
     ) -> list["Game"]:
         """Load games from a CSV file.
         Args:
@@ -120,18 +121,22 @@ class Game:
         return prob
 
     def get_point_differential(self):
-        assert (self.score[0, 0] is not None and self.score[0, 1] is not None), "Cannot compute point differential for an unplayed game"
+        assert (
+            self.score[0, 0] is not None and self.score[0, 1] is not None
+        ), "Cannot compute point differential for an unplayed game"
         return abs(self.score[0, 0] - self.score[0, 1])
-        
+
     def get_margin_of_victory_multiplier(self):
         differential = self.get_point_differential()
         if differential == 0:
             return 1
-        
+
         winning_team, losing_team = self.get_winning_losing_teams()
         elo_diff = winning_team.elo_rating - losing_team.elo_rating
-    
-        return math.log(self.get_point_differential() + 1) * (K_FACTOR_SCALE / ((elo_diff) * ELASTICITY + K_FACTOR_SCALE))
+
+        return math.log(self.get_point_differential() + 1) * (
+            K_FACTOR_SCALE / ((elo_diff) * ELASTICITY + K_FACTOR_SCALE)
+        )
 
     def get_winning_losing_teams(self):
         if self.score[0, 0] > self.score[0, 1]:
@@ -149,13 +154,14 @@ class Game:
             S_away = 0.5
 
         S_home = 1 - S_away
-        E_away = self.calculate_win_probability()
-        E_home = 1 - E_away
+        E_home = self.calculate_win_probability()
+        E_away = 1 - E_home
 
         adjusted_K = K * self.get_margin_of_victory_multiplier()
-
-        self.away_team.update_elo(int(adjusted_K * (S_away - E_away)))
-        self.home_team.update_elo(int(adjusted_K * (S_home - E_home)))
+        away_update = int(adjusted_K * (S_away - E_away))
+        home_update = int(adjusted_K * (S_home - E_home))
+        self.away_team.update_elo(away_update)
+        self.home_team.update_elo(home_update)
 
     def simulate(self) -> None:
         """Simulate the game and update team records.
