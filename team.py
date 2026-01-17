@@ -37,6 +37,7 @@ class Team:
         record: np.ndarray,
         conference: str,
         division: str,
+        staring_elo: int = 1500
     ):
 
         # Ensure Record is of the proper type and shape
@@ -56,6 +57,8 @@ class Team:
         self.strength_of_schedule: np.ndarray = np.array([0, 0, 0])
         # Sum of W - L - T of defeated opponents
         self.strength_of_victory: np.ndarray = np.array([0, 0, 0])
+        # Elo Rating
+        self.elo_rating = staring_elo
 
     @staticmethod
     def load_teams_from_csv(
@@ -115,6 +118,10 @@ class Team:
             )
             + delta
         )
+    
+    def update_elo(self, elo_delta: int):
+        assert (isinstance(elo_delta, int)), "elo_delta must be of type int"
+        self.elo_rating += elo_delta
 
     def _overall_record_lt(self, other):
         my_pct = self.get_record_pct()
