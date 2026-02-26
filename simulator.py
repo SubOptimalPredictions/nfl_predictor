@@ -191,6 +191,7 @@ class Simulator():
         return playoff_probabilities
 
 def compute_win_loss_next_game_playoff_probabilities():
+    # TODO: Fix the situation when there are no next unplayed games
     playoff_prob_by_team_after_next_game_outcome = {}
     sim = Simulator()
     season = sim.base_season
@@ -224,10 +225,10 @@ def compute_win_loss_next_game_playoff_probabilities():
 
 
 if __name__ == "__main__":
-    # playoff_prob_by_team_after_next_game_outcome = compute_win_loss_next_game_playoff_probabilities()
-    # for team in playoff_prob_by_team_after_next_game_outcome:
-    #     print(team, playoff_prob_by_team_after_next_game_outcome[team])
-    # exit()
+    playoff_prob_by_team_after_next_game_outcome = compute_win_loss_next_game_playoff_probabilities()
+    for team in playoff_prob_by_team_after_next_game_outcome:
+        print(team, playoff_prob_by_team_after_next_game_outcome[team])
+    exit()
     # aggregator, num_times_run = simulate()
     start_time = time.time()
     # aggregator, num_times_run = parallel_simulatation(
