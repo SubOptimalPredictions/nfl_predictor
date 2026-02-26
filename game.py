@@ -26,6 +26,7 @@ class GameLoadingMode(Enum):
     ALL_GAMES = 1
     UPCOMING_GAMES_ONLY = 2
     PLAYED_GAMES_ONLY = 3
+    PLAYED_GAMES_REGULAR_SEASON_ONLY = 4
 
 
 class Game:
@@ -60,7 +61,7 @@ class Game:
     def load_games_from_csv(
         schedule_filepath: str,
         teams: dict[str, Team],
-        game_mode: GameLoadingMode = GameLoadingMode.PLAYED_GAMES_ONLY,
+        game_mode: GameLoadingMode = GameLoadingMode.PLAYED_GAMES_REGULAR_SEASON_ONLY,
     ) -> list["Game"]:
         """Load games from a CSV file.
         Args:
@@ -78,6 +79,9 @@ class Game:
                     continue
             elif game_mode == GameLoadingMode.PLAYED_GAMES_ONLY:
                 if row["result"] is None:
+                    continue
+            elif game_mode == GameLoadingMode.PLAYED_GAMES_REGULAR_SEASON_ONLY:
+                if row["result"] is None or row["game_type"] != "REG":
                     continue
             away_team = teams[row["away_team"]]
             home_team = teams[row["home_team"]]
