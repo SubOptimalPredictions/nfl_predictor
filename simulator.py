@@ -153,6 +153,42 @@ class Simulator():
         for team in aggregator:
             aggregator[team] = aggregator[team] / num_times_run
         return aggregator
+    
+    """ START: TO MOVE ELSEWHERE """
+    @staticmethod
+    def calculate_playoff_probability(finishing_pos_count, num_times_run):
+        """Calculate probability of making playoffs (top 7)"""
+        # print(finishing_pos_count)
+        if num_times_run == 0:
+            return 0.0
+        return np.sum(finishing_pos_count[:7]) / num_times_run
+
+    @staticmethod
+    def calculate_division_winner_probability(finishing_pos_count, num_times_run):
+        """Calculate probability of winning division (top 4)"""
+        if num_times_run == 0:
+            return 0.0
+        return np.sum(finishing_pos_count[:4]) / num_times_run
+    
+    @staticmethod
+    def calculate_conference_winner_probability(finishing_pos_count, num_times_run):
+        """Calculate probability of winning division (top 4)"""
+        if num_times_run == 0:
+            return 0.0
+        return np.sum(finishing_pos_count[:1]) / num_times_run
+    
+    """ END: TO MOVE ELSEWHERE """
+
+    @staticmethod
+    def compute_full_results_table(aggregator, num_times_run):
+        playoff_probabilities = {}
+        for team in aggregator:
+            playoff_probabilities[team] = {
+                'playoffs': Simulator.calculate_playoff_probability(aggregator[team], num_times_run),
+                'division_winner': Simulator.calculate_division_winner_probability(aggregator[team], num_times_run),
+                'conference_winner': Simulator.calculate_conference_winner_probability(aggregator[team], num_times_run),
+            }
+        return playoff_probabilities
 
 def compute_win_loss_next_game_playoff_probabilities():
     playoff_prob_by_team_after_next_game_outcome = {}
@@ -188,10 +224,10 @@ def compute_win_loss_next_game_playoff_probabilities():
 
 
 if __name__ == "__main__":
-    playoff_prob_by_team_after_next_game_outcome = compute_win_loss_next_game_playoff_probabilities()
-    for team in playoff_prob_by_team_after_next_game_outcome:
-        print(team, playoff_prob_by_team_after_next_game_outcome[team])
-    exit()
+    # playoff_prob_by_team_after_next_game_outcome = compute_win_loss_next_game_playoff_probabilities()
+    # for team in playoff_prob_by_team_after_next_game_outcome:
+    #     print(team, playoff_prob_by_team_after_next_game_outcome[team])
+    # exit()
     # aggregator, num_times_run = simulate()
     start_time = time.time()
     # aggregator, num_times_run = parallel_simulatation(
@@ -201,7 +237,10 @@ if __name__ == "__main__":
     # sim.modify_game_probabilities("GB-CHI", np.array([0.0, 1.0]))
     # nfc, afc = sim.simulate_single_season()
     # print(nfc)
-    aggregator, num_times_run = sim.simulate()
+    aggregator, num_times_run = sim.simulate(num_iterations=10)
+    # print(aggregator)
+    output = Simulator.compute_full_results_table(aggregator, num_times_run)
+    print(output)
     # aggregator, num_times_run = simulate()
 
     print(f"Elapsed Time: {time.time() - start_time:.2f} seconds")
