@@ -15,8 +15,8 @@ ID,Name,Abbreviation,Conference,Division,Wins,Losses,Ties,Elo
 14,Indianapolis Colts,IND,AFC,South,2,2,0,1500
 15,Jacksonville Jaguars,JAX,AFC,South,3,1,0,1555
 16,Kansas City Chiefs,KC,AFC,West,3,0,0,1559
-17,Miami Dolphins,MIA,AFC,East,0,3,0,1433
-18,Minnesota Vikings,MIN,NFC,North,3,0,0,1565
+17,Miami Dolphins,MIA,AFC,East,0,4,0,1425
+18,Minnesota Vikings,MIN,NFC,North,4,0,0,1573
 19,New England Patriots,NE,AFC,East,2,2,0,1505
 20,New Orleans Saints,NO,NFC,South,1,2,0,1498
 21,New York Giants,NYG,NFC,East,3,1,0,1519

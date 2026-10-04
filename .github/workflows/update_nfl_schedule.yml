@@ -30,7 +30,7 @@ jobs:
       - name: Run update script
         # 'uv run' will automatically install dependencies from pyproject.toml 
         # and run the script in that environment.
-        run: uv run scripts/test_nfl_api.py
+        run: uv run scripts/weekly_data_update.py
 
       - name: Commit and Push changes
         run: |

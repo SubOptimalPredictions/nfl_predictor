@@ -5,6 +5,7 @@ import polars as pl
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from game import GameLoadingMode
 from season import Season
 
 # write a function that loads schedules_2026.csv and calculates each team's win-loss-tie record, and adds it to teams.csv as 3 new columns
@@ -64,6 +65,7 @@ def calculate_records(schedule_path: str, teams_path: str, output_path: str):
     season = Season.load_season(
         teams_file_path=teams_path,
         schedule_filepath=schedule_path,
+        game_mode=GameLoadingMode.PLAYED_GAMES_REGULAR_SEASON_ONLY,
     )
     season.simulate_elo()
     elos = [season.team_name_to_team[team].elo_rating for team in teams["Abbreviation"]]
