@@ -11,7 +11,6 @@ import numpy as np
 import polars as pl
 import time
 from utils import total_record_to_pct
-from operator import itemgetter
 import os
 
 
@@ -21,7 +20,10 @@ def get_strength_of_victory(team: Team, team_name_to_team):
         for loser, record in list(team.head_to_head_record.items())
         if record[0, 0] > 0
     ]
-    losing_teams = itemgetter(*losing_abbvrs)(team_name_to_team)
+    if not losing_abbvrs:
+        return 0.0
+
+    losing_teams = [team_name_to_team[abbreviation] for abbreviation in losing_abbvrs]
     loser_records = [
         np.concatenate(list(opp.head_to_head_record.values())) for opp in losing_teams
     ]
@@ -29,7 +31,13 @@ def get_strength_of_victory(team: Team, team_name_to_team):
 
 
 def get_strength_of_schedule(team: Team, team_name_to_team):
-    opponents = itemgetter(*list(team.head_to_head_record.keys()))(team_name_to_team)
+    opponent_abbreviations = list(team.head_to_head_record.keys())
+    if not opponent_abbreviations:
+        return 0.0
+
+    opponents = [
+        team_name_to_team[abbreviation] for abbreviation in opponent_abbreviations
+    ]
     opponent_records = [
         np.concatenate(list(opp.head_to_head_record.values())) for opp in opponents
     ]
