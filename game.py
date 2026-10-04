@@ -99,17 +99,21 @@ class Game:
                 probabilities = moneyline_to_probability(
                     row["away_moneyline"], row["home_moneyline"]
                 )
-            elif (
-                row["gemini_away_win_prob"] is not None
-                and row["gemini_home_win_prob"] is not None
-            ):
+            else:
+                away_elo = away_team.elo_rating
+                home_elo = home_team.elo_rating
+
+                d = (home_elo + HOME_FIELD_ADVANTAGE) - away_elo
+
+                home_win_prob = 1 / (1 + 10 ** (-d / 400))
+                away_win_prob = 1 - home_win_prob
+
                 probabilities = np.array(
                     [
-                        float(row["gemini_away_win_prob"]),
-                        float(row["gemini_home_win_prob"]),
+                        away_win_prob,
+                        home_win_prob
                     ]
                 )
-
             game = Game(away_team, home_team, score, probabilities)
             games.append(game)
 
