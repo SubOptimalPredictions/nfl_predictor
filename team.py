@@ -10,7 +10,6 @@ import numpy as np
 import polars as pl
 from utils import record_to_pct, total_record_to_pct
 from enum import Enum
-from operator import itemgetter
 from random import randint
 
 
@@ -172,15 +171,18 @@ class Team:
         common_opponents = set(self.head_to_head_record.keys()).intersection(
             other.head_to_head_record.keys()
         )
-        my_h2h_pct = total_record_to_pct(
-            np.array(itemgetter(*common_opponents)(self.head_to_head_record)).reshape(
-                (-1, 3)
-            )
-        )
+        if not common_opponents:
+            return None
+
+        self_common_records = [
+            self.head_to_head_record[opponent] for opponent in common_opponents
+        ]
+        other_common_records = [
+            other.head_to_head_record[opponent] for opponent in common_opponents
+        ]
+        my_h2h_pct = total_record_to_pct(np.concatenate(self_common_records, axis=0))
         other_h2h_pct = total_record_to_pct(
-            np.array(itemgetter(*common_opponents)(other.head_to_head_record)).reshape(
-                (-1, 3)
-            )
+            np.concatenate(other_common_records, axis=0)
         )
 
         if my_h2h_pct < other_h2h_pct:
