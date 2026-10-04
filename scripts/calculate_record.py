@@ -1,6 +1,6 @@
 import polars as pl
 
-# write a function that loads schedules_2025.csv and calculates each team's win-loss-tie record, and adds it to teams.csv as 3 new columns
+# write a function that loads schedules_2026.csv and calculates each team's win-loss-tie record, and adds it to teams.csv as 3 new columns
 
 
 def calculate_records(schedule_path: str, teams_path: str, output_path: str):
@@ -12,7 +12,6 @@ def calculate_records(schedule_path: str, teams_path: str, output_path: str):
 
     # Iterate through each game in the schedule
     for row in schedule.iter_rows(named=True):
-
         home_team = row["home_team"]
         away_team = row["away_team"]
         home_score = row["home_score"]
@@ -64,5 +63,5 @@ def calculate_records(schedule_path: str, teams_path: str, output_path: str):
 
 if __name__ == "__main__":
     calculate_records(
-        "data/schedules_2025.csv", "data/teams.csv", "data/teams_with_records.csv"
+        "data/schedules_2026.csv", "data/teams.csv", "data/teams_with_records.csv"
     )

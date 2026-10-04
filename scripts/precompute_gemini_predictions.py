@@ -82,7 +82,7 @@ def precompute_gemini_predictions(
 
 if __name__ == "__main__":
     precompute_gemini_predictions(
-        "data/schedules_2025.csv",
+        "data/schedules_2026.csv",
         "data/teams_with_records.csv",
-        "data/schedules_2025.csv",
+        "data/schedules_2026.csv",
     )

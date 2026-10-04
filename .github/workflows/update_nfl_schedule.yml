@@ -38,7 +38,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           
           # Add the specific file you updated
-          git add data/schedules_2025.csv
+          git add data/schedules_2026.csv
           
           # Check if there are changes before committing to avoid errors
           if [[ -n $(git status -s) ]]; then

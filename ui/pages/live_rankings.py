@@ -1,6 +1,7 @@
 """
 Live Rankings page for NFL Season Simulator
 """
+
 import streamlit as st
 import polars as pl
 import time
@@ -18,7 +19,7 @@ from ui.utils import (
     get_team_divisions,
     render_division_filter,
     render_html_ranking_table,
-    get_projected_order
+    get_projected_order,
 )
 from utils import update_schedule
 
@@ -41,7 +42,7 @@ def render_live_rankings_page():
     # Show any user-selected picks from the Schedule page, grouped by week
     if st.session_state.get("user_picks"):
         try:
-            df_schedule = pl.read_csv("data/schedules_2025.csv")
+            df_schedule = pl.read_csv("data/schedules_2026.csv")
             picks = st.session_state.user_picks
 
             # Build mapping week -> list of picks
@@ -80,7 +81,10 @@ def render_live_rankings_page():
                         st.rerun()
 
                 # Sort weeks numerically if possible
-                for week in sorted(picks_by_week.keys(), key=lambda w: int(w) if str(w).isdigit() else str(w)):
+                for week in sorted(
+                    picks_by_week.keys(),
+                    key=lambda w: int(w) if str(w).isdigit() else str(w),
+                ):
                     st.markdown(f"**Week {week}**")
                     for pick in picks_by_week[week]:
                         # Columns: away logo, home logo, matchup text, selected indicator
@@ -104,9 +108,9 @@ def render_live_rankings_page():
 
                         # Matchup text with selected team highlighted
                         with pick_cols[2]:
-                            away = pick['away']
-                            home = pick['home']
-                            selected = pick['selected']
+                            away = pick["away"]
+                            home = pick["home"]
+                            selected = pick["selected"]
                             # Bold the selected team in the matchup
                             if selected == away:
                                 md = f"- **{away}** @ {home} — **Selected: {away}**"
@@ -118,7 +122,9 @@ def render_live_rankings_page():
 
                         # Right: selected team's logo (if available)
                         with pick_cols[3]:
-                            sel_logo = get_base64_image(f"assets/{pick['selected']}.png")
+                            sel_logo = get_base64_image(
+                                f"assets/{pick['selected']}.png"
+                            )
                             if sel_logo:
                                 st.image(f"data:image/png;base64,{sel_logo}", width=40)
                             else:
@@ -138,19 +144,27 @@ def render_live_rankings_page():
             # Compute diffs
             added = [g for g in curr_picks.keys() if g not in last_picks.keys()]
             removed = [g for g in last_picks.keys() if g not in curr_picks.keys()]
-            changed = [g for g in curr_picks.keys() if g in last_picks.keys() and curr_picks[g] != last_picks[g]]
+            changed = [
+                g
+                for g in curr_picks.keys()
+                if g in last_picks.keys() and curr_picks[g] != last_picks[g]
+            ]
 
             # Load schedule to render readable game info
             try:
-                df_schedule = pl.read_csv("data/schedules_2025.csv")
+                df_schedule = pl.read_csv("data/schedules_2026.csv")
                 game_map = {}
                 for r in df_schedule.iter_rows(named=True):
                     gid = r["away_team"] + "-" + r["home_team"]
-                    game_map[gid] = f"{r.get('away_team')} @ {r.get('home_team')} (Week {r.get('week')})"
+                    game_map[gid] = (
+                        f"{r.get('away_team')} @ {r.get('home_team')} (Week {r.get('week')})"
+                    )
             except Exception:
                 game_map = {}
 
-            st.warning("Out of date simulation: your current picks differ from those used for the last simulation.")
+            st.warning(
+                "Out of date simulation: your current picks differ from those used for the last simulation."
+            )
 
             if added:
                 st.markdown("**Added picks:**")
@@ -162,20 +176,32 @@ def render_live_rankings_page():
                 st.markdown("**Removed picks:**")
                 for g in removed:
                     label = game_map.get(g, g)
-                    st.markdown(f"- {label} — previously selected: **{last_picks.get(g)}**")
+                    st.markdown(
+                        f"- {label} — previously selected: **{last_picks.get(g)}**"
+                    )
 
             if changed:
                 st.markdown("**Changed picks:**")
                 for g in changed:
                     label = game_map.get(g, g)
-                    st.markdown(f"- {label} — was **{last_picks.get(g)}**, now **{curr_picks.get(g)}**")
+                    st.markdown(
+                        f"- {label} — was **{last_picks.get(g)}**, now **{curr_picks.get(g)}**"
+                    )
 
             # Action: clear previous simulation results
             if st.button("Clear previous simulation results", key="clear_sim_results"):
-                for k in ["simulation_complete", "aggregator", "num_times_run", "last_simulation_picks", "last_simulation_at"]:
+                for k in [
+                    "simulation_complete",
+                    "aggregator",
+                    "num_times_run",
+                    "last_simulation_picks",
+                    "last_simulation_at",
+                ]:
                     if k in st.session_state:
                         del st.session_state[k]
-                st.success("Previous simulation results cleared. Please re-run the simulation.")
+                st.success(
+                    "Previous simulation results cleared. Please re-run the simulation."
+                )
                 st.rerun()
 
     # Prevent starting another simulation while one is already running
@@ -188,9 +214,8 @@ def render_live_rankings_page():
     if st.sidebar.button("▶️ Start Simulation", type="primary", disabled=start_disabled):
         # Mark that a simulation is in progress so the button is disabled on reruns
         st.session_state.simulation_running = True
-        update_schedule('data/schedules_2025.csv')
+        update_schedule("data/schedules_2026.csv")
         team_conferences = get_team_conferences()
-        
 
         progress_bar = st.progress(0, text="Starting simulation...")
         start_time = time.time()
@@ -199,8 +224,6 @@ def render_live_rankings_page():
             print(st.session_state.user_picks)
             sim = Simulator()
             for game in st.session_state.user_picks:
-                
-            
                 game_obj = sim.base_season.lookup_game(game)
                 winning_team = st.session_state.user_picks[game]
                 print(game, winning_team)
@@ -209,7 +232,7 @@ def render_live_rankings_page():
                 elif winning_team == game_obj.get_away_team().abbreviation:
                     modified_probs = np.array([1.0, 0.0])
                 sim.modify_game_probabilities(game_obj, modified_probs)
-            
+
             aggregator, num_times_run = sim.simulate(num_iterations=1000)
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -219,14 +242,14 @@ def render_live_rankings_page():
             st.session_state.num_times_run = num_times_run
             st.session_state.simulation_complete = True
             # Record the picks that were used for this simulation so we can detect changes later
-            st.session_state.last_simulation_picks = dict(st.session_state.get("user_picks", {}) or {})
+            st.session_state.last_simulation_picks = dict(
+                st.session_state.get("user_picks", {}) or {}
+            )
             st.session_state.last_simulation_at = time.time()
             # Clear running flag before rerunning so UI enables the Start button
             st.session_state.simulation_running = False
             # Store a summary message so it can be shown after the rerun
-            st.session_state.last_simulation_summary = (
-                f"✅ Simulation Complete! Ran {num_times_run} successful iterations in {elapsed_time:.2f} seconds ({num_times_run/elapsed_time:.1f} iterations/sec)"
-            )
+            st.session_state.last_simulation_summary = f"✅ Simulation Complete! Ran {num_times_run} successful iterations in {elapsed_time:.2f} seconds ({num_times_run / elapsed_time:.1f} iterations/sec)"
             # Re-run to refresh UI so warning about out-of-date picks clears immediately
             st.rerun()
         except Exception as e:
@@ -256,7 +279,9 @@ def render_live_rankings_page():
                 calculate_playoff_probability(finishing_pos_count, num_times_run) * 100
             )
             division_winner_prob = (
-                calculate_division_winner_probability(finishing_pos_count, num_times_run)
+                calculate_division_winner_probability(
+                    finishing_pos_count, num_times_run
+                )
                 * 100
             )
             first_seed_prob = (
@@ -303,18 +328,20 @@ def render_live_rankings_page():
             # Load NFC Logo
             nfc_logo_b64 = get_base64_image("assets/NFC.png")
             if nfc_logo_b64:
-                 st.markdown(textwrap.dedent(
-                    f"""
+                st.markdown(
+                    textwrap.dedent(
+                        f"""
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                         <img src="data:image/png;base64,{nfc_logo_b64}" style="height: 50px;">
                         <h3 style="margin: 0;">NFC Conference</h3>
                     </div>
-                    """),
-                    unsafe_allow_html=True
+                    """
+                    ),
+                    unsafe_allow_html=True,
                 )
             else:
                 st.subheader("🔵 NFC Conference")
-            
+
             # Custom Altair chart for NFC Playoff Chances with restricted bounds
             nfc_playoff_chart = (
                 alt.Chart(nfc_df)
@@ -332,16 +359,17 @@ def render_live_rankings_page():
 
             # "Seed" is column 0, "Team" is column 1
             top_nfc_team = nfc_df["Team"][0]
-            
+
             img_path = f"assets/{top_nfc_team}.png"
             img_base64 = get_base64_image(img_path)
-            
+
             logo_html = ""
             if img_base64:
                 logo_html = f'<img src="data:image/png;base64,{img_base64}" style="height: 50px; margin-left: 20px; vertical-align: middle; pointer-events: none;">'
-                
-            st.markdown(textwrap.dedent(
-                f"""
+
+            st.markdown(
+                textwrap.dedent(
+                    f"""
                 <div style="margin-bottom: 10px;">
                     <p style="font-size: 14px; margin-bottom: 0px; color: rgb(120, 120, 120);">Top NFC Team</p>
                     <div style="display: flex; align-items: center;">
@@ -349,8 +377,9 @@ def render_live_rankings_page():
                         {logo_html}
                     </div>
                 </div>
-                """),
-                unsafe_allow_html=True
+                """
+                ),
+                unsafe_allow_html=True,
             )
 
             nfc_1st_counts = aggregator.get(top_nfc_team, [])
@@ -360,7 +389,7 @@ def render_live_rankings_page():
                 else 0.0
             )
             st.metric("Top NFC 1st Seed Chance", f"{nfc_1st_prob:.1f}%")
-            
+
             # Render Custom HTML Table
             render_html_ranking_table(nfc_df, "#013369", "nfc")
 
@@ -369,18 +398,20 @@ def render_live_rankings_page():
             # Load AFC Logo
             afc_logo_b64 = get_base64_image("assets/AFC.png")
             if afc_logo_b64:
-                 st.markdown(textwrap.dedent(
-                    f"""
+                st.markdown(
+                    textwrap.dedent(
+                        f"""
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
                         <img src="data:image/png;base64,{afc_logo_b64}" style="height: 50px;">
                         <h3 style="margin: 0;">AFC Conference</h3>
                     </div>
-                    """),
-                    unsafe_allow_html=True
+                    """
+                    ),
+                    unsafe_allow_html=True,
                 )
             else:
                 st.subheader("🔴 AFC Conference")
-            
+
             # Custom Altair chart for AFC Playoff Chances with restricted bounds
             afc_playoff_chart = (
                 alt.Chart(afc_df)
@@ -398,16 +429,17 @@ def render_live_rankings_page():
 
             # "Seed" is column 0, "Team" is column 1
             top_afc_team = afc_df["Team"][0]
-            
+
             img_path = f"assests/{top_afc_team}.png"
             img_base64 = get_base64_image(img_path)
-            
+
             logo_html = ""
             if img_base64:
                 logo_html = f'<img src="data:image/png;base64,{img_base64}" style="height: 50px; margin-left: 20px; vertical-align: middle; pointer-events: none;">'
-                
-            st.markdown(textwrap.dedent(
-                f"""
+
+            st.markdown(
+                textwrap.dedent(
+                    f"""
                 <div style="margin-bottom: 10px;">
                     <p style="font-size: 14px; margin-bottom: 0px; color: rgb(120, 120, 120);">Top AFC Team</p>
                     <div style="display: flex; align-items: center;">
@@ -415,8 +447,9 @@ def render_live_rankings_page():
                         {logo_html}
                     </div>
                 </div>
-                """),
-                unsafe_allow_html=True
+                """
+                ),
+                unsafe_allow_html=True,
             )
 
             afc_1st_counts = aggregator.get(top_afc_team, [])
@@ -426,7 +459,7 @@ def render_live_rankings_page():
                 else 0.0
             )
             st.metric("Top AFC 1st Seed Chance", f"{afc_1st_prob:.1f}%")
-            
+
             # Render Custom HTML Table
             render_html_ranking_table(afc_df, "#D50A0A", "afc")
 
@@ -438,21 +471,20 @@ def render_live_rankings_page():
         nfc_team_names = sorted(
             [t for t in aggregator.keys() if team_conferences.get(t) == "NFC"]
         )
-        
+
         # Division Filter (NFC) - Checkboxes
         nfc_divs_selected = render_division_filter("NFC", "nfc_div_filter_chk")
-        
+
         nfc_defaults = [
-            t for t in nfc_team_names 
-            if team_divisions.get(t) in nfc_divs_selected
+            t for t in nfc_team_names if team_divisions.get(t) in nfc_divs_selected
         ]
-            
+
         nfc_selected_teams = st.multiselect(
-            "Select NFC Teams to View", 
-            nfc_team_names, 
+            "Select NFC Teams to View",
+            nfc_team_names,
             default=nfc_defaults,
             # Update key to force refresh when division selection changes
-            key=f"nfc_multiselect_{tuple(sorted(nfc_divs_selected))}"
+            key=f"nfc_multiselect_{tuple(sorted(nfc_divs_selected))}",
         )
 
         if nfc_selected_teams:
@@ -477,19 +509,28 @@ def render_live_rankings_page():
                 .mark_bar()
                 .encode(
                     x=alt.X("Position:O", title="Finishing Position"),
-                    y=alt.Y("Probability:Q", title="Probability", scale=alt.Scale(domain=[0, 1])),
+                    y=alt.Y(
+                        "Probability:Q",
+                        title="Probability",
+                        scale=alt.Scale(domain=[0, 1]),
+                    ),
                     color=alt.Color(
                         "Team:N",
                         scale=alt.Scale(
                             domain=list(nfc_selected_teams),
                             range=[
-                                TEAM_COLORS.get(t, "#000000") for t in nfc_selected_teams
+                                TEAM_COLORS.get(t, "#000000")
+                                for t in nfc_selected_teams
                             ],
                         ),
                         legend=alt.Legend(title="Team"),
                     ),
                     xOffset="Team:N",
-                    tooltip=["Team", "Position", alt.Tooltip("Probability", format=".1%")],
+                    tooltip=[
+                        "Team",
+                        "Position",
+                        alt.Tooltip("Probability", format=".1%"),
+                    ],
                 )
                 .properties(height=500)
                 .interactive(bind_y=False)
@@ -503,20 +544,19 @@ def render_live_rankings_page():
         afc_team_names = sorted(
             [t for t in aggregator.keys() if team_conferences.get(t) == "AFC"]
         )
-        
+
         # Division Filter (AFC) - Checkboxes
         afc_divs_selected = render_division_filter("AFC", "afc_div_filter_chk")
-        
+
         afc_defaults = [
-            t for t in afc_team_names 
-            if team_divisions.get(t) in afc_divs_selected
+            t for t in afc_team_names if team_divisions.get(t) in afc_divs_selected
         ]
 
         afc_selected_teams = st.multiselect(
-            "Select AFC Teams to View", 
-            afc_team_names, 
+            "Select AFC Teams to View",
+            afc_team_names,
             default=afc_defaults,
-            key=f"afc_multiselect_{tuple(sorted(afc_divs_selected))}"
+            key=f"afc_multiselect_{tuple(sorted(afc_divs_selected))}",
         )
 
         if afc_selected_teams:
@@ -541,19 +581,28 @@ def render_live_rankings_page():
                 .mark_bar()
                 .encode(
                     x=alt.X("Position:O", title="Finishing Position"),
-                    y=alt.Y("Probability:Q", title="Probability", scale=alt.Scale(domain=[0, 1])),
+                    y=alt.Y(
+                        "Probability:Q",
+                        title="Probability",
+                        scale=alt.Scale(domain=[0, 1]),
+                    ),
                     color=alt.Color(
                         "Team:N",
                         scale=alt.Scale(
                             domain=list(afc_selected_teams),
                             range=[
-                                TEAM_COLORS.get(t, "#000000") for t in afc_selected_teams
+                                TEAM_COLORS.get(t, "#000000")
+                                for t in afc_selected_teams
                             ],
                         ),
                         legend=alt.Legend(title="Team"),
                     ),
                     xOffset="Team:N",
-                    tooltip=["Team", "Position", alt.Tooltip("Probability", format=".1%")],
+                    tooltip=[
+                        "Team",
+                        "Position",
+                        alt.Tooltip("Probability", format=".1%"),
+                    ],
                 )
                 .properties(height=500)
                 .interactive(bind_y=False)

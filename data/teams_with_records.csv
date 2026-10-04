@@ -1,33 +1,33 @@
 ID,Name,Abbreviation,Conference,Division,Wins,Losses,Ties
-1,Arizona Cardinals,ARI,NFC,West,3,10,0
-2,Atlanta Falcons,ATL,NFC,South,5,9,0
-3,Baltimore Ravens,BAL,AFC,North,6,7,0
-4,Buffalo Bills,BUF,AFC,East,9,4,0
-5,Carolina Panthers,CAR,NFC,South,7,6,0
-6,Chicago Bears,CHI,NFC,North,9,4,0
-7,Cincinnati Bengals,CIN,AFC,North,4,9,0
-8,Cleveland Browns,CLE,AFC,North,3,10,0
-9,Dallas Cowboys,DAL,NFC,East,6,6,1
-10,Denver Broncos,DEN,AFC,West,11,2,0
-11,Detroit Lions,DET,NFC,North,8,5,0
-12,Green Bay Packers,GB,NFC,North,9,3,1
-13,Houston Texans,HOU,AFC,South,8,5,0
-14,Indianapolis Colts,IND,AFC,South,8,5,0
-15,Jacksonville Jaguars,JAX,AFC,South,9,4,0
-16,Kansas City Chiefs,KC,AFC,West,6,7,0
-17,Miami Dolphins,MIA,AFC,East,6,7,0
-18,Minnesota Vikings,MIN,NFC,North,5,8,0
-19,New England Patriots,NE,AFC,East,11,2,0
-20,New Orleans Saints,NO,NFC,South,3,10,0
-21,New York Giants,NYG,NFC,East,2,11,0
-22,New York Jets,NYJ,AFC,East,3,10,0
-23,Las Vegas Raiders,LV,AFC,West,2,11,0
-24,Philadelphia Eagles,PHI,NFC,East,8,5,0
-25,Pittsburgh Steelers,PIT,AFC,North,7,6,0
-26,Los Angeles Chargers,LAC,AFC,West,9,4,0
-27,San Francisco 49ers,SF,NFC,West,9,4,0
-28,Seattle Seahawks,SEA,NFC,West,10,3,0
-29,Los Angeles Rams,LA,NFC,West,10,3,0
-30,Tampa Bay Buccaneers,TB,NFC,South,7,7,0
-31,Tennessee Titans,TEN,AFC,South,2,11,0
-32,Washington Commanders,WAS,NFC,East,3,10,0
+1,Arizona Cardinals,ARI,NFC,West,1,3,0
+2,Atlanta Falcons,ATL,NFC,South,1,2,0
+3,Baltimore Ravens,BAL,AFC,North,3,1,0
+4,Buffalo Bills,BUF,AFC,East,3,1,0
+5,Carolina Panthers,CAR,NFC,South,1,2,0
+6,Chicago Bears,CHI,NFC,North,3,1,0
+7,Cincinnati Bengals,CIN,AFC,North,2,2,0
+8,Cleveland Browns,CLE,AFC,North,3,1,0
+9,Dallas Cowboys,DAL,NFC,East,2,2,0
+10,Denver Broncos,DEN,AFC,West,2,1,0
+11,Detroit Lions,DET,NFC,North,2,1,0
+12,Green Bay Packers,GB,NFC,North,2,2,0
+13,Houston Texans,HOU,AFC,South,0,4,0
+14,Indianapolis Colts,IND,AFC,South,2,2,0
+15,Jacksonville Jaguars,JAX,AFC,South,3,1,0
+16,Kansas City Chiefs,KC,AFC,West,3,0,0
+17,Miami Dolphins,MIA,AFC,East,0,3,0
+18,Minnesota Vikings,MIN,NFC,North,3,0,0
+19,New England Patriots,NE,AFC,East,2,2,0
+20,New Orleans Saints,NO,NFC,South,1,2,0
+21,New York Giants,NYG,NFC,East,3,1,0
+22,New York Jets,NYJ,AFC,East,1,3,0
+23,Las Vegas Raiders,LV,AFC,West,3,0,0
+24,Philadelphia Eagles,PHI,NFC,East,2,2,0
+25,Pittsburgh Steelers,PIT,AFC,North,2,2,0
+26,Los Angeles Chargers,LAC,AFC,West,0,3,0
+27,San Francisco 49ers,SF,NFC,West,3,0,0
+28,Seattle Seahawks,SEA,NFC,West,2,1,0
+29,Los Angeles Rams,LA,NFC,West,2,2,0
+30,Tampa Bay Buccaneers,TB,NFC,South,0,4,0
+31,Tennessee Titans,TEN,AFC,South,0,4,0
+32,Washington Commanders,WAS,NFC,East,1,3,0

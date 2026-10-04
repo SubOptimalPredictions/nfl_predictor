@@ -1,6 +1,7 @@
 """
 Schedule page for NFL Season Simulator
 """
+
 import streamlit as st
 import polars as pl
 import textwrap
@@ -23,32 +24,32 @@ def render_schedule_page():
             pick_data = query_params["pick"]
             if isinstance(pick_data, list):
                 pick_data = pick_data[0]
-            
+
             if ":" in pick_data:
                 game_id_param, team_param = pick_data.split(":", 1)
-                
+
                 # Check if this team is already selected
                 current_pick = st.session_state.user_picks.get(game_id_param)
-                
+
                 if current_pick == team_param:
                     # Deselect
                     del st.session_state.user_picks[game_id_param]
                 else:
                     # Select or switch
                     st.session_state.user_picks[game_id_param] = team_param
-                
+
                 # Clear query params and rerun
                 st.query_params.clear()
                 st.rerun()
         except Exception:
             pass
-            
+
     st.header("📅 NFL Season Schedule")
-    
+
     # Load data
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
-    df_schedule = pl.read_csv("data/schedules_2025.csv")
-    
+    df_schedule = pl.read_csv("data/schedules_2026.csv")
+
     # Get sorted unique weeks
     weeks = df_schedule["week"].unique().sort()
 
@@ -56,8 +57,12 @@ def render_schedule_page():
     record_lookup = {}
     try:
         # Initialize team stats
-        teams_in_schedule = set(df_schedule["away_team"]) | set(df_schedule["home_team"])
-        team_stats = {t: [0, 0, 0, 0] for t in teams_in_schedule}  # wins, losses, ties, games
+        teams_in_schedule = set(df_schedule["away_team"]) | set(
+            df_schedule["home_team"]
+        )
+        team_stats = {
+            t: [0, 0, 0, 0] for t in teams_in_schedule
+        }  # wins, losses, ties, games
 
         # Process weeks in order and accumulate results
         unique_weeks = sorted(list(df_schedule["week"].unique()))
@@ -91,19 +96,25 @@ def render_schedule_page():
 
             # After processing the week, record cumulative stats for all teams
             for t, stats in team_stats.items():
-                record_lookup[(t, int(w))] = (int(stats[0]), int(stats[1]), int(stats[2]), int(stats[3]))
+                record_lookup[(t, int(w))] = (
+                    int(stats[0]),
+                    int(stats[1]),
+                    int(stats[2]),
+                    int(stats[3]),
+                )
     except Exception:
         record_lookup = {}
-    
+
     selected_week = st.selectbox("Select Week", weeks, index=0)
-    
+
     # Filter for selected week
     week_games = df_schedule.filter(pl.col("week") == selected_week)
-    
+
     st.markdown("---")
-    
+
     # CSS for cards with pick styling and JavaScript for interaction
-    st.markdown(textwrap.dedent("""
+    st.markdown(
+        textwrap.dedent("""
         <style>
         .game-card {
             border: 1px solid #e0e0e0;
@@ -187,34 +198,38 @@ def render_schedule_page():
             padding-top: 8px;
         }
         </style>
-    """), unsafe_allow_html=True)
-    
+    """),
+        unsafe_allow_html=True,
+    )
+
     # Layout games in a grid
     cols = st.columns(3)  # 3 games per row
-    
+
     for i, game in enumerate(week_games.iter_rows(named=True)):
         col_idx = i % 3
-        
+
         # game_id = game["game_id"]
         away_team = game["away_team"]
         home_team = game["home_team"]
-        game_id = away_team + '-' + home_team # TODO: TEMP USE GENERIC GAME ID FOR BETTER USEABILITY ACROSS SEASONS
+        game_id = (
+            away_team + "-" + home_team
+        )  # TODO: TEMP USE GENERIC GAME ID FOR BETTER USEABILITY ACROSS SEASONS
         location = game["location"]
         weekday = game.get("weekday", "")
         gametime = game.get("gametime", "")
-        
+
         away_score = game.get("away_score")
         home_score = game.get("home_score")
-        
+
         # Get moneyline data
         away_moneyline = game.get("away_moneyline")
         home_moneyline = game.get("home_moneyline")
-        
+
         is_played = away_score is not None and home_score is not None
-        
+
         away_score_str = str(away_score) if away_score is not None else "-"
         home_score_str = str(home_score) if home_score is not None else "-"
-        
+
         # Format moneyline for display
         def format_moneyline(ml):
             if ml is None or ml == "":
@@ -224,26 +239,26 @@ def render_schedule_page():
                 return f"{ml_val:+d}" if ml_val != 0 else ""
             except:
                 return ""
-        
+
         away_ml_str = format_moneyline(away_moneyline)
         home_ml_str = format_moneyline(home_moneyline)
-        
+
         # Check for user pick
         user_pick = st.session_state.user_picks.get(game_id)
-        
+
         # Get logos
         away_logo_b64 = get_base64_image(f"assets/{away_team}.png")
         home_logo_b64 = get_base64_image(f"assets/{home_team}.png")
-        
+
         # Construct classes
         away_classes = "team-logo-large"
         home_classes = "team-logo-large"
-        
+
         if user_pick == away_team:
             away_classes += " picked-team"
         if user_pick == home_team:
             home_classes += " picked-team"
-            
+
         # Build card content
         with cols[col_idx]:
             # For unplayed games, show the card and add selection buttons
@@ -265,23 +280,31 @@ def render_schedule_page():
 
                 away_img = make_img_html(away_team, away_logo_b64, away_classes)
                 home_img = make_img_html(home_team, home_logo_b64, home_classes)
-                
+
                 # Add moneyline to team display if available
                 # Compute win probabilities: prefer Gemini predictions if present, else derive from moneyline
                 away_prob = None
                 home_prob = None
                 try:
                     # Prefer moneyline-derived probabilities when moneylines are available (more accurate)
-                    if away_moneyline not in (None, "") and home_moneyline not in (None, ""):
+                    if away_moneyline not in (None, "") and home_moneyline not in (
+                        None,
+                        "",
+                    ):
                         try:
-                            ml_probs = moneyline_to_probability(int(away_moneyline), int(home_moneyline))
-                            away_prob, home_prob = float(ml_probs[0]), float(ml_probs[1])
+                            ml_probs = moneyline_to_probability(
+                                int(away_moneyline), int(home_moneyline)
+                            )
+                            away_prob, home_prob = (
+                                float(ml_probs[0]),
+                                float(ml_probs[1]),
+                            )
                         except Exception:
                             away_prob = None
                             home_prob = None
 
                     # Fallback to Gemini predictions if moneyline not available or failed
-                    if (away_prob is None or home_prob is None):
+                    if away_prob is None or home_prob is None:
                         ga = game.get("gemini_away_win_prob")
                         gh = game.get("gemini_home_win_prob")
                         if ga not in (None, "") and gh not in (None, ""):
@@ -301,7 +324,7 @@ def render_schedule_page():
                     # Colors: away -> navy, home -> red
                     color = "#013369" if is_away else "#D50A0A"
                     pct = int(round(prob * 100))
-                    return f"<div style=\"margin-top:6px;\"><div style=\"display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:4px;\"><span>{'Win %'}</span><span><strong>{pct}%</strong></span></div><div style=\"background:#eee;border-radius:8px;overflow:hidden;height:8px;\"><div style=\"width:{pct}%;height:100%;background:{color};\"></div></div></div>"
+                    return f'<div style="margin-top:6px;"><div style="display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:4px;"><span>{"Win %"}</span><span><strong>{pct}%</strong></span></div><div style="background:#eee;border-radius:8px;overflow:hidden;height:8px;"><div style="width:{pct}%;height:100%;background:{color};"></div></div></div>'
 
                 split_display = ""
                 # If we have both probabilities, render a single split bar (away left, home right)
@@ -317,10 +340,18 @@ def render_schedule_page():
                     home_color = TEAM_COLORS.get(home_team, "#D50A0A")
                     # Include moneyline odds alongside the team names when available
                     # Prepare separate lines for moneyline odds to show under team names
-                    away_ml_line = f'<div style="color:#888; font-size:11px; margin-top:2px;">{away_ml_str}</div>' if away_ml_str else ""
-                    home_ml_line = f'<div style="color:#888; font-size:11px; margin-top:2px;">{home_ml_str}</div>' if home_ml_str else ""
+                    away_ml_line = (
+                        f'<div style="color:#888; font-size:11px; margin-top:2px;">{away_ml_str}</div>'
+                        if away_ml_str
+                        else ""
+                    )
+                    home_ml_line = (
+                        f'<div style="color:#888; font-size:11px; margin-top:2px;">{home_ml_str}</div>'
+                        if home_ml_str
+                        else ""
+                    )
 
-                    split_display = f'''<div style="width:100%; margin-top:8px;">
+                    split_display = f"""<div style="width:100%; margin-top:8px;">
                         <div style="display:flex;justify-content:space-between;font-size:11px;color:#666;margin-bottom:6px;">
                             <div style="text-align:left;">
                                 <div><strong>{away_team}</strong> <span style="color:#333;">{away_pct}%</span></div>
@@ -333,14 +364,22 @@ def render_schedule_page():
                             <div style="width:{away_pct}%;background:{away_color};height:100%;"></div>
                             <div style="width:{home_pct}%;background:{home_color};height:100%;"></div>
                         </div>
-                    </div>'''
+                    </div>"""
                     # Show moneyline odds under the main team name in the card
                     away_ml_display = away_ml_line
                     home_ml_display = home_ml_line
                 else:
-                    away_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{away_ml_str}</div>' if away_ml_str else ""
-                    home_ml_display = f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{home_ml_str}</div>' if home_ml_str else ""
-                
+                    away_ml_display = (
+                        f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{away_ml_str}</div>'
+                        if away_ml_str
+                        else ""
+                    )
+                    home_ml_display = (
+                        f'<div style="font-size: 12px; color: #888; margin-top: 4px;">{home_ml_str}</div>'
+                        if home_ml_str
+                        else ""
+                    )
+
                 # Compute record display: pre-game if unplayed, post-game if played
                 def record_html_for(team, week, played):
                     if played:
@@ -350,7 +389,11 @@ def render_schedule_page():
 
                     if not rec:
                         # If no prior data, default to 0-0 (with pre-game tooltip)
-                        return '<div class="team-record" title="Pre-game record (no prior games)"><strong>0-0</strong></div>' if not played else ''
+                        return (
+                            '<div class="team-record" title="Pre-game record (no prior games)"><strong>0-0</strong></div>'
+                            if not played
+                            else ""
+                        )
 
                     wins, losses, ties, games = rec
                     if ties and ties > 0:
@@ -358,7 +401,11 @@ def render_schedule_page():
                     else:
                         rec_str = f"{wins}-{losses}"
                     # Only show the W-L(-T) string; remove verbose 'Record (pre/post)' label
-                    title = "Post-game record (after this game)" if played else "Pre-game record (before this game)"
+                    title = (
+                        "Post-game record (after this game)"
+                        if played
+                        else "Pre-game record (before this game)"
+                    )
                     return f'<div class="team-record" title="{title}"><strong>{rec_str}</strong></div>'
 
                 away_record_html = record_html_for(away_team, selected_week, is_played)
@@ -366,21 +413,39 @@ def render_schedule_page():
 
                 card_html = f'<div class="game-card"><div class="game-header">{weekday} • {gametime} • Week {selected_week}</div><div class="matchup-container"><div class="team-container">{away_img}<div class="team-name">{away_team}</div>{away_record_html}{away_ml_display}<div class="score-val-large">{away_score_str}</div></div><div class="vs-text">@</div><div class="team-container">{home_img}<div class="team-name">{home_team}</div>{home_record_html}{home_ml_display}<div class="score-val-large">{home_score_str}</div></div></div>{split_display}</div>'
                 st.markdown(card_html, unsafe_allow_html=True)
-                
+
                 # Add selection buttons below the card
                 btn_cols = st.columns(2)
                 with btn_cols[0]:
-                    btn_label = f"✓ {away_team}" if user_pick == away_team else f"Select {away_team}"
-                    if st.button(btn_label, key=f"btn_{game_id}_{away_team}", use_container_width=True, type="primary" if user_pick == away_team else "secondary"):
+                    btn_label = (
+                        f"✓ {away_team}"
+                        if user_pick == away_team
+                        else f"Select {away_team}"
+                    )
+                    if st.button(
+                        btn_label,
+                        key=f"btn_{game_id}_{away_team}",
+                        use_container_width=True,
+                        type="primary" if user_pick == away_team else "secondary",
+                    ):
                         if user_pick == away_team:
                             del st.session_state.user_picks[game_id]
                         else:
                             st.session_state.user_picks[game_id] = away_team
                         st.rerun()
-                
+
                 with btn_cols[1]:
-                    btn_label = f"✓ {home_team}" if user_pick == home_team else f"Select {home_team}"
-                    if st.button(btn_label, key=f"btn_{game_id}_{home_team}", use_container_width=True, type="primary" if user_pick == home_team else "secondary"):
+                    btn_label = (
+                        f"✓ {home_team}"
+                        if user_pick == home_team
+                        else f"Select {home_team}"
+                    )
+                    if st.button(
+                        btn_label,
+                        key=f"btn_{game_id}_{home_team}",
+                        use_container_width=True,
+                        type="primary" if user_pick == home_team else "secondary",
+                    ):
                         if user_pick == home_team:
                             del st.session_state.user_picks[game_id]
                         else:
@@ -388,13 +453,22 @@ def render_schedule_page():
                         st.rerun()
             else:
                 # For played games, use the simple HTML card
-                away_img = f'<img src="data:image/png;base64,{away_logo_b64}" class="team-logo-large">' if away_logo_b64 else ""
-                home_img = f'<img src="data:image/png;base64,{home_logo_b64}" class="team-logo-large">' if home_logo_b64 else ""
+                away_img = (
+                    f'<img src="data:image/png;base64,{away_logo_b64}" class="team-logo-large">'
+                    if away_logo_b64
+                    else ""
+                )
+                home_img = (
+                    f'<img src="data:image/png;base64,{home_logo_b64}" class="team-logo-large">'
+                    if home_logo_b64
+                    else ""
+                )
+
                 # compute post-game records
                 def record_html_for_played(team, week):
                     rec = record_lookup.get((team, int(week)))
                     if not rec:
-                        return ''
+                        return ""
                     wins, losses, ties, games = rec
                     if ties and ties > 0:
                         rec_str = f"{wins}-{losses}-{ties}"
