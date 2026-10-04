@@ -97,9 +97,9 @@ class Season:
         """
 
         # TODO: Check actual minimum number of games
-        assert (
-            len(self.list_of_games) > 13
-        ), "Less than Minimum Number of games per week"
+        assert len(self.list_of_games) > 13, (
+            "Less than Minimum Number of games per week"
+        )
         for game in self.list_of_games:
             game.simulate()
         for _, team in self.team_name_to_team.items():
@@ -245,7 +245,7 @@ class Season:
 if __name__ == "__main__":
     season = Season.load_season(
         teams_file_path="data/teams_with_records.csv",
-        schedule_filepath="data/schedules_2025.csv",
+        schedule_filepath="data/schedules_2026.csv",
     )
 
     st = time.time()

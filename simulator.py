@@ -11,7 +11,6 @@ import utils
 import copy
 
 
-
 def get_aggregator_dict():
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
     aggregator = {}
@@ -32,7 +31,7 @@ def aggregate_final_ranking(aggregator, nfc_ranking, afc_ranking):
 def simulate_single_season():
     season = Season.load_season(
         teams_file_path="data/teams_with_records.csv",
-        schedule_filepath="data/schedules_2025.csv",
+        schedule_filepath="data/schedules_2026.csv",
     )
     season.simulate_games()
     nfc_ranking, afc_ranking = season.rank()
@@ -97,7 +96,7 @@ def orig_parallel_simulatation(num_iterations=100, batch_size=10):
 
 
 def parallel_simulatation(num_iterations=100, batch_size=10, num_workers=None):
-    utils.update_schedule("data/schedules_2025.csv")
+    utils.update_schedule("data/schedules_2026.csv")
     num_batches = math.ceil(num_iterations / batch_size)
 
     if num_workers is None:
@@ -115,23 +114,30 @@ def parallel_simulatation(num_iterations=100, batch_size=10, num_workers=None):
     print("All jobs completed.")
     return aggregate_multiple_results(rankings)
 
-class Simulator():
-    def __init__(self, teams_file_path: str = "data/teams_with_records.csv", schedule_filepath: str = "data/schedules_2025.csv"):
+
+class Simulator:
+    def __init__(
+        self,
+        teams_file_path: str = "data/teams_with_records.csv",
+        schedule_filepath: str = "data/schedules_2026.csv",
+    ):
         self.base_season = Season.load_season(
             teams_file_path=teams_file_path,
             schedule_filepath=schedule_filepath,
         )
 
     def modify_game_probabilities(self, game: Game, updated_probabilities: np.ndarray):
-        assert (np.isclose(np.sum(updated_probabilities), 1)), "Updated Probabilities are invalid"
+        assert np.isclose(np.sum(updated_probabilities), 1), (
+            "Updated Probabilities are invalid"
+        )
         game.probabilities = updated_probabilities
-    
+
     def simulate_single_season(self):
         season = copy.deepcopy(self.base_season)
         season.simulate_games()
         nfc_ranking, afc_ranking = season.rank()
         return nfc_ranking, afc_ranking
-    
+
     def simulate(self, num_iterations=1000):
         aggregator = get_aggregator_dict()
         num_times_run = 0
@@ -146,15 +152,16 @@ class Simulator():
                 print(f"Exception Occured During Ranking...Moving On...: {i}", end="\r")
 
         return aggregator, num_times_run
-    
+
     @staticmethod
     def format_results(aggregator, num_times_run):
         aggregator = copy.deepcopy(aggregator)
         for team in aggregator:
             aggregator[team] = aggregator[team] / num_times_run
         return aggregator
-    
+
     """ START: TO MOVE ELSEWHERE """
+
     @staticmethod
     def calculate_playoff_probability(finishing_pos_count, num_times_run):
         """Calculate probability of making playoffs (top 7)"""
@@ -169,14 +176,14 @@ class Simulator():
         if num_times_run == 0:
             return 0.0
         return np.sum(finishing_pos_count[:4]) / num_times_run
-    
+
     @staticmethod
     def calculate_conference_winner_probability(finishing_pos_count, num_times_run):
         """Calculate probability of winning division (top 4)"""
         if num_times_run == 0:
             return 0.0
         return np.sum(finishing_pos_count[:1]) / num_times_run
-    
+
     """ END: TO MOVE ELSEWHERE """
 
     @staticmethod
@@ -184,11 +191,18 @@ class Simulator():
         playoff_probabilities = {}
         for team in aggregator:
             playoff_probabilities[team] = {
-                'playoffs': Simulator.calculate_playoff_probability(aggregator[team], num_times_run),
-                'division_winner': Simulator.calculate_division_winner_probability(aggregator[team], num_times_run),
-                'conference_winner': Simulator.calculate_conference_winner_probability(aggregator[team], num_times_run),
+                "playoffs": Simulator.calculate_playoff_probability(
+                    aggregator[team], num_times_run
+                ),
+                "division_winner": Simulator.calculate_division_winner_probability(
+                    aggregator[team], num_times_run
+                ),
+                "conference_winner": Simulator.calculate_conference_winner_probability(
+                    aggregator[team], num_times_run
+                ),
             }
         return playoff_probabilities
+
 
 def compute_win_loss_next_game_playoff_probabilities():
     # TODO: Fix the situation when there are no next unplayed games
@@ -225,7 +239,9 @@ def compute_win_loss_next_game_playoff_probabilities():
 
 
 if __name__ == "__main__":
-    playoff_prob_by_team_after_next_game_outcome = compute_win_loss_next_game_playoff_probabilities()
+    playoff_prob_by_team_after_next_game_outcome = (
+        compute_win_loss_next_game_playoff_probabilities()
+    )
     for team in playoff_prob_by_team_after_next_game_outcome:
         print(team, playoff_prob_by_team_after_next_game_outcome[team])
     exit()

@@ -7,11 +7,13 @@ import nflreadpy as nfl
 import polars as pl
 import pandas as pd
 
+
 def _single_moneyline_to_probability(team_moneyline: int):
     if team_moneyline < 0:
         return abs(team_moneyline) / (abs(team_moneyline) + 100)
     else:
         return 100 / (abs(team_moneyline) + 100)
+
 
 def moneyline_to_probability(
     away_team_moneyline: int, home_team_moneyline: int
@@ -22,8 +24,12 @@ def moneyline_to_probability(
     away_team_win_prob_vig = _single_moneyline_to_probability(away_team_moneyline)
     home_team_win_prob_vig = _single_moneyline_to_probability(home_team_moneyline)
 
-    away_team_win_prob = away_team_win_prob_vig / (away_team_win_prob_vig + home_team_win_prob_vig)
-    home_team_win_prob = home_team_win_prob_vig / (away_team_win_prob_vig + home_team_win_prob_vig)
+    away_team_win_prob = away_team_win_prob_vig / (
+        away_team_win_prob_vig + home_team_win_prob_vig
+    )
+    home_team_win_prob = home_team_win_prob_vig / (
+        away_team_win_prob_vig + home_team_win_prob_vig
+    )
 
     result = np.array([away_team_win_prob, home_team_win_prob])
 
@@ -138,7 +144,7 @@ def update_schedule(
     ],
 ):
     pbp = nfl.load_pbp()
-    schedule_new: pl.DataFrame = nfl.load_schedules([2025])
+    schedule_new: pl.DataFrame = nfl.load_schedules([2026])
     try:
         schedule_existing = pl.read_csv(schedule_filepath)
 
@@ -146,42 +152,54 @@ def update_schedule(
 
         # Merge: keep all new data and join the custom columns
         schedule = schedule_new.join(custom_cols, on="game_id", how="left")
-        schedule.write_csv("data/schedules_2025.csv")
+        schedule.write_csv(schedule_filepath)
     except FileNotFoundError:
-        schedule_new.write_csv("data/schedules_2025.csv")
+        schedule_new.write_csv(schedule_filepath)
+
 
 def generate_team_with_weekly_records_table():
     schedules = nfl.load_schedules([2025]).to_pandas()
 
     # Create a DataFrame to store the weekly records for each team
-    team_weekly_records = pd.DataFrame(columns=["team", "week", "games_played", "wins", "losses", "ties"])
+    team_weekly_records = pd.DataFrame(
+        columns=["team", "week", "games_played", "wins", "losses", "ties"]
+    )
 
     for idx, row in schedules.iterrows():
+        away_team_record = pd.DataFrame(
+            {
+                "team": [row["away_team"]],
+                "week": [row["week"]],
+                "games_played": [1],
+                "wins": [1 if row["away_score"] > row["home_score"] else 0],
+                "losses": [1 if row["away_score"] < row["home_score"] else 0],
+                "ties": [1 if row["away_score"] == row["home_score"] else 0],
+            }
+        )
+        team_weekly_records = pd.concat(
+            [team_weekly_records, away_team_record], ignore_index=True
+        )
 
-        away_team_record = pd.DataFrame({
-            "team": [row['away_team']],
-            "week": [row['week']],
-            "games_played": [1],
-            "wins": [1 if row['away_score'] > row['home_score'] else 0],
-            "losses": [1 if row['away_score'] < row['home_score'] else 0],
-            "ties": [1 if row['away_score'] == row['home_score'] else 0],
-        })
-        team_weekly_records = pd.concat([team_weekly_records, away_team_record], ignore_index=True)
+        home_team_record = pd.DataFrame(
+            {
+                "team": [row["home_team"]],
+                "week": [row["week"]],
+                "games_played": [1],
+                "wins": [1 if row["home_score"] > row["away_score"] else 0],
+                "losses": [1 if row["home_score"] < row["away_score"] else 0],
+                "ties": [1 if row["home_score"] == row["away_score"] else 0],
+            }
+        )
 
-        home_team_record = pd.DataFrame({
-            "team": [row['home_team']],
-            "week": [row['week']],
-            "games_played": [1],
-            "wins": [1 if row['home_score'] > row['away_score'] else 0],
-            "losses": [1 if row['home_score'] < row['away_score'] else 0],
-            "ties": [1 if row['home_score'] == row['away_score'] else 0],
-        })
-
-        team_weekly_records = pd.concat([team_weekly_records, home_team_record], ignore_index=True)
+        team_weekly_records = pd.concat(
+            [team_weekly_records, home_team_record], ignore_index=True
+        )
 
     return team_weekly_records
 
+
 # def format_tables_for_display(df: pd.DataFrame) -> pd.DataFrame:
+
 
 def split_standings_by_division(conference_standings: pd.DataFrame):
     """Split a conference standings table into divisions.
@@ -202,11 +220,16 @@ def split_standings_by_division(conference_standings: pd.DataFrame):
         return conference_standings
 
     # If there's a 'Division' column, use it directly
-    if isinstance(conference_standings, pd.DataFrame) and 'Division' in conference_standings.columns:
+    if (
+        isinstance(conference_standings, pd.DataFrame)
+        and "Division" in conference_standings.columns
+    ):
         divisions = {}
-        division_names = conference_standings['Division'].dropna().unique()
+        division_names = conference_standings["Division"].dropna().unique()
         for division in division_names:
-            divisions[division] = conference_standings[conference_standings['Division'] == division]
+            divisions[division] = conference_standings[
+                conference_standings["Division"] == division
+            ]
         return divisions
 
     # If columns are MultiIndex with division-level top headers
@@ -215,7 +238,7 @@ def split_standings_by_division(conference_standings: pd.DataFrame):
         top_headers = list(conference_standings.columns.get_level_values(0).unique())
         for h in top_headers:
             try:
-                sub = conference_standings[h].dropna(how='all')
+                sub = conference_standings[h].dropna(how="all")
                 if not sub.empty:
                     divisions[str(h)] = sub
             except Exception:
@@ -227,7 +250,9 @@ def split_standings_by_division(conference_standings: pd.DataFrame):
     div_rows = []
     for idx, row in conference_standings.iterrows():
         for cell in row:
-            if isinstance(cell, str) and re.match(r'^(?:AFC|NFC)?\s*(?:East|North|South|West)$', cell.strip(), re.I):
+            if isinstance(cell, str) and re.match(
+                r"^(?:AFC|NFC)?\s*(?:East|North|South|West)$", cell.strip(), re.I
+            ):
                 div_rows.append((idx, cell.strip()))
                 break
 
@@ -238,14 +263,15 @@ def split_standings_by_division(conference_standings: pd.DataFrame):
         for i, name in enumerate(names):
             start = indices[i] + 1
             end = indices[i + 1] if i + 1 < len(indices) else len(conference_standings)
-            sub = conference_standings.iloc[start:end].dropna(how='all')
+            sub = conference_standings.iloc[start:end].dropna(how="all")
             if not sub.empty:
                 divisions[name] = sub.reset_index(drop=True)
         if divisions:
             return divisions
 
     # As a last resort, return the whole table under 'All'
-    return {'All': conference_standings}
+    return {"All": conference_standings}
+
 
 def get_current_standings(season: int = 2025):
     url = f"https://www.pro-football-reference.com/years/{season}/index.htm"
@@ -253,7 +279,10 @@ def get_current_standings(season: int = 2025):
     tables = pd.read_html(url)
     afc_standings = tables[0]
     nfc_standings = tables[1]
-    return split_standings_by_division(afc_standings), split_standings_by_division(nfc_standings)
+    return split_standings_by_division(afc_standings), split_standings_by_division(
+        nfc_standings
+    )
+
 
 if __name__ == "__main__":
     dotenv.load_dotenv()

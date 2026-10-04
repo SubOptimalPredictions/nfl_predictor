@@ -129,9 +129,9 @@ class Game:
         return prob
 
     def get_point_differential(self):
-        assert (
-            self.score[0, 0] is not None and self.score[0, 1] is not None
-        ), "Cannot compute point differential for an unplayed game"
+        assert self.score[0, 0] is not None and self.score[0, 1] is not None, (
+            "Cannot compute point differential for an unplayed game"
+        )
         return abs(self.score[0, 0] - self.score[0, 1])
 
     def get_margin_of_victory_multiplier(self):
@@ -248,7 +248,7 @@ class Game:
 
 if __name__ == "__main__":
     teams = Team.load_teams_from_csv("data/teams_with_records.csv")
-    games = Game.load_games_from_csv("data/schedules_2025.csv", teams)
+    games = Game.load_games_from_csv("data/schedules_2026.csv", teams)
     for game in games:
         game.simulate()
         print(game)
