@@ -81,7 +81,8 @@ class Team:
             conference = row["Conference"]
             division = row["Division"]
             abbreviation = row["Abbreviation"]
-            team = Team(name, abbreviation, record, conference, division)
+            elo = row["Elo"]
+            team = Team(name, abbreviation, record, conference, division, elo)
             teams[abbreviation] = team
         return teams
 
