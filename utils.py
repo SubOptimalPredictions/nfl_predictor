@@ -139,8 +139,6 @@ def update_schedule(
     schedule_filepath: str,
     columns_to_preserve: list[str] = [
         "game_id",
-        "gemini_away_win_prob",
-        "gemini_home_win_prob",
     ],
 ):
     pbp = nfl.load_pbp()

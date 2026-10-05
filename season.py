@@ -6,7 +6,7 @@ project grows.
 """
 
 from team import Team, DivisionTeamWrapper, ConferenceTeamWrapper
-from game import Game
+from game import Game, GameLoadingMode
 import numpy as np
 import polars as pl
 import time
@@ -232,9 +232,13 @@ class Season:
         df.write_csv(filepath)
 
     @staticmethod
-    def load_season(teams_file_path: str, schedule_filepath: str):
+    def load_season(
+        teams_file_path: str,
+        schedule_filepath: str,
+        game_mode: GameLoadingMode = GameLoadingMode.REGULAR_SEASON_ONLY,
+    ):
         teams = Team.load_teams_from_csv(teams_file_path)
-        games = Game.load_games_from_csv(schedule_filepath, teams)
+        games = Game.load_games_from_csv(schedule_filepath, teams, game_mode=game_mode)
 
         season = Season(list_of_games=games, team_name_to_team=teams)
         return season
