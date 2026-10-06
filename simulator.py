@@ -222,7 +222,7 @@ def compute_win_loss_next_game_playoff_probabilities(write_to_file=True):
             "Playoff Probability After Next Game Win": 0.0,
             "Playoff Probability After Next Game Loss": 0.0,
             "Next Game Opponent": next_game.away_team.abbreviation if next_game.home_team.abbreviation == name else next_game.home_team.abbreviation,
-            "Next Game Win Probability": next_game.probabilities[0] if next_game.home_team.abbreviation == name else next_game.probabilities[1],
+            "Next Game Win Probability": next_game.probabilities[0] if next_game.away_team.abbreviation == name else next_game.probabilities[1],
             "Next Game Loss Probability": next_game.probabilities[1] if next_game.home_team.abbreviation == name else next_game.probabilities[0]
         }
 
