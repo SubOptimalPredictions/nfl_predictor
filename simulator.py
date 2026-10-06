@@ -228,7 +228,6 @@ def compute_win_loss_next_game_playoff_probabilities():
         aggregator, num_times_run = sim.simulate()
         standing_probabilities = Simulator.format_results(aggregator, num_times_run)
         playoff_prob = np.sum(standing_probabilities[name][:7])
-        # idx = 0 if next_game.away_team.abbreviation == name else 1
 
         # If this team is the away team (away team won)
         if next_game.away_team.abbreviation == name:
@@ -242,8 +241,6 @@ def compute_win_loss_next_game_playoff_probabilities():
         aggregator, num_times_run = sim.simulate()
         standing_probabilities = Simulator.format_results(aggregator, num_times_run)
         playoff_prob = np.sum(standing_probabilities[name][:7])
-        # idx = 0 if next_game.home_team.abbreviation == name else 1
-        # playoff_prob_by_team_after_next_game_outcome[name][idx] = playoff_prob
 
         # If this team is the home team (home team won)
         if next_game.home_team.abbreviation == name:
