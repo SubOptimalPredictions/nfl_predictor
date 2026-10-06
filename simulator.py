@@ -221,7 +221,11 @@ def compute_win_loss_next_game_playoff_probabilities(write_to_file=True):
             "Current Playoff Probability": 0.0,
             "Playoff Probability After Next Game Win": 0.0,
             "Playoff Probability After Next Game Loss": 0.0,
+            "Next Game Opponent": next_game.away_team.abbreviation if next_game.home_team.abbreviation == name else next_game.home_team.abbreviation,
+            "Next Game Win Probability": next_game.probabilities[0] if next_game.home_team.abbreviation == name else next_game.probabilities[1],
+            "Next Game Loss Probability": next_game.probabilities[1] if next_game.home_team.abbreviation == name else next_game.probabilities[0]
         }
+
         print(f"Team: {name}")
         print(next_game)
         # Away Win
@@ -260,7 +264,15 @@ def compute_win_loss_next_game_playoff_probabilities(write_to_file=True):
         playoff_prob_by_team_after_next_game_outcome[team_name]["Current Playoff Probability"] = playoff_probability
 
     if write_to_file:
-        headers = ["Name", "Current Playoff Probability", "Playoff Probability After Next Game Win", "Playoff Probability After Next Game Loss"]
+        headers = [
+            "Name", 
+            "Current Playoff Probability",
+            "Playoff Probability After Next Game Win",
+            "Playoff Probability After Next Game Loss",
+            "Next Game Opponent",
+            "Next Game Win Probability",
+            "Next Game Loss Probability"
+        ]
         # Save to file:
         with open("data/impact_analysis_2026.csv", mode="w", newline="", encoding="utf-8") as file:
             # Use the dictionary's keys as the fieldnames
