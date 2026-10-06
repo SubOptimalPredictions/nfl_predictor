@@ -1,159 +1,276 @@
-"""
-Impact Analysis page for NFL Season Simulator
-Shows how each team's playoff chances change with a win or loss in their next game
-"""
-import streamlit as st
-import polars as pl
+"""Impact analysis page for the NFL season simulator."""
+
 import os
-from ui.utils import (
-    get_base64_image,
-    get_team_conferences,
-)
-from team_colors import TEAM_COLORS
+
+import polars as pl
+import streamlit as st
+
+from ui.utils import get_base64_image, get_team_conferences
 
 
+IMPACT_DATA_PATH = "data/impact_analysis_2026.csv"
+REQUIRED_COLUMNS = {
+    "Name",
+    "Current Playoff Probability",
+    "Playoff Probability After Next Game Win",
+    "Playoff Probability After Next Game Loss",
+    "Next Game Opponent",
+    "Next Game Win Probability",
+    "Next Game Loss Probability",
+}
 
-def load_impact_data(csv_path="data/impact_analysis.csv"):
-    """Load impact analysis data from CSV file"""
-    if not os.path.exists(csv_path):
+
+def load_impact_data(csv_path=IMPACT_DATA_PATH):
+    """Load the precomputed 2026 impact analysis data."""
+    if not os.path.isfile(csv_path):
         return None
-    
+
     try:
-        df = pl.read_csv(csv_path)
-        return df
-    except Exception as e:
-        st.error(f"Error loading data: {str(e)}")
+        data = pl.read_csv(csv_path)
+    except (OSError, pl.exceptions.PolarsError) as error:
+        st.error(f"Error loading impact analysis data: {error}")
         return None
+
+    missing_columns = REQUIRED_COLUMNS.difference(data.columns)
+    if missing_columns:
+        st.error(
+            "Impact analysis data is missing required columns: "
+            + ", ".join(sorted(missing_columns))
+        )
+        return None
+
+    return data
 
 
 def render_impact_analysis_page():
-    """Render the impact analysis page"""
+    """Render each team's next-game and playoff-probability scenarios."""
     st.subheader("🎯 Playoff Impact Analysis")
     st.markdown(
-        "See how each team's playoff chances change with a win or loss in their next game."
+        "Compare each team's chance to win its next game with its current "
+        "playoff odds and the change if it wins or loses."
     )
-    
-    # Load data
+
     impact_data = load_impact_data()
-    
     if impact_data is None:
-        st.info("📁 No impact analysis data available. Please ensure `data/impact_analysis.csv` exists.")
-        st.markdown("""
-        ### Expected CSV Format
-        The CSV should have the following columns:
-        - `team`: Team abbreviation (e.g., "KC", "SF", "DAL")
-        - `opponent`: Opponent abbreviation
-        - `is_home`: Boolean (true/false) indicating if team is playing at home
-        - `current_probability`: Current playoff probability (0.0-1.0)
-        - `win_probability`: Playoff probability if team wins (0.0-1.0)
-        - `loss_probability`: Playoff probability if team loses (0.0-1.0)
-        """)
+        st.info(
+            f"No usable impact analysis data found. "
+            f"Expected `{IMPACT_DATA_PATH}` with the computed 2026 matchup data."
+        )
         return
-    
-    # Get team conferences for filtering
+
     team_conferences = get_team_conferences()
-    
-    # Separate by conference
-    nfc_data = impact_data.filter(impact_data["team"].is_in([t for t, c in team_conferences.items() if c == "NFC"]))
-    afc_data = impact_data.filter(impact_data["team"].is_in([t for t, c in team_conferences.items() if c == "AFC"]))
-    
-    # Sort by impact swing (descending)
-    for df in [nfc_data, afc_data]:
-        if len(df) > 0:
-            df = df.with_columns(
-                swing=(pl.col("win_probability") - pl.col("loss_probability")).abs()
-            ).sort("swing", descending=True)
-    
-    # Display results
-    nfc_tab, afc_tab = st.tabs(["NFC Impact", "AFC Impact"])
-    
-    with nfc_tab:
-        st.markdown("### NFC Teams - Ranked by Impact")
-        if len(nfc_data) > 0:
-            display_conference_results(nfc_data)
-        else:
-            st.info("No NFC data available")
-    
-    with afc_tab:
-        st.markdown("### AFC Teams - Ranked by Impact")
-        if len(afc_data) > 0:
-            display_conference_results(afc_data)
-        else:
-            st.info("No AFC data available")
+    known_teams = set(team_conferences)
+    data_teams = set(impact_data["Name"].to_list())
+    unknown_teams = sorted(data_teams - known_teams)
+    if unknown_teams:
+        st.warning(
+            "These teams are not present in the team records and will be omitted: "
+            + ", ".join(unknown_teams)
+        )
+
+    impact_data = impact_data.filter(pl.col("Name").is_in(known_teams))
+    display_matchups(impact_data)
 
 
-def display_conference_results(data):
-    """Display impact analysis results for a conference"""
-    
-    # Calculate derived metrics
-    display_data = data.with_columns([
-        (pl.col("win_probability") - pl.col("loss_probability")).abs().alias("swing"),
-        ((pl.col("win_probability") - pl.col("current_probability")) * 100).alias("win_delta"),
-        ((pl.col("loss_probability") - pl.col("current_probability")) * 100).alias("loss_delta"),
-    ]).sort("swing", descending=True)
-    
-    # Display cards vertically (1 column)
-    for idx, row in enumerate(display_data.iter_rows(named=True)):
-        team = row["team"]
-        opponent = row["opponent"]
-        is_home = row["is_home"]
-        current = row["current_probability"]
-        win_prob = row["win_probability"]
-        loss_prob = row["loss_probability"]
-        swing = row["swing"]
-        
-        location = "🏠 Home" if is_home else "✈️ Away"
-        
-        # Determine impact level
-        if swing > 0.25:
-            impact_level = "🔴 CRITICAL"
-        elif swing > 0.15:
-            impact_level = "🟡 HIGH STAKES"
-        else:
-            impact_level = "🟢 MODERATE"
-        
-        # Get team color for gradient
-        team_color = TEAM_COLORS.get(team, "#6366f1")  # Default to indigo if not found
-        opponent_color = TEAM_COLORS.get(opponent, "#6366f1")
-        
-        # Convert hex to RGB for rgba values (simple conversion)
-        def hex_to_rgb(hex_color):
-            hex_color = hex_color.lstrip('#')
-            return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-        
-        team_rgb = hex_to_rgb(team_color)
-        opponent_rgb = hex_to_rgb(opponent_color)
-        
-        # Get team logos
-        logo_path = f"assets/{team}.png"
-        logo_data = get_base64_image(logo_path)
-        team_logo_html = f"<img src='data:image/png;base64,{logo_data}' style='width: 50px; height: 50px; object-fit: contain;'>" if logo_data else ""
-        
-        opp_logo_path = f"assets/{opponent}.png"
-        opp_logo_data = get_base64_image(opp_logo_path)
-        opp_logo_html = f"<img src='data:image/png;base64,{opp_logo_data}' style='width: 50px; height: 50px; object-fit: contain;'>" if opp_logo_data else ""
-        
-        # Create complete card HTML using double quotes to avoid conflicts
-        card_html = f"""<div style="background: linear-gradient(135deg, rgba({team_rgb[0]}, {team_rgb[1]}, {team_rgb[2]}, 0.1) 0%, rgba({opponent_rgb[0]}, {opponent_rgb[1]}, {opponent_rgb[2]}, 0.1) 100%); padding: 24px; border-radius: 10px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-                <div style="flex: 0.8;"><h3 style="margin: 0; font-size: 28px; font-weight: bold; color: #1f2937;">{team}</h3></div>
-                <div style="flex: 0.2; display: flex; justify-content: center;">{team_logo_html}</div>
-                <div style="flex: 1; text-align: center;"><p style="margin: 0; font-weight: bold; color: #4b5563;">{location}</p></div>
-                <div style="flex: 0.2; display: flex; justify-content: center;">{opp_logo_html}</div>
-                <div style="flex: 0.8; text-align: right;"><h3 style="margin: 0; font-size: 28px; font-weight: bold; color: #1f2937;">vs {opponent}</h3></div>
-            </div>
-            <div style="text-align: center; padding: 12px; background: linear-gradient(135deg, rgba({team_rgb[0]}, {team_rgb[1]}, {team_rgb[2]}, 0.25) 0%, rgba({opponent_rgb[0]}, {opponent_rgb[1]}, {opponent_rgb[2]}, 0.25) 100%); border-radius: 8px; font-weight: bold; border: 1px solid rgba(0,0,0,0.1); margin-bottom: 16px; color: #1f2937;">{impact_level}</div>
-            <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(0,0,0,0.1);">
-            <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;">
-                <div><p style="margin: 0 0 8px 0; color: #6b7280; font-size: 12px; font-weight: 600;">IMPACT SWING</p><p style="margin: 0; color: #1f2937; font-size: 24px; font-weight: bold;">{swing*100:.1f}%</p></div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-                <div style="background: #dcfce7; padding: 12px; border-radius: 8px; border: 1px solid #86efac; text-align: center;"><p style="margin: 0 0 4px 0; color: #166534; font-size: 11px; font-weight: 600;">📈 IF WIN</p><p style="margin: 0 0 4px 0; color: #166534; font-size: 20px; font-weight: bold;">{win_prob*100:.1f}%</p><p style="margin: 0; color: #16a34a; font-size: 11px;">+{(win_prob - current)*100:.1f}%</p></div>
-                <div style="background: #fef3c7; padding: 12px; border-radius: 8px; border: 1px solid #fcd34d; text-align: center;"><p style="margin: 0 0 4px 0; color: #92400e; font-size: 11px; font-weight: 600;">➡️ CURRENT</p><p style="margin: 0 0 4px 0; color: #92400e; font-size: 20px; font-weight: bold;">{current*100:.1f}%</p><p style="margin: 0; color: #b45309; font-size: 11px;">Baseline</p></div>
-                <div style="background: #fee2e2; padding: 12px; border-radius: 8px; border: 1px solid #fca5a5; text-align: center;"><p style="margin: 0 0 4px 0; color: #7c2d12; font-size: 11px; font-weight: 600;">📉 IF LOSS</p><p style="margin: 0 0 4px 0; color: #7c2d12; font-size: 20px; font-weight: bold;">{loss_prob*100:.1f}%</p><p style="margin: 0; color: #dc2626; font-size: 11px;">{(loss_prob - current)*100:.1f}%</p></div>
-            </div>
-        </div>"""
-        
-        st.markdown(card_html, unsafe_allow_html=True)
-        st.write("")  # Spacing between cards
+def _playoff_swing(row):
+    """Return the playoff-probability swing between the team's outcomes."""
+    return abs(
+        row["Playoff Probability After Next Game Win"]
+        - row["Playoff Probability After Next Game Loss"]
+    )
 
+
+def _display_team_heading(row):
+    """Display a team's logo and name in the matchup header."""
+    team = row["Name"]
+    logo_data = get_base64_image(f"assets/{team}.png")
+    if logo_data:
+        st.markdown(
+            f"<div style='display:flex;align-items:center;justify-content:center;"
+            f"gap:8px;margin-bottom:4px'>"
+            f"<img src='data:image/png;base64,{logo_data}' "
+            f"alt='{team} logo' style='width:32px;height:32px;object-fit:contain'>"
+            f"<strong style='font-size:0.95rem'>{team}</strong>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            f"<div style='text-align:center'><strong>{team}</strong></div>",
+            unsafe_allow_html=True,
+        )
+
+
+def _display_comparison_row(left_value, label, right_value):
+    """Display a centered metric label between both teams' values."""
+    left, middle, right = st.columns([1, 1.2, 1], gap="small")
+    left.markdown(
+        f"<div style='text-align:center;font-weight:700'>{left_value}</div>",
+        unsafe_allow_html=True,
+    )
+    middle.markdown(
+        f"<div style='text-align:center;font-size:0.7rem;color:gray'>{label}</div>",
+        unsafe_allow_html=True,
+    )
+    right.markdown(
+        f"<div style='text-align:center;font-weight:700'>{right_value}</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def _probability_with_delta(value, current):
+    """Format a conditional playoff probability and its baseline change."""
+    if value is None:
+        return "—"
+    delta = (value - current) * 100
+    bubble_color = "#15803d" if delta >= 0 else "#b91c1c"
+    bubble_background = "#dcfce7" if delta >= 0 else "#fee2e2"
+    return (
+        f"<strong>{value:.1%}</strong>"
+        f"<br><span style='display:inline-block;margin-top:2px;padding:2px 7px;"
+        f"border-radius:999px;background:{bubble_background};color:{bubble_color};"
+        f"font-size:0.65rem;font-weight:700;line-height:1.2'>"
+        f"{delta:+.1f} pp</span>"
+    )
+
+
+def display_matchups(data):
+    """Display each matchup once, pairing team projections when available."""
+    if data.is_empty():
+        st.info("No matchup data available.")
+        return
+
+    rows = {row["Name"]: row for row in data.iter_rows(named=True)}
+    matchups = []
+    displayed_teams = set()
+    for team, row in rows.items():
+        if team in displayed_teams:
+            continue
+
+        opponent = row["Next Game Opponent"]
+        opponent_row = rows.get(opponent)
+        is_reciprocal = (
+            opponent_row is not None
+            and opponent_row["Next Game Opponent"] == team
+        )
+        paired_row = opponent_row if is_reciprocal else None
+        displayed_teams.add(team)
+        if paired_row is not None:
+            displayed_teams.add(opponent)
+
+        swing = _playoff_swing(row)
+        if paired_row is not None:
+            swing = max(swing, _playoff_swing(paired_row))
+        matchups.append((swing, row, paired_row))
+
+    matchups.sort(key=lambda matchup: matchup[0], reverse=True)
+    st.caption(
+        "Scenario changes are percentage-point shifts from current playoff odds. "
+        "Matchups are combined when both teams list each other as their next game."
+    )
+    for start in range(0, len(matchups), 2):
+        matchup_columns = st.columns(2, gap="medium")
+        for column, (_, row, paired_row) in zip(
+            matchup_columns, matchups[start : start + 2]
+        ):
+            team = row["Name"]
+            opponent = row["Next Game Opponent"]
+            with column:
+                with st.container(border=True, key=f"impact-card-{team}"):
+                    left, center, right = st.columns([1, 0.35, 1], gap="small")
+                    with left:
+                        _display_team_heading(row)
+                    with center:
+                        st.markdown(
+                            "<div style='text-align:center;font-size:0.7rem;"
+                            "padding-top:8px'>MATCHUP</div>",
+                            unsafe_allow_html=True,
+                        )
+                    with right:
+                        if paired_row is not None:
+                            _display_team_heading(paired_row)
+                        else:
+                            opponent_logo = get_base64_image(f"assets/{opponent}.png")
+                            if opponent_logo:
+                                st.markdown(
+                                    f"<div style='display:flex;align-items:center;"
+                                    f"justify-content:center;gap:8px;margin-bottom:4px'>"
+                                    f"<img src='data:image/png;base64,{opponent_logo}' "
+                                    f"alt='{opponent} logo' "
+                                    "style='width:32px;height:32px;object-fit:contain'>"
+                                    f"<strong style='font-size:0.95rem'>{opponent}</strong>"
+                                    "</div>",
+                                    unsafe_allow_html=True,
+                                )
+                            else:
+                                st.markdown(
+                                    f"<div style='text-align:center'>"
+                                    f"<strong>{opponent}</strong></div>",
+                                    unsafe_allow_html=True,
+                                )
+
+                    opponent_current = (
+                        paired_row["Current Playoff Probability"]
+                        if paired_row is not None
+                        else None
+                    )
+                    _display_comparison_row(
+                        f"<strong>{row['Next Game Win Probability']:.1%}</strong>",
+                        "Chance to win",
+                        (
+                            f"<strong>{paired_row['Next Game Win Probability']:.1%}</strong>"
+                            if paired_row is not None
+                            else (
+                                "<strong>"
+                                f"{row['Next Game Loss Probability']:.1%}"
+                                "</strong>"
+                            )
+                        ),
+                    )
+                    _display_comparison_row(
+                        f"<strong>{row['Current Playoff Probability']:.1%}</strong>",
+                        "Current playoff chance",
+                        (
+                            f"<strong>{opponent_current:.1%}</strong>"
+                            if opponent_current is not None
+                            else "—"
+                        ),
+                    )
+                    _display_comparison_row(
+                        _probability_with_delta(
+                            row["Playoff Probability After Next Game Win"],
+                            row["Current Playoff Probability"],
+                        ),
+                        "Playoff chance if they win",
+                        (
+                            _probability_with_delta(
+                                paired_row[
+                                    "Playoff Probability After Next Game Win"
+                                ],
+                                opponent_current,
+                            )
+                            if paired_row is not None
+                            else "—"
+                        ),
+                    )
+                    _display_comparison_row(
+                        _probability_with_delta(
+                            row["Playoff Probability After Next Game Loss"],
+                            row["Current Playoff Probability"],
+                        ),
+                        "Playoff chance if they lose",
+                        (
+                            _probability_with_delta(
+                                paired_row[
+                                    "Playoff Probability After Next Game Loss"
+                                ],
+                                opponent_current,
+                            )
+                            if paired_row is not None
+                            else "—"
+                        ),
+                    )
+                    if paired_row is None:
+                        st.caption(
+                            "Opponent playoff projections are not paired in the CSV."
+                        )
