@@ -9,6 +9,7 @@ import concurrent.futures
 import time
 import utils
 import copy
+import csv
 
 
 def get_aggregator_dict():
@@ -204,7 +205,7 @@ class Simulator:
         return playoff_probabilities
 
 
-def compute_win_loss_next_game_playoff_probabilities():
+def compute_win_loss_next_game_playoff_probabilities(write_to_file=True):
     # TODO: Fix the situation when there are no next unplayed games
     playoff_prob_by_team_after_next_game_outcome = {}
     sim = Simulator()
@@ -216,6 +217,7 @@ def compute_win_loss_next_game_playoff_probabilities():
         next_game = sim.base_season.get_team_next_game(name)
         # playoff_prob_by_team_after_next_game_outcome[name] = np.array([0.0, 0.0])
         playoff_prob_by_team_after_next_game_outcome[name] = {
+            "Name": name,
             "Current Playoff Probability": 0.0,
             "Playoff Probability After Next Game Win": 0.0,
             "Playoff Probability After Next Game Loss": 0.0,
@@ -227,7 +229,7 @@ def compute_win_loss_next_game_playoff_probabilities():
         sim.modify_game_probabilities(next_game, new_probability)
         aggregator, num_times_run = sim.simulate()
         standing_probabilities = Simulator.format_results(aggregator, num_times_run)
-        playoff_prob = float(np.sum(standing_probabilities[name][:7]))
+        playoff_prob = float(np.round(np.sum(standing_probabilities[name][:7]), 2))
 
         # If this team is the away team (away team won)
         if next_game.away_team.abbreviation == name:
@@ -240,7 +242,7 @@ def compute_win_loss_next_game_playoff_probabilities():
         sim.modify_game_probabilities(next_game, new_probability)
         aggregator, num_times_run = sim.simulate()
         standing_probabilities = Simulator.format_results(aggregator, num_times_run)
-        playoff_prob = float(np.sum(standing_probabilities[name][:7]))
+        playoff_prob = float(np.round(np.sum(standing_probabilities[name][:7]), 2))
 
         # If this team is the home team (home team won)
         if next_game.home_team.abbreviation == name:
@@ -254,8 +256,19 @@ def compute_win_loss_next_game_playoff_probabilities():
     standing_probabilities = Simulator.format_results(aggregator, num_times_run)
     for team_name in playoff_prob_by_team_after_next_game_outcome:
         standing_probs = standing_probabilities[team_name]
-        playoff_probability = float(np.sum(standing_probs[:7]))
+        playoff_probability = float(np.round(np.sum(standing_probs[:7]), 2))
         playoff_prob_by_team_after_next_game_outcome[team_name]["Current Playoff Probability"] = playoff_probability
+
+    if write_to_file:
+        headers = ["Name", "Current Playoff Probability", "Playoff Probability After Next Game Win", "Playoff Probability After Next Game Loss"]
+        # Save to file:
+        with open("data/impact_analysis_2026.csv", mode="w", newline="", encoding="utf-8") as file:
+            # Use the dictionary's keys as the fieldnames
+            writer = csv.DictWriter(file, fieldnames=headers)
+            
+            writer.writeheader()
+            for team in playoff_prob_by_team_after_next_game_outcome:
+                writer.writerow(playoff_prob_by_team_after_next_game_outcome[team])
 
     return playoff_prob_by_team_after_next_game_outcome
 
