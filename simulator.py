@@ -227,7 +227,7 @@ def compute_win_loss_next_game_playoff_probabilities():
         sim.modify_game_probabilities(next_game, new_probability)
         aggregator, num_times_run = sim.simulate()
         standing_probabilities = Simulator.format_results(aggregator, num_times_run)
-        playoff_prob = np.sum(standing_probabilities[name][:7])
+        playoff_prob = float(np.sum(standing_probabilities[name][:7]))
 
         # If this team is the away team (away team won)
         if next_game.away_team.abbreviation == name:
@@ -240,7 +240,7 @@ def compute_win_loss_next_game_playoff_probabilities():
         sim.modify_game_probabilities(next_game, new_probability)
         aggregator, num_times_run = sim.simulate()
         standing_probabilities = Simulator.format_results(aggregator, num_times_run)
-        playoff_prob = np.sum(standing_probabilities[name][:7])
+        playoff_prob = float(np.sum(standing_probabilities[name][:7]))
 
         # If this team is the home team (home team won)
         if next_game.home_team.abbreviation == name:
@@ -254,7 +254,7 @@ def compute_win_loss_next_game_playoff_probabilities():
     standing_probabilities = Simulator.format_results(aggregator, num_times_run)
     for team_name in playoff_prob_by_team_after_next_game_outcome:
         standing_probs = standing_probabilities[team_name]
-        playoff_probability = np.sum(standing_probs[:7])
+        playoff_probability = float(np.sum(standing_probs[:7]))
         playoff_prob_by_team_after_next_game_outcome[team_name]["Current Playoff Probability"] = playoff_probability
 
     return playoff_prob_by_team_after_next_game_outcome
