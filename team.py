@@ -81,7 +81,9 @@ class Team:
             conference = row["Conference"]
             division = row["Division"]
             abbreviation = row["Abbreviation"]
-            elo = row["Elo"]
+            elo = row.get("Elo")
+            if elo is None:
+                elo = 1500
             team = Team(name, abbreviation, record, conference, division, elo)
             teams[abbreviation] = team
         return teams
